@@ -1,0 +1,17 @@
+# An editor to work with credentials
+vim
+# Application dependencies
+sqlite3
+libvips
+ffmpeg
+libvips-dev
+libyaml-dev
+libssl-dev
+default-mysql-client
+default-libmysqlclient-dev
+# System tests
+chromium
+chromium-driver
+# Claude
+bubblewrap
+socat
