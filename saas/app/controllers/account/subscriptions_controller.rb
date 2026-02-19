@@ -1,5 +1,7 @@
 class Account::SubscriptionsController < ApplicationController
-  before_action :ensure_admin
+  verify_authorized
+
+  before_action :ensure_can_manage_account
   before_action :set_stripe_session, only: :show
 
   def show

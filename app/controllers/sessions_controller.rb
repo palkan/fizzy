@@ -1,4 +1,5 @@
 class SessionsController < ApplicationController
+  skip_authorization
   disallow_account_scope
   require_unauthenticated_access except: :destroy
   rate_limit to: 10, within: 3.minutes, only: :create, with: :rate_limit_exceeded

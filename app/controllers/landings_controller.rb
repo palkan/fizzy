@@ -1,4 +1,6 @@
 class LandingsController < ApplicationController
+  skip_authorization
+
   def show
     flash.keep(:welcome_letter)
 

@@ -1,4 +1,6 @@
 class Notifications::TraysController < ApplicationController
+  skip_authorization
+
   def show
     @notifications = Current.user.notifications.preloaded.unread.ordered.limit(100)
 

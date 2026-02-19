@@ -1,6 +1,8 @@
 class Cards::DraftsController < ApplicationController
   include CardScoped
 
+  verify_authorized
+
   before_action :redirect_if_published
 
   def show

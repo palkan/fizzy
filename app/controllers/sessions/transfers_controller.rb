@@ -1,4 +1,5 @@
 class Sessions::TransfersController < ApplicationController
+  skip_authorization
   disallow_account_scope
   require_unauthenticated_access
 

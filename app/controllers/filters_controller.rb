@@ -1,4 +1,6 @@
 class FiltersController < ApplicationController
+  skip_authorization
+
   before_action :set_filters
 
   def create

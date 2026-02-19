@@ -1,4 +1,6 @@
 class Signups::CompletionsController < ApplicationController
+  skip_authorization
+
   layout "public"
 
   disallow_account_scope

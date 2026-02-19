@@ -6,13 +6,18 @@ class WebhooksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index" do
-    get board_webhooks_path(boards(:writebook))
+    assert_authorized_to(:index?, Webhook) do
+      get board_webhooks_path(boards(:writebook))
+    end
     assert_response :success
   end
 
   test "show" do
     webhook = webhooks(:active)
-    get board_webhook_path(webhook.board, webhook)
+    assert_authorized_to(:show?, webhook) do
+      get board_webhook_path(webhook.board, webhook)
+    end
+
     assert_response :success
 
     webhook = webhooks(:inactive)
@@ -21,7 +26,9 @@ class WebhooksControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "new" do
-    get new_board_webhook_path(boards(:writebook))
+    assert_authorized_to(:create?, Webhook) do
+      get new_board_webhook_path(boards(:writebook))
+    end
     assert_response :success
     assert_select "form"
   end
@@ -29,14 +36,16 @@ class WebhooksControllerTest < ActionDispatch::IntegrationTest
   test "create with valid params" do
     board = boards(:writebook)
 
-    assert_difference "Webhook.count", 1 do
-      post board_webhooks_path(board), params: {
-        webhook: {
-          name: "Test Webhook",
-          url: "https://example.com/webhook",
-          subscribed_actions: [ "", "card_published", "card_closed" ]
+    assert_authorized_to(:create?, Webhook) do
+      assert_difference "Webhook.count", 1 do
+        post board_webhooks_path(board), params: {
+          webhook: {
+            name: "Test Webhook",
+            url: "https://example.com/webhook",
+            subscribed_actions: [ "", "card_published", "card_closed" ]
+          }
         }
-      }
+      end
     end
 
     webhook = Webhook.last

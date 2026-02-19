@@ -1,4 +1,5 @@
 class PwaController < ApplicationController
+  skip_authorization
   disallow_account_scope
   skip_forgery_protection
 

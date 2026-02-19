@@ -1,4 +1,6 @@
 class Users::PushSubscriptionsController < ApplicationController
+  skip_authorization
+
   before_action :set_push_subscriptions
 
   def index

@@ -1,7 +1,11 @@
 class Cards::PublishesController < ApplicationController
   include CardScoped
 
+  verify_authorized
+
   def create
+    authorize! @card, to: :publish?
+
     @card.publish
 
     if add_another_param?

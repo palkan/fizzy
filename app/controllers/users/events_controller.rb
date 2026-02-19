@@ -1,6 +1,8 @@
 class Users::EventsController < ApplicationController
   include FilterScoped
 
+  skip_authorization
+
   before_action :set_user, :set_filter, :set_user_filtering
 
   def show

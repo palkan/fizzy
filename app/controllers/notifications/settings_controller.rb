@@ -1,4 +1,6 @@
 class Notifications::SettingsController < ApplicationController
+  skip_authorization
+
   before_action :set_settings
 
   def show

@@ -10,7 +10,7 @@
         <label class="flex gap cursor-pointer">
           <span class="txt-large"><%= icon_tag "lock" %></span>
           <span class="switch flex align-center justify-between">
-            <%= form.check_box :published, class: "switch__input", checked: true, data: { action: "change->form#submit" }, disabled: !Current.user.can_administer_board?(@board) %>
+            <%= form.check_box :published, class: "switch__input", checked: true, data: { action: "change->form#submit" }, disabled: !allowed_to?(:update?, @board) %>
             <span class="switch__btn round"></span>
           </span>
           <span class="for-screen-reader">Turn off the public link</span>
@@ -33,7 +33,7 @@
           <%= form.rich_textarea :public_description, class: "rich-text-content txt-small",
             placeholder: "Add a public note about this board…",
             data: { action: "keydown.ctrl+enter->form#submit:prevent keydown.meta+enter->form#submit:prevent keydown.esc->form#cancel:stop" },
-            readonly: !Current.user.can_administer_board?(@board) %>
+            readonly: !allowed_to?(:update?, @board) %>
           <%= form.button "Save changes", type: :submit, class: "btn txt-small", title: "Save changes (#{ hotkey_label(["ctrl", "enter"]) })" %>
         <% end %>
       </div>
@@ -44,7 +44,7 @@
         <span class="txt-large" aria-hidden="true"><%= icon_tag "lock" %></span>
         <label class="flex gap cursor-pointer">
           <span class="switch flex align-center justify-between">
-            <%= form.check_box :published, class: "switch__input", checked: false, data: { action: "change->form#submit" }, disabled: !Current.user.can_administer_board?(@board) %>
+            <%= form.check_box :published, class: "switch__input", checked: false, data: { action: "change->form#submit" }, disabled: !allowed_to?(:update?, @board) %>
             <span class="switch__btn round"></span>
           </span>
           <span class="txt-large"><%= icon_tag "world" %></span>

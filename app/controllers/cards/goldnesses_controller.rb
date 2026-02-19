@@ -1,7 +1,10 @@
 class Cards::GoldnessesController < ApplicationController
   include CardScoped
 
+  verify_authorized
+
   def create
+    authorize! @card, to: :manage?
     @card.gild
 
     respond_to do |format|
@@ -11,6 +14,7 @@ class Cards::GoldnessesController < ApplicationController
   end
 
   def destroy
+    authorize! @card, to: :manage?
     @card.ungild
 
     respond_to do |format|

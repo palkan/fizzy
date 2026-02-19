@@ -1,7 +1,10 @@
 class Cards::SelfAssignmentsController < ApplicationController
   include CardScoped
 
+  verify_authorized
+
   def create
+    authorize! @card, to: :manage?
     if @card.toggle_assignment(Current.user)
       respond_to do |format|
         format.turbo_stream { render "cards/assignments/create" }

@@ -212,3 +212,311 @@ class Event::RelayJob < ApplicationJob
   end
 end
 ```
+
+## Action Policy authorization
+
+We use Action Policy for authorization. Policies are the source of truth for all authorization logic.
+
+### Keep rules CRUD-like
+
+Policies should have a small number of rules that map to CRUD operations. Custom rules (like `can_archive?` or `can_publish?`) are a sign of wrong design—introduce a new resource instead.
+
+```ruby
+# Good - CRUD rules only
+class CardPolicy < ApplicationPolicy
+  def show?
+    allowed_to?(:show?, record.board)
+  end
+
+  def manage?
+    allowed_to?(:show?, record.board)
+  end
+
+  def destroy?
+    allowed_to?(:manage?) && check?(:can_administer?)
+  end
+end
+
+# Bad - custom action rules
+class CardPolicy < ApplicationPolicy
+  def can_archive?      # Should be ArchivePolicy#create?
+  def can_publish?      # Should be PublicationPolicy#create?
+  def can_assign?       # Should be AssignmentPolicy#create?
+end
+```
+
+### Default rule and aliases
+
+Action Policy provides default rule `:manage?` and alias `:new? -> :create?`. Unknown rules fall back to `:manage?`, so you only need to define rules that differ from it:
+
+```ruby
+class BoardPolicy < ApplicationPolicy
+  # show? is defined (visibility differs from manage?)
+  def show?
+    record.all_access? || check?(:has_access?)
+  end
+
+  # manage? is defined (admin-only actions)
+  def manage?
+    check?(:board_admin?)
+  end
+
+  # update?, edit?, destroy? all fall back to manage? automatically
+  # new? falls back to create? automatically
+end
+```
+
+### Use `check?` for reason tracking
+
+Use `check?` instead of calling predicate methods directly. This enables failure reasons feature:
+
+```ruby
+# Good - enables failure reason tracking
+def manage?
+  check?(:admin?)
+end
+
+def destroy?
+  check?(:owner?)
+end
+
+# Bad - loses reason information
+def manage?
+  admin?
+end
+```
+
+### Use `allowed_to?` for policy composition
+
+When a policy rule depends on another resource's authorization, delegate via `allowed_to?`:
+
+```ruby
+class CardPolicy < ApplicationPolicy
+  def show?
+    allowed_to?(:show?, record.board)  # Delegates to BoardPolicy
+  end
+end
+
+class CommentPolicy < ApplicationPolicy
+  def show?
+    allowed_to?(:show?, record.card)  # Delegates to CardPolicy
+  end
+
+  def manage?
+    allowed_to?(:show?) && check?(:creator?)
+  end
+end
+```
+
+### Authorization contexts for parent records
+
+When a policy needs the parent record for `create?` or `index?` rules (where `record` isn't set), declare an authorization context:
+
+```ruby
+class CommentPolicy < ApplicationPolicy
+  authorize :card, optional: true
+
+  def create?
+    allowed_to?(:show?, card)  # Uses context, not record
+  end
+end
+
+class WebhookPolicy < ApplicationPolicy
+  authorize :board, optional: true
+
+  def index?
+    allowed_to?(:manage?, board)
+  end
+
+  def create?
+    allowed_to?(:manage?, board)
+  end
+end
+```
+
+Register contexts in scoped controller concerns:
+
+```ruby
+module CardScoped
+  extend ActiveSupport::Concern
+
+  included do
+    before_action :set_card
+    authorize :card, through: -> { @card }
+  end
+end
+
+module BoardScoped
+  extend ActiveSupport::Concern
+
+  included do
+    before_action :set_board
+    authorize :board, through: -> { @board }
+  end
+end
+```
+
+### Controller authorization patterns
+
+Keep authorization code minimal. Use `authorize!` in `before_action` callbacks for record lookups:
+
+```ruby
+class WebhooksController < ApplicationController
+  include BoardScoped
+
+  before_action :set_webhook, except: %i[ index new create ]
+
+  def index
+    authorize!  # Authorizes with WebhookPolicy using board context
+    set_page_and_extract_portion_from @board.webhooks.ordered
+  end
+
+  def create
+    authorize!
+    webhook = @board.webhooks.create!(webhook_params)
+    redirect_to webhook
+  end
+
+  private
+    def set_webhook
+      @webhook = @board.webhooks.find(params[:id])
+      authorize! @webhook  # Authorizes the specific record
+    end
+end
+```
+
+### Scopes belong in policies, not models
+
+Define `relation_scope` blocks in policies to filter collections:
+
+```ruby
+# Good - scope in policy
+class BoardPolicy < ApplicationPolicy
+  relation_scope do |scope|
+    scope.joins(:accesses).where(accesses: { user_id: user.id })
+  end
+end
+
+# Bad - scope in model
+class Board < ApplicationRecord
+  scope :accessible_by, ->(user) { joins(:accesses).where(accesses: { user_id: user.id }) }
+end
+```
+
+### Find + authorize for single records
+
+For single record lookups, find the record first, then authorize. Use `authorized_scope` only for collections:
+
+```ruby
+# Good - find then authorize
+def set_card
+  @card = Current.account.cards.find_by!(slug: params[:id])
+  authorize! @card
+end
+
+# Bad - scope for single record
+def set_card
+  @card = authorized_scope(Card.all).find_by!(slug: params[:id])
+end
+```
+
+### Return 404 for visibility failures
+
+When `show?` fails, return 404 to avoid leaking record existence. Return 403 for other rule failures:
+
+```ruby
+def handle_unauthorized(exception)
+  if exception.rule == :show?
+    raise ActiveRecord::RecordNotFound
+  else
+    head :forbidden
+  end
+end
+```
+
+### Views use policies, not role checks
+
+Replace direct role checks in views with `allowed_to?`:
+
+```ruby
+# Good - uses policy
+<%= link_to_webhooks(@board) if allowed_to?(:index?, Webhook, context: {board: @board}) %>
+<%= link_to_edit_board @board if allowed_to?(:manage?, @board) %>
+
+# Bad - direct role check
+<%= link_to_webhooks(@board) if current_user.admin? %>
+<%= link_to_edit_board @board if current_user.owner? || @board.creator == current_user %>
+```
+
+### No role predicate methods in models
+
+Role predicates (`admin?`, `owner?`) should only be used within policies. Don't call them from controllers or views:
+
+```ruby
+# Good - policy encapsulates the logic
+class AccountPolicy < ApplicationPolicy
+  def manage?
+    check?(:admin?)
+  end
+
+  def destroy?
+    check?(:owner?)
+  end
+end
+
+# Then in controller/view
+authorize! Current.account, to: :manage?
+
+# Bad - role check outside policy
+if current_user.admin?
+  # ...
+end
+```
+
+### Testing with ActionPolicy::TestHelper
+
+Use `assert_authorized_to` in controller tests to verify authorization:
+
+```ruby
+class ActionDispatch::IntegrationTest
+  include ActionPolicy::TestHelper
+end
+
+class WebhooksControllerTest < ActionDispatch::IntegrationTest
+  test "index authorizes with WebhookPolicy" do
+    assert_authorized_to(:index?, Webhook) do
+      get board_webhooks_path(boards(:writebook))
+    end
+  end
+
+  test "show authorizes the specific webhook" do
+    webhook = webhooks(:active)
+    assert_authorized_to(:show?, webhook) do
+      get board_webhook_path(webhook.board, webhook)
+    end
+  end
+end
+```
+
+Test policy rules directly with `policy.apply`:
+
+```ruby
+class WebhookPolicyTest < ActiveSupport::TestCase
+  test "board admin can manage webhooks" do
+    policy = WebhookPolicy.new(@webhook, user: users(:david), account: @account)
+    assert policy.apply(:show?)
+    assert policy.apply(:update?)
+    assert policy.apply(:destroy?)
+  end
+
+  test "non-admin cannot manage webhooks" do
+    policy = WebhookPolicy.new(@webhook, user: users(:jz), account: @account)
+    assert_not policy.apply(:show?)
+  end
+
+  test "create uses board context" do
+    policy = WebhookPolicy.new(board: @board, user: users(:david), account: @account)
+    assert policy.apply(:create?)
+  end
+end
+```

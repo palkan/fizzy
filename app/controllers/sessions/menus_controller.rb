@@ -1,4 +1,5 @@
 class Sessions::MenusController < ApplicationController
+  skip_authorization
   disallow_account_scope
 
   layout "public"

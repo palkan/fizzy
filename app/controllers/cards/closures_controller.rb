@@ -1,7 +1,10 @@
 class Cards::ClosuresController < ApplicationController
   include CardScoped
 
+  verify_authorized
+
   def create
+    authorize! @card, to: :manage?
     capture_card_location
     @card.close
     refresh_stream_if_needed
@@ -13,6 +16,7 @@ class Cards::ClosuresController < ApplicationController
   end
 
   def destroy
+    authorize! @card, to: :manage?
     @card.reopen
     refresh_stream_after_reopen
 

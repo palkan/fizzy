@@ -1,4 +1,6 @@
 class Users::VerificationsController < ApplicationController
+  skip_authorization
+
   layout "public"
 
   def new

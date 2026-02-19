@@ -1,9 +1,10 @@
 class Boards::EntropiesController < ApplicationController
   include BoardScoped
 
-  before_action :ensure_permission_to_admin_board
+  verify_authorized
 
   def update
+    authorize! @board
     @board.update!(entropy_params)
   end
 

@@ -1,8 +1,9 @@
 class Cards::CommentsController < ApplicationController
   include CardScoped
 
+  verify_authorized
+
   before_action :set_comment, only: %i[ show edit update destroy ]
-  before_action :ensure_creatorship, only: %i[ edit update destroy ]
   before_action :ensure_card_is_commentable, only: :create
 
   def index
@@ -10,6 +11,7 @@ class Cards::CommentsController < ApplicationController
   end
 
   def create
+    authorize!
     @comment = @card.comments.create!(comment_params)
 
     respond_to do |format|
@@ -45,10 +47,7 @@ class Cards::CommentsController < ApplicationController
   private
     def set_comment
       @comment = @card.comments.find(params[:id])
-    end
-
-    def ensure_creatorship
-      head :forbidden if Current.user != @comment.creator
+      authorize! @comment
     end
 
     def ensure_card_is_commentable

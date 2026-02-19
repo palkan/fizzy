@@ -1,8 +1,9 @@
 class Users::AvatarsController < ApplicationController
   allow_unauthenticated_access only: :show
 
+  verify_authorized except: :show
+
   before_action :set_user
-  before_action :ensure_permission_to_administer_user, only: :destroy
 
   def show
     if @user.system?
@@ -15,6 +16,7 @@ class Users::AvatarsController < ApplicationController
   end
 
   def destroy
+    authorize! @user
     @user.avatar.destroy
     redirect_to @user
   end
@@ -22,10 +24,6 @@ class Users::AvatarsController < ApplicationController
   private
     def set_user
       @user = Current.account.users.find(params[:user_id])
-    end
-
-    def ensure_permission_to_administer_user
-      head :forbidden unless Current.user.can_change?(@user)
     end
 
     def cache_control

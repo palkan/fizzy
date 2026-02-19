@@ -1,4 +1,5 @@
 class JoinCodesController < ApplicationController
+  skip_authorization
   allow_unauthenticated_access
   rate_limit to: 10, within: 3.minutes, only: :create, with: -> { head :too_many_requests }
 

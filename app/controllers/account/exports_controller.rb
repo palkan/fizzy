@@ -1,5 +1,7 @@
 class Account::ExportsController < ApplicationController
-  before_action :ensure_admin_or_owner
+  verify_authorized
+
+  before_action :ensure_can_manage_account
   before_action :ensure_export_limit_not_exceeded, only: :create
   before_action :set_export, only: :show
 
@@ -14,10 +16,6 @@ class Account::ExportsController < ApplicationController
   end
 
   private
-    def ensure_admin_or_owner
-      head :forbidden unless Current.user.admin? || Current.user.owner?
-    end
-
     def ensure_export_limit_not_exceeded
       head :too_many_requests if Current.account.exports.current.count >= CURRENT_EXPORT_LIMIT
     end

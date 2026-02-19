@@ -2,10 +2,24 @@ module Authorization
   extend ActiveSupport::Concern
 
   included do
+    include ActionPolicy::Controller
+
+    authorize :user, through: :current_user
+    authorize :account, through: :current_account
+
+    rescue_from ActionPolicy::Unauthorized, with: :handle_unauthorized
+
     before_action :ensure_can_access_account, if: :authenticated_account_access?
   end
 
   class_methods do
+    def skip_authorization
+      # No-op marker: documents that this controller intentionally
+      # does not perform authorization (authentication is sufficient).
+      # When verify_authorized is added to ApplicationController,
+      # replace with skip_verify_authorized.
+    end
+
     def allow_unauthorized_access(**options)
       skip_before_action :ensure_can_access_account, **options
     end
@@ -17,8 +31,20 @@ module Authorization
   end
 
   private
-    def ensure_admin
-      head :forbidden unless Current.user.admin?
+    def current_user
+      Current.user
+    end
+
+    def current_account
+      Current.account
+    end
+
+    def handle_unauthorized(exception)
+      if exception.rule == :show?
+        raise ActiveRecord::RecordNotFound
+      else
+        head :forbidden
+      end
     end
 
     def ensure_staff
@@ -36,6 +62,10 @@ module Authorization
           format.json { head :forbidden }
         end
       end
+    end
+
+    def ensure_can_manage_account
+      authorize! Current.account, to: :manage?
     end
 
     def redirect_existing_user

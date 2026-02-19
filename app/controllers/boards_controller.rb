@@ -1,8 +1,9 @@
 class BoardsController < ApplicationController
   include FilterScoped
 
+  verify_authorized except: %i[ index new create ]
+
   before_action :set_board, except: %i[ index new create ]
-  before_action :ensure_permission_to_admin_board, only: %i[ update destroy ]
 
   def index
     set_page_and_extract_portion_from Current.user.boards
@@ -17,10 +18,12 @@ class BoardsController < ApplicationController
   end
 
   def new
+    authorize! Board, to: :create?
     @board = Board.new
   end
 
   def create
+    authorize! Board, to: :create?
     @board = Board.create! board_params.with_defaults(all_access: true)
 
     respond_to do |format|
@@ -36,6 +39,7 @@ class BoardsController < ApplicationController
   end
 
   def update
+    authorize! @board
     @board.update! board_params
     @board.accesses.revise granted: grantees, revoked: revokees if grantees_changed?
 
@@ -52,6 +56,7 @@ class BoardsController < ApplicationController
   end
 
   def destroy
+    authorize! @board
     @board.destroy
 
     respond_to do |format|
@@ -62,13 +67,8 @@ class BoardsController < ApplicationController
 
   private
     def set_board
-      @board = Current.user.boards.find params[:id]
-    end
-
-    def ensure_permission_to_admin_board
-      unless Current.user.can_administer_board?(@board)
-        head :forbidden
-      end
+      @board = Current.account.boards.find(params[:id])
+      authorize! @board, to: :show?
     end
 
     def grantees_changed?

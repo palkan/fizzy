@@ -1,10 +1,12 @@
 class WebhooksController < ApplicationController
   include BoardScoped
 
-  before_action :ensure_admin
+  verify_authorized
+
   before_action :set_webhook, except: %i[ index new create ]
 
   def index
+    authorize!
     set_page_and_extract_portion_from @board.webhooks.ordered
   end
 
@@ -12,10 +14,12 @@ class WebhooksController < ApplicationController
   end
 
   def new
-    @webhook = @board.webhooks.new
+    authorize!
+    @webhook = @board.webhooks.build
   end
 
   def create
+    authorize!
     webhook = @board.webhooks.create!(webhook_params)
     redirect_to webhook
   end
@@ -36,6 +40,7 @@ class WebhooksController < ApplicationController
   private
     def set_webhook
       @webhook = @board.webhooks.find(params[:id])
+      authorize! @webhook
     end
 
     def webhook_params

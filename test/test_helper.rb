@@ -7,6 +7,7 @@ require_relative "webmock_ipaddr_extension"
 require "vcr"
 require "mocha/minitest"
 require "turbo/broadcastable/test_helper"
+require "action_policy/test_helper"
 
 WebMock.allow_net_connect!
 
@@ -59,6 +60,8 @@ module ActiveSupport
 end
 
 class ActionDispatch::IntegrationTest
+  include ActionPolicy::TestHelper
+
   setup do
     integration_session.default_url_options[:script_name] = "/#{ActiveRecord::FixtureSet.identify("37signals")}"
   end

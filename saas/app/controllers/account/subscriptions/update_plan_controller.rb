@@ -1,5 +1,7 @@
 class Account::Subscriptions::UpdatePlanController < ApplicationController
-  before_action :ensure_admin
+  verify_authorized
+
+  before_action :ensure_can_manage_account
 
   def create
     portal_session = Stripe::BillingPortal::Session.create(

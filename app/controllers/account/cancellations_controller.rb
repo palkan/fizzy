@@ -1,13 +1,9 @@
 class Account::CancellationsController < ApplicationController
-  before_action :ensure_owner
+  verify_authorized
 
   def create
+    authorize! Current.account, to: :destroy?
     Current.account.cancel
     redirect_to session_menu_path(script_name: nil), notice: "Account deleted"
   end
-
-  private
-    def ensure_owner
-      head :forbidden unless Current.user.owner?
-    end
 end

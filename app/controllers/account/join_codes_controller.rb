@@ -1,6 +1,8 @@
 class Account::JoinCodesController < ApplicationController
+  verify_authorized
+
   before_action :set_join_code
-  before_action :ensure_admin, only: %i[ update destroy ]
+  before_action :ensure_can_manage_account, only: %i[ update destroy ]
 
   def show
   end
@@ -24,6 +26,7 @@ class Account::JoinCodesController < ApplicationController
   private
     def set_join_code
       @join_code = Current.account.join_code
+      authorize! Current.account, to: :show?
     end
 
     def join_code_params

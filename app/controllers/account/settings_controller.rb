@@ -1,8 +1,11 @@
 class Account::SettingsController < ApplicationController
-  before_action :ensure_admin, only: :update
+  verify_authorized
+
   before_action :set_account
+  before_action :ensure_can_manage_account, only: :update
 
   def show
+    authorize! @account, to: :show?
     @users = @account.users.active.alphabetically.includes(:identity)
   end
 

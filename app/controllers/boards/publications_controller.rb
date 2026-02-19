@@ -1,13 +1,15 @@
 class Boards::PublicationsController < ApplicationController
   include BoardScoped
 
-  before_action :ensure_permission_to_admin_board
+  verify_authorized
 
   def create
+    authorize! @board, to: :manage?
     @board.publish
   end
 
   def destroy
+    authorize! @board, to: :manage?
     @board.unpublish
     @board.reload
   end

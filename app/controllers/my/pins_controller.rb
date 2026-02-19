@@ -1,4 +1,6 @@
 class My::PinsController < ApplicationController
+  skip_authorization
+
   def index
     @pins = user_pins
     fresh_when etag: [ @pins, @pins.collect(&:card) ]

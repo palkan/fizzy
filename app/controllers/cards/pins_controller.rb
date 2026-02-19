@@ -1,11 +1,14 @@
 class Cards::PinsController < ApplicationController
   include CardScoped
 
+  verify_authorized
+
   def show
     fresh_when etag: @card.pin_for(Current.user) || "none"
   end
 
   def create
+    authorize! @card, to: :manage?
     @pin = @card.pin_by Current.user
 
     broadcast_add_pin_to_tray
@@ -17,6 +20,7 @@ class Cards::PinsController < ApplicationController
   end
 
   def destroy
+    authorize! @card, to: :manage?
     @pin = @card.unpin_by Current.user
 
     broadcast_remove_pin_from_tray

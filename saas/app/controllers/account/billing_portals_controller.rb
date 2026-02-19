@@ -1,5 +1,7 @@
 class Account::BillingPortalsController < ApplicationController
-  before_action :ensure_admin
+  verify_authorized
+
+  before_action :ensure_can_manage_account
   before_action :ensure_subscribed_account
 
   def show

@@ -1,4 +1,6 @@
 class Notifications::BulkReadingsController < ApplicationController
+  skip_authorization
+
   def create
     Current.user.notifications.unread.read_all
 

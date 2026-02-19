@@ -1,4 +1,6 @@
 class NotificationsController < ApplicationController
+  skip_authorization
+
   MAX_UNREAD_NOTIFICATIONS = 500
   MAX_UNREAD_NOTIFICATIONS_VIA_API = 100
 

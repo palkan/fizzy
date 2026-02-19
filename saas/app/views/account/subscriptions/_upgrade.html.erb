@@ -1,5 +1,5 @@
 <div class="settings-subscription__notch card-perma__notch card-perma__notch--bottom">
-  <% if Current.user.admin? %>
+  <% if allowed_to?(:manage_billing?, Current.account) %>
     <%= render "account/subscriptions/notices/admin_exceeding_card_limit" if Current.account.exceeding_card_limit? %>
     <%= render "account/subscriptions/notices/admin_exceeding_storage_limit" if Current.account.exceeding_storage_limit? %>
   <% else %>

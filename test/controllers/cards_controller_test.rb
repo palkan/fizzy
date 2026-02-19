@@ -16,8 +16,12 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create a new draft" do
-    assert_difference -> { Card.count }, 1 do
-      post board_cards_path(boards(:writebook))
+    board = boards(:writebook)
+
+    assert_authorized_to(:show?, board, with: BoardPolicy) do
+      assert_difference -> { Card.count }, 1 do
+        post board_cards_path(board)
+      end
     end
 
     card = Card.last
@@ -43,12 +47,22 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "show" do
-    get card_path(cards(:logo))
+    card = cards(:logo)
+
+    assert_authorized_to(:show?, card, with: CardPolicy) do
+      get card_path(card)
+    end
+
     assert_response :success
   end
 
   test "edit" do
-    get edit_card_path(cards(:logo))
+    card = cards(:logo)
+
+    assert_authorized_to(:manage?, card, with: CardPolicy) do
+      get edit_card_path(card)
+    end
+
     assert_response :success
   end
 
@@ -63,14 +77,19 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update" do
-    patch card_path(cards(:logo)), as: :turbo_stream, params: {
-      card: {
-        title: "Logo needs to change",
-        image: fixture_file_upload("moon.jpg", "image/jpeg"),
-        description: "Something more in-depth" } }
+    card = cards(:logo)
+
+    assert_authorized_to(:manage?, card, with: CardPolicy) do
+      patch card_path(card), as: :turbo_stream, params: {
+        card: {
+          title: "Logo needs to change",
+          image: fixture_file_upload("moon.jpg", "image/jpeg"),
+          description: "Something more in-depth" } }
+    end
+
     assert_response :success
 
-    card = cards(:logo).reload
+    card.reload
     assert_equal "Logo needs to change", card.title
     assert_equal "moon.jpg", card.image.filename.to_s
     assert_equal "Something more in-depth", card.description.to_plain_text.strip
@@ -85,17 +104,6 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     assert_no_match "reactions", response.body, "Draft card should not show reactions/boost button"
-  end
-
-  test "users can only see cards in boards they have access to" do
-    get card_path(cards(:logo))
-    assert_response :success
-
-    boards(:writebook).update! all_access: false
-    boards(:writebook).accesses.revoke_from users(:kevin)
-
-    get card_path(cards(:logo))
-    assert_response :not_found
   end
 
   test "admins can see delete button on any card" do
@@ -135,17 +143,12 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
 
   test "card creators can delete their own cards" do
     logout_and_sign_in_as :david
+    card = cards(:logo)
 
-    assert_difference -> { Card.count }, -1 do
-      delete card_path(cards(:logo))
-    end
-
-    assert_redirected_to boards(:writebook)
-  end
-
-  test "admins can delete any card" do
-    assert_difference -> { Card.count }, -1 do
-      delete card_path(cards(:logo))
+    assert_authorized_to(:destroy?, card, with: CardPolicy) do
+      assert_difference -> { Card.count }, -1 do
+        delete card_path(card)
+      end
     end
 
     assert_redirected_to boards(:writebook)
@@ -177,11 +180,15 @@ class CardsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "create as JSON" do
-    assert_difference -> { Card.count }, +1 do
-      post board_cards_path(boards(:writebook)),
-        params: { card: { title: "My new card", description: "Big if true" } },
-        as: :json
-      assert_response :created
+    board = boards(:writebook)
+
+    assert_authorized_to(:show?, board, with: BoardPolicy) do
+      assert_difference -> { Card.count }, +1 do
+        post board_cards_path(board),
+          params: { card: { title: "My new card", description: "Big if true" } },
+          as: :json
+        assert_response :created
+      end
     end
 
     card = Card.last

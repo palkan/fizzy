@@ -1,6 +1,8 @@
 class SearchesController < ApplicationController
   include Turbo::DriveHelper
 
+  skip_authorization
+
   def show
     if card = Current.user.accessible_cards.find_by_id(params[:q])
       @card = card

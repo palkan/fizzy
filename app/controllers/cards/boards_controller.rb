@@ -1,6 +1,8 @@
 class Cards::BoardsController < ApplicationController
   include BoardScoped
 
+  verify_authorized
+
   skip_before_action :set_board, only: %i[ edit ]
   before_action :set_card
 
@@ -10,6 +12,7 @@ class Cards::BoardsController < ApplicationController
   end
 
   def update
+    authorize! @card, to: :manage?
     @card.move_to(@board)
 
     respond_to do |format|

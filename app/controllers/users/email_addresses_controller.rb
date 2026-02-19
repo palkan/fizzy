@@ -1,4 +1,6 @@
 class Users::EmailAddressesController < ApplicationController
+  skip_authorization
+
   before_action :set_user
   rate_limit to: 5, within: 1.hour, only: :create
 

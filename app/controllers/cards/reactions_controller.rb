@@ -1,12 +1,10 @@
 class Cards::ReactionsController < ApplicationController
   include CardScoped
 
-  before_action :set_reactable
+  verify_authorized
 
-  with_options only: :destroy do
-    before_action :set_reaction
-    before_action :ensure_permission_to_administer_reaction
-  end
+  before_action :set_reactable
+  before_action :set_reaction, only: :destroy
 
   def index
     render "reactions/index"
@@ -17,6 +15,7 @@ class Cards::ReactionsController < ApplicationController
   end
 
   def create
+    authorize! @card, to: :manage?
     @reaction = @reactable.reactions.create!(params.expect(reaction: :content))
 
     respond_to do |format|
@@ -41,9 +40,6 @@ class Cards::ReactionsController < ApplicationController
 
     def set_reaction
       @reaction = @reactable.reactions.find(params[:id])
-    end
-
-    def ensure_permission_to_administer_reaction
-      head :forbidden if Current.user != @reaction.reacter
+      authorize! @reaction
     end
 end

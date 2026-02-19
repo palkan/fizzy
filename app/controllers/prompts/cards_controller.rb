@@ -1,4 +1,6 @@
 class Prompts::CardsController < ApplicationController
+  skip_authorization
+
   MAX_RESULTS = 10
 
   def index

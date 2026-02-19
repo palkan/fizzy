@@ -1,4 +1,6 @@
 class Notifications::ReadingsController < ApplicationController
+  skip_authorization
+
   def create
     @notification = Current.user.notifications.find(params[:notification_id])
     @notification.read

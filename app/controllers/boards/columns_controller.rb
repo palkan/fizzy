@@ -1,6 +1,8 @@
 class Boards::ColumnsController < ApplicationController
   include BoardScoped
 
+  verify_authorized
+
   before_action :set_column, only: %i[ show update destroy ]
 
   def index
@@ -14,6 +16,7 @@ class Boards::ColumnsController < ApplicationController
   end
 
   def create
+    authorize!
     @column = @board.columns.create!(column_params)
 
     respond_to do |format|
@@ -43,6 +46,7 @@ class Boards::ColumnsController < ApplicationController
   private
     def set_column
       @column = @board.columns.find(params[:id])
+      authorize! @column
     end
 
     def column_params

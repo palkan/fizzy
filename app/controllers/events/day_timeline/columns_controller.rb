@@ -1,6 +1,8 @@
 class Events::DayTimeline::ColumnsController < ApplicationController
   include DayTimelinesScoped
 
+  skip_authorization
+
   before_action :ensure_valid_column
   before_action :set_column
 

@@ -1,4 +1,6 @@
 class My::AccessTokensController < ApplicationController
+  skip_authorization
+
   def index
     @access_tokens = my_access_tokens.order(created_at: :desc)
   end

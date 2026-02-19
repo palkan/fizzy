@@ -1,4 +1,5 @@
 class QrCodesController < ApplicationController
+  skip_authorization
   allow_unauthenticated_access
 
   def show

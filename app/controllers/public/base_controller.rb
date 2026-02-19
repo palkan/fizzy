@@ -1,4 +1,5 @@
 class Public::BaseController < ApplicationController
+  skip_authorization
   allow_unauthenticated_access
 
   before_action :set_board, :set_card, :set_public_cache_expiration

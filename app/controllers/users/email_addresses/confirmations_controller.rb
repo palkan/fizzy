@@ -1,4 +1,5 @@
 class Users::EmailAddresses::ConfirmationsController < ApplicationController
+  skip_authorization
   allow_unauthenticated_access
 
   before_action :set_user

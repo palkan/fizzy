@@ -6,7 +6,7 @@
     <%= render "cards/comments/watchers", card: card %>
   <% end %>
 
-  <% if Current.user.can_administer_card?(card) %>
+  <% if allowed_to?(:destroy?, card) %>
     <footer class="delete-card txt-align-center full-width flex flex-column margin-block-start-double">
       <hr class="separator--horizontal full-width margin-block" style="--border-color: var(--color-ink-lighter)">
       <%= render "cards/delete", card: card %>

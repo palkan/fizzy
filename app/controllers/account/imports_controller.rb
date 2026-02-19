@@ -1,4 +1,6 @@
 class Account::ImportsController < ApplicationController
+  skip_authorization
+
   layout "public"
 
   disallow_account_scope only: %i[ new create ]

@@ -3,11 +3,14 @@ module CardScoped
 
   included do
     before_action :set_card, :set_board
+
+    authorize :card, through: -> { @card }
   end
 
   private
     def set_card
-      @card = Current.user.accessible_cards.find_by!(number: params[:card_id])
+      @card = Current.account.cards.find_by!(number: params[:card_id])
+      authorize! @card, to: :show?
     end
 
     def set_board

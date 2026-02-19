@@ -1,4 +1,6 @@
 class Users::DataExportsController < ApplicationController
+  skip_authorization
+
   before_action :set_user
   before_action :ensure_current_user
   before_action :ensure_export_limit_not_exceeded, only: :create

@@ -1,6 +1,8 @@
 class Cards::ReadingsController < ApplicationController
   include CardScoped
 
+  verify_authorized
+
   def create
     @notifications = @card.read_by(Current.user)
     record_board_access

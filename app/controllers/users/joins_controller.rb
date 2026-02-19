@@ -1,4 +1,6 @@
 class Users::JoinsController < ApplicationController
+  skip_authorization
+
   layout "public"
 
   def new

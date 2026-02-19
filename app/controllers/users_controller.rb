@@ -1,6 +1,7 @@
 class UsersController < ApplicationController
+  verify_authorized except: :index
+
   before_action :set_user, except: %i[ index ]
-  before_action :ensure_permission_to_change_user, only: %i[ update destroy ]
 
   def index
     set_page_and_extract_portion_from Current.account.users.active.alphabetically
@@ -13,6 +14,7 @@ class UsersController < ApplicationController
   end
 
   def update
+    authorize! @user
     if @user.update(user_params)
       respond_to do |format|
         format.html { redirect_to @user }
@@ -27,6 +29,7 @@ class UsersController < ApplicationController
   end
 
   def destroy
+    authorize! @user
     @user.deactivate
 
     respond_to do |format|
@@ -38,10 +41,7 @@ class UsersController < ApplicationController
   private
     def set_user
       @user = Current.account.users.active.find(params[:id])
-    end
-
-    def ensure_permission_to_change_user
-      head :forbidden unless Current.user.can_change?(@user)
+      authorize! @user, to: :show?
     end
 
     def user_params

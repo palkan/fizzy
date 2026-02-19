@@ -1,7 +1,10 @@
 class Cards::NotNowsController < ApplicationController
   include CardScoped
 
+  verify_authorized
+
   def create
+    authorize! @card, to: :manage?
     capture_card_location
     @card.postpone
     refresh_stream_if_needed

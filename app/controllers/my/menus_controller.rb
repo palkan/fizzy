@@ -1,4 +1,6 @@
 class My::MenusController < ApplicationController
+  skip_authorization
+
   def show
     @filters = Current.user.filters.all
     @boards = Current.user.boards.ordered_by_recently_accessed
