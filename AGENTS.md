@@ -153,6 +153,33 @@ Login: david@example.com (passwordless magic link auth - check rails console for
 
 Use Chrome MCP tools to interact with the running dev app for UI testing and debugging.
 
+## Architecture Direction
+
+We are **gradually adopting layered design principles** from "Layered Design for Ruby on Rails Applications" by Vladimir Dementyev. The codebase started as a classic DHH/37signals Rails app and is evolving toward cleaner abstraction boundaries.
+
+### Guiding principles
+
+- **Unidirectional data flow**: presentation → application → domain → infrastructure
+- **No reverse dependencies**: lower layers never reference higher layers
+- **Extract when justified**: don't introduce abstractions speculatively — extract when a model, controller, or callback accumulates too many responsibilities
+- **Specification test**: when unsure if code belongs in a layer, apply the specification test (would you test this behavior independently?)
+
+### What this means in practice
+
+- **New features**: consider whether the feature needs an application-layer abstraction (form object, service, policy) or fits naturally in the model. Don't default to "no services ever" — use judgment.
+- **Refactoring**: look for extraction signals — god objects, operation-type callbacks (score 1-2/5), controllers with business logic, views with query logic.
+- **Authorization**: prefer policy objects (Action Policy) over ad-hoc `before_action` checks when authorization logic is non-trivial.
+- **Callbacks**: score callbacks 1-5. Keep transformers (5/5) and maintainers (4/5). Extract operations (1/5) and background triggers (2/5) into explicit service calls or job enqueueing.
+- **Existing patterns**: respect what's already there. Don't rewrite working code to match layered ideals unless you're already touching it.
+
+### For planning agents
+
+When planning new features or architectural changes, use the `layered-rails` skill for analysis:
+- `/layers:gradual` — plan incremental adoption of layered patterns
+- `/layers:analyze` — full codebase architecture analysis
+- `/layers:review` — review code from a layered architecture perspective
+- `/layers:spec-test` — apply the specification test to evaluate layer placement
+
 ## Coding style
 
 @STYLE.md
