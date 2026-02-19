@@ -1,0 +1,11 @@
+# An editor to work with credentials
+vim
+# Application dependencies
+sqlite3
+libvips-dev
+libyaml-dev
+default-mysql-client
+default-libmysqlclient-dev
+# Claude
+bubblewrap
+socat
