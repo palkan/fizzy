@@ -1,6 +1,7 @@
 class CardsController < ApplicationController
   include FilterScoped
 
+  before_action :ensure_contributor, only: %i[ create edit update ]
   before_action :set_board, only: %i[ create ]
   before_action :set_card, only: %i[ show edit update destroy ]
   before_action :redirect_if_drafted, only: :show

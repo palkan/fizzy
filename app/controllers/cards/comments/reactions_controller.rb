@@ -1,6 +1,7 @@
 class Cards::Comments::ReactionsController < ApplicationController
   include CardScoped
 
+  before_action :ensure_contributor, only: %i[ create destroy ]
   before_action :set_comment
   before_action :set_reactable
 

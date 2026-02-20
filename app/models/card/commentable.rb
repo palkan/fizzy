@@ -9,6 +9,10 @@ module Card::Commentable
     published?
   end
 
+  def commentable_by?(user)
+    commentable? && (user.contributor? || awaiting_triage?)
+  end
+
   private
     STORAGE_BATCH_SIZE = 1000
 

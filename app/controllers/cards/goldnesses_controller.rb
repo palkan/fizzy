@@ -1,6 +1,8 @@
 class Cards::GoldnessesController < ApplicationController
   include CardScoped
 
+  before_action :ensure_contributor
+
   def create
     @card.gild
 

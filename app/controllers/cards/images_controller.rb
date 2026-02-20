@@ -1,6 +1,8 @@
 class Cards::ImagesController < ApplicationController
   include CardScoped
 
+  before_action :ensure_contributor
+
   def destroy
     @card.image.purge_later
 

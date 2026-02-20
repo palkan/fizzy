@@ -1,4 +1,5 @@
 class Account::SettingsController < ApplicationController
+  before_action :ensure_contributor
   before_action :ensure_admin, only: :update
   before_action :set_account
 

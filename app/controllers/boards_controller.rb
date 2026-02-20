@@ -1,6 +1,7 @@
 class BoardsController < ApplicationController
   include FilterScoped
 
+  before_action :ensure_contributor, only: %i[ new create edit ]
   before_action :set_board, except: %i[ index new create ]
   before_action :ensure_permission_to_admin_board, only: %i[ update destroy ]
 

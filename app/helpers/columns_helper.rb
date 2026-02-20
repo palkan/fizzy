@@ -15,14 +15,17 @@ module ColumnsHelper
     classes = token_list("cards", properties.delete(:class), "is-collapsed": collapsed, "is-expanded": !collapsed)
     hotkeys_disabled = data[:card_hotkeys_disabled]
 
-    data = {
+    column_data = {
       drag_and_drop_target: "container",
       navigable_list_target: "item",
       column_name: name,
-      drag_and_drop_url: drop_url,
       drag_and_drop_css_variable_name: "--card-color",
       drag_and_drop_css_variable_value: card_color
-    }.merge(data)
+    }
+
+    column_data[:drag_and_drop_url] = drop_url if contributor?
+
+    data = column_data.merge(data)
 
     data[:action] = token_list(
       "turbo:before-morph-attribute->collapsible-columns#preventToggle",

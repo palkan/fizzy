@@ -1,6 +1,7 @@
 class Cards::DraftsController < ApplicationController
   include CardScoped
 
+  before_action :ensure_contributor
   before_action :redirect_if_published
 
   def show

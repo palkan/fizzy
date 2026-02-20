@@ -1,6 +1,7 @@
 class Cards::BoardsController < ApplicationController
   include BoardScoped
 
+  before_action :ensure_contributor, only: %i[ edit update ]
   skip_before_action :set_board, only: %i[ edit ]
   before_action :set_card
 

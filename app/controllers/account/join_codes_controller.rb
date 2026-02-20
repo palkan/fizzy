@@ -1,4 +1,5 @@
 class Account::JoinCodesController < ApplicationController
+  before_action :ensure_contributor
   before_action :set_join_code
   before_action :ensure_admin, only: %i[ update destroy ]
 

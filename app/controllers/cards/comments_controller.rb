@@ -3,7 +3,8 @@ class Cards::CommentsController < ApplicationController
 
   before_action :set_comment, only: %i[ show edit update destroy ]
   before_action :ensure_creatorship, only: %i[ edit update destroy ]
-  before_action :ensure_card_is_commentable, only: :create
+  before_action :ensure_can_comment, only: :create
+  before_action :ensure_can_edit_comment, only: %i[ edit update destroy ]
 
   def index
     set_page_and_extract_portion_from @card.comments.chronologically
@@ -51,8 +52,12 @@ class Cards::CommentsController < ApplicationController
       head :forbidden if Current.user != @comment.creator
     end
 
-    def ensure_card_is_commentable
-      head :forbidden unless @card.commentable?
+    def ensure_can_comment
+      head :forbidden unless @card.commentable_by?(Current.user)
+    end
+
+    def ensure_can_edit_comment
+      head :forbidden unless Current.user.contributor? || @card.awaiting_triage?
     end
 
     def comment_params

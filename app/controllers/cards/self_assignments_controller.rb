@@ -1,6 +1,8 @@
 class Cards::SelfAssignmentsController < ApplicationController
   include CardScoped
 
+  before_action :ensure_contributor
+
   def create
     if @card.toggle_assignment(Current.user)
       respond_to do |format|

@@ -1,6 +1,8 @@
 class Cards::PublishesController < ApplicationController
   include CardScoped
 
+  before_action :ensure_contributor
+
   def create
     @card.publish
 

@@ -1,8 +1,12 @@
 <%= turbo_frame_tag step do %>
   <li class="step">
-    <%= form_with model: [step.card, step], data: { controller: "form" } do |form| %>
-      <%= form.check_box :completed, { class: "step__checkbox", data: { action: "change->form#submit" } } %>
+    <% if contributor? %>
+      <%= form_with model: [step.card, step], data: { controller: "form" } do |form| %>
+        <%= form.check_box :completed, { class: "step__checkbox", data: { action: "change->form#submit" } } %>
+      <% end %>
+      <%= link_to step.content, edit_card_step_path(step.card, step), class: "step__content" %>
+    <% else %>
+      <span class="step__content"><%= step.content %></span>
     <% end %>
-    <%= link_to step.content, edit_card_step_path(step.card, step), class: "step__content" %>
-  </li> 
+  </li>
 <% end %>

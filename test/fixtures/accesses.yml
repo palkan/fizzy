@@ -22,6 +22,12 @@ private_kevin:
   board: private_uuid
   user: kevin_uuid
 
+writebook_pat:
+  id: <%= ActiveRecord::FixtureSet.identify("writebook_pat", :uuid) %>
+  account: 37s_uuid
+  board: writebook_uuid
+  user: pat_uuid
+
 miltons_wish_list_mike:
   id: <%= ActiveRecord::FixtureSet.identify("miltons_wish_list_mike", :uuid) %>
   account: initech_uuid

@@ -1,6 +1,8 @@
 class Cards::ClosuresController < ApplicationController
   include CardScoped
 
+  before_action :ensure_contributor
+
   def create
     capture_card_location
     @card.close

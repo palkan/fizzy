@@ -21,6 +21,10 @@ module Authorization
       head :forbidden unless Current.user.admin?
     end
 
+    def ensure_contributor
+      head :forbidden unless Current.user.contributor?
+    end
+
     def ensure_staff
       head :forbidden unless Current.identity.staff?
     end

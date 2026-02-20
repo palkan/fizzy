@@ -95,4 +95,70 @@ class User::RoleTest < ActiveSupport::TestCase
     # Creator cannot administer other people's cards
     assert_not users(:david).can_administer_card?(text_card)
   end
+
+  test "contributor? returns true for owner, admin, member" do
+    assert users(:jason).contributor?
+    assert users(:kevin).contributor?
+    assert users(:david).contributor?
+  end
+
+  test "contributor? returns false for viewer and system" do
+    assert_not users(:pat).contributor?
+    assert_not users(:system).contributor?
+  end
+
+  test "viewer is included in active scope" do
+    assert_includes User.active, users(:pat)
+  end
+
+  test "contributor scope excludes viewers" do
+    assert_not_includes User.contributor, users(:pat)
+    assert_includes User.contributor, users(:david)
+  end
+
+  test "viewer cannot administer board even as creator" do
+    board = boards(:writebook)
+    board.update_column(:creator_id, users(:pat).id)
+
+    assert_not users(:pat).can_administer_board?(board)
+  end
+
+  test "viewer cannot administer card even as creator" do
+    card = cards(:logo)
+    card.update_column(:creator_id, users(:pat).id)
+
+    assert_not users(:pat).can_administer_card?(card)
+  end
+
+  test "demotion to viewer removes assignments" do
+    user = users(:david)
+    card = cards(:logo)
+
+    Current.session = sessions(:kevin)
+    card.toggle_assignment(user)
+    assert card.assigned_to?(user)
+
+    user.update!(role: :viewer)
+    assert_not card.reload.assigned_to?(user)
+  end
+
+  test "demotion to viewer deletes drafted cards" do
+    user = users(:david)
+    board = boards(:writebook)
+    draft = board.cards.create!(creator: user, status: :drafted, account: accounts("37s"))
+
+    user.update!(role: :viewer)
+    assert_not Card.exists?(draft.id)
+  end
+
+  test "demotion to viewer does not delete published cards" do
+    user = users(:david)
+
+    user.update!(role: :viewer)
+    assert Card.exists?(cards(:logo).id)
+  end
+
+  test "admin can administer viewer" do
+    assert users(:kevin).can_administer?(users(:pat))
+  end
 end

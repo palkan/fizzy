@@ -31,7 +31,9 @@ class My::AccessTokensController < ApplicationController
     end
 
     def access_token_params
-      params.expect(access_token: %i[ description permission ])
+      permitted = params.expect(access_token: %i[ description permission ])
+      permitted[:permission] = "read" if Current.user.viewer?
+      permitted
     end
 
     def verifier

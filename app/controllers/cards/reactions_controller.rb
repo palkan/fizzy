@@ -1,6 +1,7 @@
 class Cards::ReactionsController < ApplicationController
   include CardScoped
 
+  before_action :ensure_contributor, only: %i[ create destroy ]
   before_action :set_reactable
 
   with_options only: :destroy do

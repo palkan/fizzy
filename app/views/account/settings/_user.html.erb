@@ -10,13 +10,8 @@
   <hr class="separator--horizontal flex-item-grow" style="--border-color: var(--color-ink-medium); --border-style: dashed" aria-hidden="true">
 
   <%= form_with model: user, url: user_role_path(user), data: { controller: "form" }, method: :patch do | form | %>
-    <span title="<%= role_display_name(user) %>">
-      <label class="btn btn--circle" for="<%= dom_id(user, :role) %>" aria-label="Role: <%= role_display_name(user) %>">
-        <%= icon_tag "crown" %>
-        <span class="for-screen-reader">Role: <%= role_display_name(user) %></span>
-        <%= form.check_box :role, { data: { action: "form#submit" }, disabled: !Current.user.can_administer?(user), checked: user.admin?, hidden: true, id: dom_id(user, :role) }, "admin", "member" %>
-      </label>
-    </span>
+    <%= form.select :role, [["Admin", "admin"], ["Member", "member"], ["Viewer", "viewer"]],
+          {}, { data: { action: "form#submit" }, disabled: !Current.user.can_administer?(user), class: "input input--select txt-small", "aria-label": "Role: #{role_display_name(user)}" } %>
   <% end %>
 
   <%# FIXME: Move this Current.user check to a stimulus controller that just checks for admin? or the like we so we can cache user list %>

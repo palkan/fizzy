@@ -1,6 +1,7 @@
 class Cards::StepsController < ApplicationController
   include CardScoped
 
+  before_action :ensure_contributor, only: %i[ create edit update destroy ]
   before_action :set_step, only: %i[ show edit update destroy ]
 
   def create

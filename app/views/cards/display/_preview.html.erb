@@ -1,4 +1,4 @@
-<% draggable = local_assigns.fetch(:draggable, false) && card.published? %>
+<% draggable = local_assigns.fetch(:draggable, false) && card.published? && contributor? %>
 
 <% card_data = {
   id: card.number,
@@ -8,10 +8,12 @@
 } %>
 
 <% if card.open? %>
-  <% card_data[:card_not_now_url] = card_not_now_path(card) %>
-  <% card_data[:card_closure_url] = card_closure_path(card) %>
   <% card_data[:action] = "mouseenter->navigable-list#hoverSelect" %>
-  <% card_data[:card_assign_to_self_url] = card_self_assignment_path(card) %>
+  <% if contributor? %>
+    <% card_data[:card_not_now_url] = card_not_now_path(card) %>
+    <% card_data[:card_closure_url] = card_closure_path(card) %>
+    <% card_data[:card_assign_to_self_url] = card_self_assignment_path(card) %>
+  <% end %>
 <% end %>
 
 <%= card_article_tag card, class: "card", draggable: draggable, data: card_data, tabindex: 0 do %>

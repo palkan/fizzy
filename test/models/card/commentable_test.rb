@@ -28,4 +28,19 @@ class Card::CommentableTest < ActiveSupport::TestCase
     assert cards(:logo).commentable?
     assert_not cards(:unfinished_thoughts).commentable?
   end
+
+  test "commentable_by? allows contributors on any published card" do
+    assert cards(:logo).commentable_by?(users(:david))
+    assert cards(:buy_domain).commentable_by?(users(:david))
+  end
+
+  test "commentable_by? allows viewers only on triage cards" do
+    assert cards(:buy_domain).commentable_by?(users(:pat))
+    assert cards(:buy_domain).awaiting_triage?
+  end
+
+  test "commentable_by? denies viewers on triaged cards" do
+    assert_not cards(:logo).commentable_by?(users(:pat))
+    assert cards(:logo).triaged?
+  end
 end

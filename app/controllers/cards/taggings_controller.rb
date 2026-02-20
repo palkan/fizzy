@@ -1,6 +1,8 @@
 class Cards::TaggingsController < ApplicationController
   include CardScoped
 
+  before_action :ensure_contributor
+
   def new
     @tagged_with = @card.tags.alphabetically
     @tags = Current.account.tags.all.alphabetically.where.not(id: @tagged_with)
