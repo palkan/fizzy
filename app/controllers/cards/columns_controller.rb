@@ -5,7 +5,7 @@ class Cards::ColumnsController < ApplicationController
 
   def edit
     authorize! @card, to: :manage?
-    @columns = @card.board.columns.sorted
+    @columns = @card.board.columns.sorted.accessible_by(Current.user)
 
     fresh_when etag: [ @card, @columns ]
   end

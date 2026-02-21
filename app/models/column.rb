@@ -1,5 +1,5 @@
 class Column < ApplicationRecord
-  include Colored, Positioned
+  include Accessible, Colored, Positioned
 
   belongs_to :account, default: -> { board.account }
   belongs_to :board, touch: true

@@ -6,8 +6,7 @@ class Boards::ColumnsController < ApplicationController
   before_action :set_column, only: %i[ show update destroy ]
 
   def index
-    @columns = @board.columns.sorted
-    @columns = @columns.where(viewer_restricted: false) if Current.user.viewer?
+    @columns = @board.columns.sorted.accessible_by(Current.user)
     fresh_when etag: @columns
   end
 
@@ -51,6 +50,6 @@ class Boards::ColumnsController < ApplicationController
     end
 
     def column_params
-      params.expect(column: [ :name, :color, :viewer_restricted ])
+      params.expect(column: [ :name, :color, :min_role ])
     end
 end

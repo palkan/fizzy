@@ -30,9 +30,11 @@ class CardsController < ApplicationController
   end
 
   def edit
+    authorize! @card, to: :manage?
   end
 
   def update
+    authorize! @card, to: :manage?
     @card.update! card_params
 
     respond_to do |format|
@@ -60,7 +62,7 @@ class CardsController < ApplicationController
 
     def set_card
       @card = Current.account.cards.find_by!(number: params[:id])
-      authorize! @card
+      authorize! @card, to: :show?
     end
 
     def redirect_if_drafted

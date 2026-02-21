@@ -6,13 +6,7 @@ class CardPolicy < ApplicationPolicy
       scope.left_joins(board: :accesses).where(accesses: { user_id: user.id })
     ).distinct
 
-    if viewer?
-      base.left_joins(:column).where(columns: { viewer_restricted: [false, nil] }).or(
-        base.left_joins(:column).where(column_id: nil)
-      )
-    else
-      base
-    end
+    base.column_accessible_by(user)
   end
 
   def create?
@@ -20,7 +14,7 @@ class CardPolicy < ApplicationPolicy
   end
 
   def show?
-    if viewer? && record.column&.viewer_restricted?
+    if record.column && !record.column.accessible_to?(user)
       false
     else
       allowed_to?(:show?, record.board)

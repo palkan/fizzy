@@ -96,18 +96,17 @@ class Boards::ColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_response :no_content
   end
 
-  test "admin can toggle viewer_restricted" do
+  test "admin can set column min_role" do
     column = columns(:writebook_in_progress)
 
-    assert_changes -> { column.reload.viewer_restricted? }, from: false, to: true do
-      put board_column_path(column.board, column), params: { column: { viewer_restricted: true } }, as: :turbo_stream
+    assert_changes -> { column.reload.min_role }, from: "viewer", to: "member" do
+      put board_column_path(column.board, column), params: { column: { min_role: "member" } }, as: :turbo_stream
       assert_response :success
     end
   end
 
-  test "viewer cannot access viewer-restricted column show" do
-    column = columns(:writebook_in_progress)
-    column.update!(viewer_restricted: true)
+  test "viewer cannot access member-restricted column show" do
+    column = columns(:writebook_on_hold) # min_role: member
 
     logout_and_sign_in_as :pat
 
@@ -123,8 +122,7 @@ class Boards::ColumnsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "viewer JSON index excludes restricted columns" do
-    column = columns(:writebook_in_progress)
-    column.update!(viewer_restricted: true)
+    column = columns(:writebook_on_hold) # min_role: member
 
     logout_and_sign_in_as :pat
 
@@ -135,9 +133,8 @@ class Boards::ColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_not_includes column_ids, column.id
   end
 
-  test "non-viewer JSON index includes restricted columns" do
-    column = columns(:writebook_in_progress)
-    column.update!(viewer_restricted: true)
+  test "admin JSON index includes restricted columns" do
+    column = columns(:writebook_on_hold) # min_role: member
 
     get board_columns_path(column.board), as: :json
     assert_response :success

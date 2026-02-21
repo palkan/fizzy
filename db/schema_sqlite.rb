@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_21_153025) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_21_183735) do
   create_table "accesses", id: :uuid, force: :cascade do |t|
     t.datetime "accessed_at"
     t.uuid "account_id", null: false
@@ -239,6 +239,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_21_153025) do
     t.uuid "board_id", null: false
     t.string "color", limit: 255, null: false
     t.datetime "created_at", null: false
+    t.integer "min_role", default: 0, null: false
     t.string "name", limit: 255, null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false

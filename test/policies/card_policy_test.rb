@@ -84,21 +84,39 @@ class CardPolicyTest < ActiveSupport::TestCase
     assert policy.apply(:show?)
   end
 
-  test "viewer cannot show card in viewer-restricted column" do
-    @card.column.update!(viewer_restricted: true)
+  test "viewer cannot show card in member-restricted column" do
+    @card.update!(column: columns(:writebook_on_hold)) # min_role: member
     policy = CardPolicy.new(@card, user: users(:pat), account: @account)
     assert_not policy.apply(:show?)
+  end
+
+  test "viewer cannot show card in admin-restricted column" do
+    @card.update!(column: columns(:writebook_review)) # min_role: admin
+    policy = CardPolicy.new(@card, user: users(:pat), account: @account)
+    assert_not policy.apply(:show?)
+  end
+
+  test "member cannot show card in admin-restricted column" do
+    @card.update!(column: columns(:writebook_review)) # min_role: admin
+    policy = CardPolicy.new(@card, user: users(:jz), account: @account)
+    assert_not policy.apply(:show?)
+  end
+
+  test "member can show card in member-restricted column" do
+    @card.update!(column: columns(:writebook_on_hold)) # min_role: member
+    policy = CardPolicy.new(@card, user: users(:david), account: @account)
+    assert policy.apply(:show?)
+  end
+
+  test "admin can show card in any restricted column" do
+    @card.update!(column: columns(:writebook_review)) # min_role: admin
+    policy = CardPolicy.new(@card, user: users(:kevin), account: @account)
+    assert policy.apply(:show?)
   end
 
   test "viewer can show card with nil column (triage)" do
     card = cards(:buy_domain)  # has no column
     policy = CardPolicy.new(card, user: users(:pat), account: @account)
-    assert policy.apply(:show?)
-  end
-
-  test "member can show card in viewer-restricted column" do
-    @card.column.update!(viewer_restricted: true)
-    policy = CardPolicy.new(@card, user: users(:david), account: @account)
     assert policy.apply(:show?)
   end
 
@@ -117,8 +135,8 @@ class CardPolicyTest < ActiveSupport::TestCase
     assert_not policy.apply(:destroy?)
   end
 
-  test "relation scope excludes cards in viewer-restricted columns for viewers" do
-    @card.column.update!(viewer_restricted: true)
+  test "relation scope excludes cards in member-restricted columns for viewers" do
+    @card.update!(column: columns(:writebook_on_hold)) # min_role: member
 
     accessible_cards = CardPolicy.new(Card, user: users(:pat), account: @account)
       .apply_scope(Card.all, type: :active_record_relation)
@@ -127,10 +145,28 @@ class CardPolicyTest < ActiveSupport::TestCase
     assert_includes accessible_cards, cards(:buy_domain) # nil column card still visible
   end
 
-  test "relation scope includes all cards for non-viewers regardless of restriction" do
-    @card.column.update!(viewer_restricted: true)
+  test "relation scope excludes cards in admin-restricted columns for members" do
+    @card.update!(column: columns(:writebook_review)) # min_role: admin
+
+    accessible_cards = CardPolicy.new(Card, user: users(:jz), account: @account)
+      .apply_scope(Card.all, type: :active_record_relation)
+
+    assert_not_includes accessible_cards, @card
+  end
+
+  test "relation scope includes member-restricted column cards for members" do
+    @card.update!(column: columns(:writebook_on_hold)) # min_role: member
 
     accessible_cards = CardPolicy.new(Card, user: users(:david), account: @account)
+      .apply_scope(Card.all, type: :active_record_relation)
+
+    assert_includes accessible_cards, @card
+  end
+
+  test "relation scope includes all cards for admins regardless of restriction" do
+    @card.update!(column: columns(:writebook_review)) # min_role: admin
+
+    accessible_cards = CardPolicy.new(Card, user: users(:kevin), account: @account)
       .apply_scope(Card.all, type: :active_record_relation)
 
     assert_includes accessible_cards, @card

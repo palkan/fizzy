@@ -54,26 +54,55 @@ class ColumnPolicyTest < ActiveSupport::TestCase
     assert policy.apply(:create?)
   end
 
-  test "viewer can show column on accessible board" do
+  test "viewer can show column with min_role viewer" do
     policy = ColumnPolicy.new(@column, user: users(:pat), account: @account)
     assert policy.apply(:show?)
   end
 
-  test "viewer cannot show viewer-restricted column" do
-    @column.update!(viewer_restricted: true)
-    policy = ColumnPolicy.new(@column, user: users(:pat), account: @account)
+  test "viewer cannot show column with min_role member" do
+    column = columns(:writebook_on_hold) # min_role: member
+    policy = ColumnPolicy.new(column, user: users(:pat), account: @account)
     assert_not policy.apply(:show?)
   end
 
-  test "admin can show viewer-restricted column" do
-    @column.update!(viewer_restricted: true)
-    policy = ColumnPolicy.new(@column, user: users(:kevin), account: @account)
+  test "viewer cannot show column with min_role admin" do
+    column = columns(:writebook_review) # min_role: admin
+    policy = ColumnPolicy.new(column, user: users(:pat), account: @account)
+    assert_not policy.apply(:show?)
+  end
+
+  test "member can show column with min_role viewer" do
+    policy = ColumnPolicy.new(@column, user: users(:david), account: @account)
     assert policy.apply(:show?)
   end
 
-  test "member can show viewer-restricted column" do
-    @column.update!(viewer_restricted: true)
-    policy = ColumnPolicy.new(@column, user: users(:david), account: @account)
+  test "member can show column with min_role member" do
+    column = columns(:writebook_on_hold) # min_role: member
+    policy = ColumnPolicy.new(column, user: users(:david), account: @account)
+    assert policy.apply(:show?)
+  end
+
+  test "member cannot show column with min_role admin" do
+    column = columns(:writebook_review) # min_role: admin
+    policy = ColumnPolicy.new(column, user: users(:jz), account: @account)
+    assert_not policy.apply(:show?)
+  end
+
+  test "board creator can show admin-only column on their board" do
+    column = columns(:writebook_review) # min_role: admin
+    policy = ColumnPolicy.new(column, user: users(:david), account: @account)
+    assert policy.apply(:show?)
+  end
+
+  test "admin can show column with any min_role" do
+    column = columns(:writebook_review) # min_role: admin
+    policy = ColumnPolicy.new(column, user: users(:kevin), account: @account)
+    assert policy.apply(:show?)
+  end
+
+  test "owner can show column with any min_role" do
+    column = columns(:writebook_review) # min_role: admin
+    policy = ColumnPolicy.new(column, user: users(:jason), account: @account)
     assert policy.apply(:show?)
   end
 

@@ -6,6 +6,7 @@ class Cards::TriagesController < ApplicationController
   def create
     authorize! @card, to: :manage?
     column = @card.board.columns.find(params[:column_id])
+    authorize! column, to: :show?
     @card.triage_into(column)
 
     respond_to do |format|

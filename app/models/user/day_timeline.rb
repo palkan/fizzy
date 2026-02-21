@@ -70,10 +70,21 @@ class User::DayTimeline
     end
 
     def timelineable_events
-      Event
+      events = Event
         .preloaded
         .where(board: boards)
         .where(action: TIMELINEABLE_ACTIONS)
+
+      if user.admin?
+        events
+      else
+        rank = Column::Accessible::ROLE_RANKS.fetch(user.role, 0)
+        restricted_card_ids = Card.joins(:column).where("columns.min_role > ?", rank).select(:id)
+
+        events
+          .where.not(eventable_type: "Card", eventable_id: restricted_card_ids)
+          .where.not(eventable_type: "Comment", eventable_id: Comment.where(card_id: restricted_card_ids).select(:id))
+      end
     end
 
     def boards

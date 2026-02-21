@@ -27,11 +27,12 @@ class Search::Record < ApplicationRecord
 
     if query.valid? && user.board_ids.any?
       result = matching(query.to_s, user.account_id).where(account_id: user.account_id, board_id: user.board_ids)
-      if user.viewer?
-        restricted_card_ids = Card.joins(:column).where(columns: { viewer_restricted: true }).select(:id)
-        result.where.not(card_id: restricted_card_ids)
-      else
+      if user.admin?
         result
+      else
+        rank = Column::Accessible::ROLE_RANKS.fetch(user.role, 0)
+        restricted_card_ids = Card.joins(:column).where("columns.min_role > ?", rank).select(:id)
+        result.where.not(card_id: restricted_card_ids)
       end
     else
       none

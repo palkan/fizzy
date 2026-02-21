@@ -11,20 +11,12 @@ class User::DataExport < Export
     end
 
     def exportable_cards
-      result = user.accessible_cards.includes(
+      user.accessible_cards.includes(
         :board,
         creator: :identity,
         comments: { creator: :identity },
         rich_text_description: { embeds_attachments: :blob }
-      )
-
-      if user.viewer?
-        result.left_joins(:column)
-          .where(columns: { viewer_restricted: false })
-          .or(result.left_joins(:column).where(column_id: nil))
-      else
-        result
-      end
+      ).column_accessible_by(user)
     end
 
     def add_card_to_zip(zip, card)

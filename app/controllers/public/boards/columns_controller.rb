@@ -11,6 +11,6 @@ class Public::Boards::ColumnsController < Public::BaseController
     end
 
     def set_column
-      @column = @board.columns.where(viewer_restricted: false).find(params[:id])
+      @column = @board.columns.where(min_role: :viewer).find(params[:id])
     end
 end

@@ -5,7 +5,7 @@ class SearchesController < ApplicationController
 
   def show
     if card = Current.user.accessible_cards.find_by_id(params[:q])
-      if Current.user.viewer? && card.column&.viewer_restricted?
+      if card.column && !card.column.accessible_to?(Current.user)
         set_page_and_extract_portion_from Current.user.search(params[:q])
       else
         @card = card

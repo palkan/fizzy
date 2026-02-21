@@ -22,6 +22,7 @@ writebook_on_hold:
   board: writebook_uuid
   position: 2
   account: 37s_uuid
+  min_role: member
 
 writebook_review:
   id: <%= ActiveRecord::FixtureSet.identify("writebook_review", :uuid) %>
@@ -30,3 +31,4 @@ writebook_review:
   board: writebook_uuid
   position: 3
   account: 37s_uuid
+  min_role: admin

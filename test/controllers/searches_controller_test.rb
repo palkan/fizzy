@@ -50,8 +50,7 @@ class SearchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "viewer search excludes cards in restricted columns" do
-    column = @board.columns.create!(name: "Restricted", account: @account)
-    column.update!(viewer_restricted: true)
+    column = @board.columns.create!(name: "Restricted", account: @account, min_role: :member)
 
     @board.cards.create!(title: "Secret restricted content", column: column, status: "published", creator: @user)
     @board.cards.create!(title: "Visible content here", status: "published", creator: @user)
@@ -69,8 +68,7 @@ class SearchesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "viewer numeric ID search excludes card in restricted column" do
-    column = @board.columns.create!(name: "Restricted", account: @account)
-    column.update!(viewer_restricted: true)
+    column = @board.columns.create!(name: "Restricted", account: @account, min_role: :member)
 
     restricted_card = @board.cards.create!(title: "Restricted card", column: column, status: "published", creator: @user)
 

@@ -68,12 +68,12 @@ class User::DataExportTest < ActiveSupport::TestCase
     end
   end
 
-  test "build excludes cards in viewer-restricted columns for viewer" do
+  test "build excludes cards in restricted columns for viewer" do
     viewer = users(:pat)
     board = boards(:writebook)
-    column = columns(:writebook_in_progress)
-    column.update!(viewer_restricted: true)
+    column = columns(:writebook_on_hold) # min_role: member
 
+    Current.user = users(:kevin)
     restricted_card = board.cards.create!(title: "Secret card", column: column, status: "published", creator: users(:kevin))
 
     export = User::DataExport.create!(account: Current.account, user: viewer)

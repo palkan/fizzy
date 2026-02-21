@@ -11,9 +11,8 @@ class Public::Boards::ColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "viewer-restricted column returns 404 on public board" do
-    column = columns(:writebook_in_progress)
-    column.update!(viewer_restricted: true)
+  test "restricted column returns 404 on public board" do
+    column = columns(:writebook_on_hold) # min_role: member
 
     get public_board_column_path(boards(:writebook).publication.key, column)
     assert_response :not_found
