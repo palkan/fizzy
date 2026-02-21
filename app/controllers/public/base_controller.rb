@@ -12,7 +12,10 @@ class Public::BaseController < ApplicationController
     end
 
     def set_card
-      @card = @board.cards.published.find_by!(number: params[:id]) if params[:board_id] && params[:id]
+      if params[:board_id] && params[:id]
+        @card = @board.cards.published.find_by!(number: params[:id])
+        raise ActiveRecord::RecordNotFound if @card.column&.hidden_from_viewers?
+      end
     end
 
     def set_public_cache_expiration

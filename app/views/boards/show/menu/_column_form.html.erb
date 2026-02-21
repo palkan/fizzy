@@ -12,5 +12,10 @@
     <% end %>
   </div>
 
+  <label class="flex gap-half align-center">
+    <%= form.check_box :hidden_from_viewers %>
+    <span>Hide from viewers</span>
+  </label>
+
   <%= form.submit label, class: "btn btn--link" %>
 <% end %>

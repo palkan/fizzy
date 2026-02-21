@@ -25,6 +25,16 @@ class Card < ApplicationRecord
   scope :with_users,              -> { preload(creator: [ :avatar_attachment, :account ], assignees: [ :avatar_attachment, :account ]) }
   scope :preloaded,               -> { with_users.preload(:column, :tags, :steps, :closure, :goldness, :activity_spike, :image_attachment, reactions: :reacter, board: [ :entropy, :columns ], not_now: [ :user ]).with_rich_text_description_and_embeds }
 
+  scope :visible_to, ->(user) {
+    if user&.contributor?
+      all
+    else
+      where(column_id: nil).or(
+        where.not(column_id: Column.where(hidden_from_viewers: true).select(:id))
+      )
+    end
+  }
+
   scope :indexed_by, ->(index) do
     case index
     when "stalled" then stalled

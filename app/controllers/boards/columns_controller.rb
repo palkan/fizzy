@@ -5,7 +5,7 @@ class Boards::ColumnsController < ApplicationController
   before_action :set_column, only: %i[ show update destroy ]
 
   def index
-    @columns = @board.columns.sorted
+    @columns = @board.columns.visible_to(Current.user).sorted
     fresh_when etag: @columns
   end
 
@@ -43,10 +43,10 @@ class Boards::ColumnsController < ApplicationController
 
   private
     def set_column
-      @column = @board.columns.find(params[:id])
+      @column = @board.columns.visible_to(Current.user).find(params[:id])
     end
 
     def column_params
-      params.expect(column: [ :name, :color ])
+      params.expect(column: [ :name, :color, :hidden_from_viewers ])
     end
 end

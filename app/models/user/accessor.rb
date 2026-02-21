@@ -11,6 +11,23 @@ module User::Accessor
     after_create_commit :grant_access_to_boards, unless: :system?
   end
 
+  def accessible_columns
+    if contributor?
+      super
+    else
+      super.where(hidden_from_viewers: false)
+    end
+  end
+
+  def accessible_cards
+    if contributor?
+      super
+    else
+      hidden_column_ids = Column.where(board_id: board_ids, hidden_from_viewers: true).select(:id)
+      super.where(column_id: [nil]).or(super.where.not(column_id: hidden_column_ids))
+    end
+  end
+
   def draft_new_card_in(board)
     board.cards.find_or_initialize_by(creator: self, status: "drafted").tap do |card|
       card.update!(created_at: Time.current, updated_at: Time.current, last_active_at: Time.current)

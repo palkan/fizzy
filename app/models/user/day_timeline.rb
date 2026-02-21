@@ -70,10 +70,20 @@ class User::DayTimeline
     end
 
     def timelineable_events
-      Event
+      events = Event
         .preloaded
         .where(board: boards)
         .where(action: TIMELINEABLE_ACTIONS)
+
+      unless user.contributor?
+        hidden_card_ids = Card.where(column_id: ::Column.where(board_id: boards, hidden_from_viewers: true).select(:id)).select(:id)
+
+        events = events
+          .where.not(eventable_type: "Card", eventable_id: hidden_card_ids)
+          .where.not(eventable_type: "Comment", eventable_id: Comment.where(card_id: hidden_card_ids).select(:id))
+      end
+
+      events
     end
 
     def boards
