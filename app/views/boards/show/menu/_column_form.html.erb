@@ -13,8 +13,7 @@
   </div>
 
   <label class="flex gap-half align-center">
-    <%= form.check_box :hidden_from_viewers %>
-    <span>Hide from viewers</span>
+    <%= form.select :min_role, Column::MIN_ROLES.map { |r| [r.capitalize, r] }, {}, class: "input" %>
   </label>
 
   <%= form.submit label, class: "btn btn--link" %>

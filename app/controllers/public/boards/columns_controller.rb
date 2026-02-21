@@ -11,6 +11,6 @@ class Public::Boards::ColumnsController < Public::BaseController
     end
 
     def set_column
-      @column = @board.columns.viewer_visible.find(params[:id])
+      @column = @board.columns.publicly_visible.find(params[:id])
     end
 end

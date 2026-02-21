@@ -14,7 +14,7 @@
     <%= render "public/boards/show/stream", board: board, page: page %>
 
     <div class="card-columns__right">
-      <%= render partial: "public/boards/show/column", collection: board.columns.viewer_visible, cached: true %>
+      <%= render partial: "public/boards/show/column", collection: board.columns.publicly_visible, cached: true %>
       <%= render "public/boards/show/closed", board: board %>
     </div>
   </div>

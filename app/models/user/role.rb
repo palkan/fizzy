@@ -1,6 +1,8 @@
 module User::Role
   extend ActiveSupport::Concern
 
+  ROLE_LEVELS = { viewer: 0, member: 1, admin: 2, owner: 2 }.freeze
+
   included do
     enum :role, %i[ owner admin member viewer system ].index_by(&:itself), scopes: false
 
@@ -19,6 +21,14 @@ module User::Role
 
   def contributor?
     owner? || admin? || member?
+  end
+
+  def role_level
+    ROLE_LEVELS.fetch(role.to_sym)
+  end
+
+  def role_at_least?(min_role)
+    role_level >= ROLE_LEVELS.fetch(min_role.to_sym)
   end
 
   def can_change?(other)

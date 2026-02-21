@@ -28,9 +28,9 @@ class Search::Record < ApplicationRecord
     if query.valid? && user.board_ids.any?
       result = matching(query.to_s, user.account_id).where(account_id: user.account_id, board_id: user.board_ids)
 
-      unless user.contributor?
-        hidden_column_ids = Column.where(board_id: user.board_ids, hidden_from_viewers: true).select(:id)
-        result = result.where.not(card_id: Card.where(column_id: hidden_column_ids).select(:id))
+      unless user.admin?
+        visible_column_ids = Column.where(board_id: user.board_ids).visible_to(user).select(:id)
+        result = result.where.not(card_id: Card.where.not(column_id: [nil]).where.not(column_id: visible_column_ids).select(:id))
       end
 
       result

@@ -75,8 +75,9 @@ class User::DayTimeline
         .where(board: boards)
         .where(action: TIMELINEABLE_ACTIONS)
 
-      unless user.contributor?
-        hidden_card_ids = Card.where(column_id: ::Column.where(board_id: boards, hidden_from_viewers: true).select(:id)).select(:id)
+      unless user.admin?
+        visible_column_ids = ::Column.where(board_id: boards).visible_to(user).select(:id)
+        hidden_card_ids = Card.where.not(column_id: [nil]).where.not(column_id: visible_column_ids).select(:id)
 
         events = events
           .where.not(eventable_type: "Card", eventable_id: hidden_card_ids)

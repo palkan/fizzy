@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2026_02_21_140434) do
+ActiveRecord::Schema[8.2].define(version: 2026_02_21_194001) do
   create_table "accesses", id: :uuid, force: :cascade do |t|
     t.datetime "accessed_at"
     t.uuid "account_id", null: false
@@ -239,7 +239,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_21_140434) do
     t.uuid "board_id", null: false
     t.string "color", limit: 255, null: false
     t.datetime "created_at", null: false
-    t.boolean "hidden_from_viewers", default: false, null: false
+    t.string "min_role", limit: 255, default: "viewer", null: false
     t.string "name", limit: 255, null: false
     t.integer "position", default: 0, null: false
     t.datetime "updated_at", null: false
@@ -299,7 +299,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_21_140434) do
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.string "status", limit: 255, default: "pending", null: false
-    t.string "type"
+    t.string "type", limit: 255
     t.datetime "updated_at", null: false
     t.uuid "user_id", null: false
     t.index ["account_id"], name: "index_exports_on_account_id"
@@ -492,7 +492,7 @@ ActiveRecord::Schema[8.2].define(version: 2026_02_21_140434) do
     t.string "operation", limit: 255, null: false
     t.uuid "recordable_id"
     t.string "recordable_type", limit: 255
-    t.string "request_id"
+    t.string "request_id", limit: 255
     t.uuid "user_id"
     t.index ["account_id"], name: "index_storage_entries_on_account_id"
     t.index ["blob_id"], name: "index_storage_entries_on_blob_id"

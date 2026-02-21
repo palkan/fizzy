@@ -12,19 +12,19 @@ module User::Accessor
   end
 
   def accessible_columns
-    if contributor?
+    if admin?
       super
     else
-      super.where(hidden_from_viewers: false)
+      super.visible_to(self)
     end
   end
 
   def accessible_cards
-    if contributor?
+    if admin?
       super
     else
-      hidden_column_ids = Column.where(board_id: board_ids, hidden_from_viewers: true).select(:id)
-      super.where(column_id: [nil]).or(super.where.not(column_id: hidden_column_ids))
+      visible_column_ids = Column.where(board_id: board_ids).visible_to(self).select(:id)
+      super.where(column_id: [nil]).or(super.where(column_id: visible_column_ids))
     end
   end
 

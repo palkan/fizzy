@@ -14,7 +14,7 @@ class Public::BaseController < ApplicationController
     def set_card
       if params[:board_id] && params[:id]
         @card = @board.cards.published.find_by!(number: params[:id])
-        raise ActiveRecord::RecordNotFound if @card.column&.hidden_from_viewers?
+        raise ActiveRecord::RecordNotFound if @card.column&.restricted?
       end
     end
 

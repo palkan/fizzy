@@ -47,6 +47,8 @@ class Boards::ColumnsController < ApplicationController
     end
 
     def column_params
-      params.expect(column: [ :name, :color, :hidden_from_viewers ])
+      attrs = params.expect(column: [ :name, :color, :min_role ])
+      attrs.delete(:min_role) unless Current.user.can_administer_board?(@board)
+      attrs
     end
 end

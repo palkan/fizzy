@@ -7,8 +7,8 @@ class Public::ColumnVisibilityTest < ActionDispatch::IntegrationTest
     @key = boards(:writebook).publication.key
   end
 
-  test "hidden columns are not visible on published board" do
-    columns(:writebook_in_progress).update!(hidden_from_viewers: true)
+  test "restricted columns are not visible on published board" do
+    columns(:writebook_in_progress).update!(min_role: "member")
 
     sign_out
     get public_board_path(@key)
@@ -16,28 +16,28 @@ class Public::ColumnVisibilityTest < ActionDispatch::IntegrationTest
     assert_no_match "In progress", response.body
   end
 
-  test "hidden column cannot be accessed directly on published board" do
+  test "restricted column cannot be accessed directly on published board" do
     column = columns(:writebook_in_progress)
-    column.update!(hidden_from_viewers: true)
+    column.update!(min_role: "member")
 
     sign_out
     get public_board_column_path(@key, column)
     assert_response :not_found
   end
 
-  test "card in hidden column cannot be accessed on published board" do
-    columns(:writebook_in_progress).update!(hidden_from_viewers: true)
-    card = cards(:text) # in writebook_in_progress
+  test "card in restricted column cannot be accessed on published board" do
+    columns(:writebook_in_progress).update!(min_role: "member")
+    card = cards(:text)
 
     sign_out
     get public_board_card_path(@key, card)
     assert_response :not_found
   end
 
-  test "closed cards from hidden columns are not visible on published board" do
-    card = cards(:text) # in writebook_in_progress
+  test "closed cards from restricted columns are not visible on published board" do
+    card = cards(:text)
     with_current_user(:kevin) { card.close }
-    columns(:writebook_in_progress).update!(hidden_from_viewers: true)
+    columns(:writebook_in_progress).update!(min_role: "admin")
 
     sign_out
     get public_board_columns_closed_path(@key)

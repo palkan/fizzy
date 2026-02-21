@@ -26,12 +26,11 @@ class Card < ApplicationRecord
   scope :preloaded,               -> { with_users.preload(:column, :tags, :steps, :closure, :goldness, :activity_spike, :image_attachment, reactions: :reacter, board: [ :entropy, :columns ], not_now: [ :user ]).with_rich_text_description_and_embeds }
 
   scope :visible_to, ->(user) {
-    if user&.contributor?
+    if user&.admin?
       all
     else
-      where(column_id: nil).or(
-        where.not(column_id: Column.where(hidden_from_viewers: true).select(:id))
-      )
+      visible_column_ids = Column.visible_to(user).select(:id)
+      where(column_id: nil).or(where(column_id: visible_column_ids))
     end
   }
 
