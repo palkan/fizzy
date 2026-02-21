@@ -84,6 +84,24 @@ class CardPolicyTest < ActiveSupport::TestCase
     assert policy.apply(:show?)
   end
 
+  test "viewer cannot show card in viewer-restricted column" do
+    @card.column.update!(viewer_restricted: true)
+    policy = CardPolicy.new(@card, user: users(:pat), account: @account)
+    assert_not policy.apply(:show?)
+  end
+
+  test "viewer can show card with nil column (triage)" do
+    card = cards(:buy_domain)  # has no column
+    policy = CardPolicy.new(card, user: users(:pat), account: @account)
+    assert policy.apply(:show?)
+  end
+
+  test "member can show card in viewer-restricted column" do
+    @card.column.update!(viewer_restricted: true)
+    policy = CardPolicy.new(@card, user: users(:david), account: @account)
+    assert policy.apply(:show?)
+  end
+
   test "viewer cannot create card" do
     policy = CardPolicy.new(board: @board, user: users(:pat), account: @account)
     assert_not policy.apply(:create?)
@@ -97,6 +115,25 @@ class CardPolicyTest < ActiveSupport::TestCase
   test "viewer cannot destroy card" do
     policy = CardPolicy.new(@card, user: users(:pat), account: @account)
     assert_not policy.apply(:destroy?)
+  end
+
+  test "relation scope excludes cards in viewer-restricted columns for viewers" do
+    @card.column.update!(viewer_restricted: true)
+
+    accessible_cards = CardPolicy.new(Card, user: users(:pat), account: @account)
+      .apply_scope(Card.all, type: :active_record_relation)
+
+    assert_not_includes accessible_cards, @card
+    assert_includes accessible_cards, cards(:buy_domain) # nil column card still visible
+  end
+
+  test "relation scope includes all cards for non-viewers regardless of restriction" do
+    @card.column.update!(viewer_restricted: true)
+
+    accessible_cards = CardPolicy.new(Card, user: users(:david), account: @account)
+      .apply_scope(Card.all, type: :active_record_relation)
+
+    assert_includes accessible_cards, @card
   end
 
   test "relation scope returns only cards from accessible boards" do

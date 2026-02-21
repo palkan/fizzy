@@ -34,6 +34,17 @@
 
       <li class="popup__item">
         <%= button_to board_column_path(column.board, column),
+              method: :patch,
+              params: { column: { viewer_restricted: !column.viewer_restricted? } },
+              class: "popup__btn btn",
+              form_class: "display-contents" do %>
+          <%= icon_tag column.viewer_restricted? ? "eye" : "eye-off" %>
+          <span><%= column.viewer_restricted? ? "Show to viewers" : "Hide from viewers" %></span>
+        <% end %>
+      </li>
+
+      <li class="popup__item">
+        <%= button_to board_column_path(column.board, column),
               method: :delete,
               class: "popup__btn btn txt-negative",
                 form_class: "display-contents",

@@ -19,6 +19,11 @@ class Filter < ApplicationRecord
   def cards
     @cards ||= begin
       result = creator.accessible_cards.preloaded.published
+      if creator.viewer?
+        result = result.left_joins(:column)
+          .where(columns: { viewer_restricted: [false, nil] })
+          .or(result.left_joins(:column).where(column_id: nil))
+      end
       result = result.indexed_by(indexed_by)
       result = result.sorted_by(sorted_by)
       result = result.where(id: card_ids) if card_ids.present?

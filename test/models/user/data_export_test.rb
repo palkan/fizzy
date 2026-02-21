@@ -67,4 +67,29 @@ class User::DataExportTest < ActiveSupport::TestCase
       export.build_later
     end
   end
+
+  test "build excludes cards in viewer-restricted columns for viewer" do
+    viewer = users(:pat)
+    board = boards(:writebook)
+    column = columns(:writebook_in_progress)
+    column.update!(viewer_restricted: true)
+
+    restricted_card = board.cards.create!(title: "Secret card", column: column, status: "published", creator: users(:kevin))
+
+    export = User::DataExport.create!(account: Current.account, user: viewer)
+    export.build
+
+    assert export.completed?
+    assert export.file.attached?
+
+    Tempfile.create([ "test", ".zip" ]) do |temp|
+      temp.binmode
+      export.file.download { |chunk| temp.write(chunk) }
+      temp.rewind
+
+      reader = ZipKit::FileReader.read_zip_structure(io: temp)
+      json_files = reader.map(&:filename)
+      assert_not_includes json_files, "#{restricted_card.number}.json"
+    end
+  end
 end

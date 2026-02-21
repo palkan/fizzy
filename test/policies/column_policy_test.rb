@@ -59,6 +59,24 @@ class ColumnPolicyTest < ActiveSupport::TestCase
     assert policy.apply(:show?)
   end
 
+  test "viewer cannot show viewer-restricted column" do
+    @column.update!(viewer_restricted: true)
+    policy = ColumnPolicy.new(@column, user: users(:pat), account: @account)
+    assert_not policy.apply(:show?)
+  end
+
+  test "admin can show viewer-restricted column" do
+    @column.update!(viewer_restricted: true)
+    policy = ColumnPolicy.new(@column, user: users(:kevin), account: @account)
+    assert policy.apply(:show?)
+  end
+
+  test "member can show viewer-restricted column" do
+    @column.update!(viewer_restricted: true)
+    policy = ColumnPolicy.new(@column, user: users(:david), account: @account)
+    assert policy.apply(:show?)
+  end
+
   test "viewer cannot create column" do
     policy = ColumnPolicy.new(board: @board, user: users(:pat), account: @account)
     assert_not policy.apply(:create?)

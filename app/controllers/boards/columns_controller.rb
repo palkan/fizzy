@@ -7,6 +7,7 @@ class Boards::ColumnsController < ApplicationController
 
   def index
     @columns = @board.columns.sorted
+    @columns = @columns.where(viewer_restricted: false) if Current.user.viewer?
     fresh_when etag: @columns
   end
 
@@ -50,6 +51,6 @@ class Boards::ColumnsController < ApplicationController
     end
 
     def column_params
-      params.expect(column: [ :name, :color ])
+      params.expect(column: [ :name, :color, :viewer_restricted ])
     end
 end

@@ -28,11 +28,18 @@ class Prompts::CardsController < ApplicationController
     end
 
     def published_cards
-      Current.user.accessible_cards.published
+      result = Current.user.accessible_cards.published
+      if Current.user.viewer?
+        result.left_joins(:column)
+          .where(columns: { viewer_restricted: false })
+          .or(result.left_joins(:column).where(column_id: nil))
+      else
+        result
+      end
     end
 
     def prepending_exact_matches_by_id(cards)
-      if card_by_id = Current.user.accessible_cards.find_by(number: params[:filter])
+      if card_by_id = published_cards.find_by(number: params[:filter])
         [ card_by_id ] + cards
       else
         cards

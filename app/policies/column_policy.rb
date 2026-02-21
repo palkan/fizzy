@@ -6,7 +6,11 @@ class ColumnPolicy < ApplicationPolicy
   end
 
   def show?
-    allowed_to?(:show?, record.board)
+    if viewer? && record.viewer_restricted?
+      false
+    else
+      allowed_to?(:show?, record.board)
+    end
   end
 
   def manage?

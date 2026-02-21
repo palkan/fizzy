@@ -95,4 +95,54 @@ class Boards::ColumnsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :no_content
   end
+
+  test "admin can toggle viewer_restricted" do
+    column = columns(:writebook_in_progress)
+
+    assert_changes -> { column.reload.viewer_restricted? }, from: false, to: true do
+      put board_column_path(column.board, column), params: { column: { viewer_restricted: true } }, as: :turbo_stream
+      assert_response :success
+    end
+  end
+
+  test "viewer cannot access viewer-restricted column show" do
+    column = columns(:writebook_in_progress)
+    column.update!(viewer_restricted: true)
+
+    logout_and_sign_in_as :pat
+
+    get board_column_path(column.board, column)
+    assert_response :not_found
+  end
+
+  test "viewer can access non-restricted column show" do
+    logout_and_sign_in_as :pat
+
+    get board_column_path(boards(:writebook), columns(:writebook_in_progress))
+    assert_response :success
+  end
+
+  test "viewer JSON index excludes restricted columns" do
+    column = columns(:writebook_in_progress)
+    column.update!(viewer_restricted: true)
+
+    logout_and_sign_in_as :pat
+
+    get board_columns_path(column.board), as: :json
+    assert_response :success
+
+    column_ids = @response.parsed_body.map { |c| c["id"] }
+    assert_not_includes column_ids, column.id
+  end
+
+  test "non-viewer JSON index includes restricted columns" do
+    column = columns(:writebook_in_progress)
+    column.update!(viewer_restricted: true)
+
+    get board_columns_path(column.board), as: :json
+    assert_response :success
+
+    column_ids = @response.parsed_body.map { |c| c["id"] }
+    assert_includes column_ids, column.id
+  end
 end

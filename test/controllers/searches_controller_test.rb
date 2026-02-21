@@ -49,6 +49,42 @@ class SearchesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "viewer search excludes cards in restricted columns" do
+    column = @board.columns.create!(name: "Restricted", account: @account)
+    column.update!(viewer_restricted: true)
+
+    @board.cards.create!(title: "Secret restricted content", column: column, status: "published", creator: @user)
+    @board.cards.create!(title: "Visible content here", status: "published", creator: @user)
+
+    viewer_identity = Identity.create!(email_address: "viewer@example.com")
+    User.create!(name: "Viewer", account: @account, identity: viewer_identity, role: :viewer)
+
+    untenanted { logout_and_sign_in_as viewer_identity }
+
+    get search_path(q: "content", script_name: "/#{@account.external_account_id}")
+    assert_select "li .search__title", text: /Visible content/, count: 1
+    assert_select "li .search__title", text: /Secret restricted/, count: 0
+  ensure
+    Identity.find_by(email_address: "viewer@example.com")&.destroy
+  end
+
+  test "viewer numeric ID search excludes card in restricted column" do
+    column = @board.columns.create!(name: "Restricted", account: @account)
+    column.update!(viewer_restricted: true)
+
+    restricted_card = @board.cards.create!(title: "Restricted card", column: column, status: "published", creator: @user)
+
+    viewer_identity = Identity.create!(email_address: "viewer@example.com")
+    User.create!(name: "Viewer", account: @account, identity: viewer_identity, role: :viewer)
+
+    untenanted { logout_and_sign_in_as viewer_identity }
+
+    get search_path(q: restricted_card.id, script_name: "/#{@account.external_account_id}")
+    assert_select "form[data-controller='auto-submit']", count: 0
+  ensure
+    Identity.find_by(email_address: "viewer@example.com")&.destroy
+  end
+
   test "search preserves highlight marks but escapes surrounding HTML" do
     @board.cards.create!(
       title: "<b>Bold</b> testing content",

@@ -26,7 +26,13 @@ class Search::Record < ApplicationRecord
     query = Search::Query.wrap(query)
 
     if query.valid? && user.board_ids.any?
-      matching(query.to_s, user.account_id).where(account_id: user.account_id, board_id: user.board_ids)
+      result = matching(query.to_s, user.account_id).where(account_id: user.account_id, board_id: user.board_ids)
+      if user.viewer?
+        restricted_card_ids = Card.joins(:column).where(columns: { viewer_restricted: true }).select(:id)
+        result.where.not(card_id: restricted_card_ids)
+      else
+        result
+      end
     else
       none
     end
