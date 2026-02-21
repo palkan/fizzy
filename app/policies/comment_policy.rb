@@ -3,7 +3,11 @@ class CommentPolicy < ApplicationPolicy
   authorize :card, optional: true
 
   def create?
-    allowed_to?(:show?, card)
+    if viewer?
+      check?(:card_awaiting_triage?) && allowed_to?(:show?, card)
+    else
+      allowed_to?(:show?, card)
+    end
   end
 
   def show?
@@ -11,10 +15,14 @@ class CommentPolicy < ApplicationPolicy
   end
 
   def manage?
-    allowed_to?(:show?) && check?(:creator?)
+    check?(:not_viewer?) && allowed_to?(:show?) && check?(:creator?)
   end
 
   def creator?
     record.creator == user
+  end
+
+  def card_awaiting_triage?
+    card&.awaiting_triage?
   end
 end

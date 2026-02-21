@@ -1,7 +1,7 @@
 class BoardsController < ApplicationController
   include FilterScoped
 
-  verify_authorized except: %i[ index new create ]
+  verify_authorized except: :index
 
   before_action :set_board, except: %i[ index new create ]
 

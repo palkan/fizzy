@@ -2,11 +2,13 @@ class CardPolicy < ApplicationPolicy
   authorize :board, optional: true
 
   relation_scope do |scope|
-    scope.joins(board: :accesses).where(accesses: { user_id: user.id })
+    scope.left_joins(board: :accesses).where(boards: { all_access: true }).or(
+      scope.left_joins(board: :accesses).where(accesses: { user_id: user.id })
+    ).distinct
   end
 
   def create?
-    allowed_to?(:show?, board)
+    check?(:not_viewer?) && allowed_to?(:show?, board)
   end
 
   def show?
@@ -14,7 +16,7 @@ class CardPolicy < ApplicationPolicy
   end
 
   def manage?
-    allowed_to?(:show?, record.board)
+    check?(:not_viewer?) && allowed_to?(:show?, record.board)
   end
 
   def destroy?

@@ -53,4 +53,19 @@ class ColumnPolicyTest < ActiveSupport::TestCase
     policy = ColumnPolicy.new(board: @board, user: users(:kevin), account: @account)
     assert policy.apply(:create?)
   end
+
+  test "viewer can show column on accessible board" do
+    policy = ColumnPolicy.new(@column, user: users(:pat), account: @account)
+    assert policy.apply(:show?)
+  end
+
+  test "viewer cannot create column" do
+    policy = ColumnPolicy.new(board: @board, user: users(:pat), account: @account)
+    assert_not policy.apply(:create?)
+  end
+
+  test "viewer cannot manage column" do
+    policy = ColumnPolicy.new(@column, user: users(:pat), account: @account)
+    assert_not policy.apply(:manage?)
+  end
 end

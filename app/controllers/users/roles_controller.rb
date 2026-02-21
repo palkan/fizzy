@@ -15,6 +15,6 @@ class Users::RolesController < ApplicationController
     end
 
     def role_params
-      { role: params.require(:user)[:role].presence_in(%w[ member admin ]) || "member" }
+      { role: params.require(:user)[:role].presence_in(%w[ member admin viewer ]) || "member" }
     end
 end

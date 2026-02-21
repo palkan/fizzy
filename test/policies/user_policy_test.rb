@@ -106,6 +106,15 @@ class UserPolicyTest < ActiveSupport::TestCase
     assert policy.apply(:edit?)
   end
 
+  test "viewer excluded from assignable scope" do
+    scoped = UserPolicy.new(User, user: users(:david), account: @account)
+      .apply_scope(User.all, type: :active_record_relation, name: :assignable)
+
+    assert_not_includes scoped, users(:pat)
+    assert_not_includes scoped, users(:system)
+    assert_includes scoped, users(:david)
+  end
+
   test "relation scope returns account users" do
     user = users(:david)
     scoped = UserPolicy.new(User, user: user, account: @account)

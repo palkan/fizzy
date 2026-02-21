@@ -4,7 +4,7 @@ class Board::AccessibleTest < ActiveSupport::TestCase
   test "revising access" do
     boards(:writebook).update! all_access: false
 
-    boards(:writebook).accesses.revise granted: users(:david, :jz), revoked: users(:kevin)
+    boards(:writebook).accesses.revise granted: users(:david, :jz), revoked: users(:kevin, :pat)
     assert_equal users(:david, :jz).to_set, boards(:writebook).users.to_set
 
     boards(:writebook).accesses.grant_to users(:kevin)

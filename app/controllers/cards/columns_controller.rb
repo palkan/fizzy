@@ -1,8 +1,10 @@
 class Cards::ColumnsController < ApplicationController
-  skip_authorization
+  include CardScoped
+
+  verify_authorized
 
   def edit
-    @card = Current.user.accessible_cards.find_by!(number: params[:card_id])
+    authorize! @card, to: :manage?
     @columns = @card.board.columns.sorted
 
     fresh_when etag: [ @card, @columns ]

@@ -15,7 +15,7 @@ class Cards::ReactionsController < ApplicationController
   end
 
   def create
-    authorize! @card, to: :manage?
+    authorize! Reaction
     @reaction = @reactable.reactions.create!(params.expect(reaction: :content))
 
     respond_to do |format|

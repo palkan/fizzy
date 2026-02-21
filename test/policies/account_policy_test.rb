@@ -60,4 +60,19 @@ class AccountPolicyTest < ActiveSupport::TestCase
     policy = AccountPolicy.new(@account, user: users(:david), account: @account)
     assert_not policy.apply(:manage_billing?)
   end
+
+  test "viewer cannot manage account" do
+    policy = AccountPolicy.new(@account, user: users(:pat), account: @account)
+    assert_not policy.apply(:manage?)
+  end
+
+  test "viewer cannot update account" do
+    policy = AccountPolicy.new(@account, user: users(:pat), account: @account)
+    assert_not policy.apply(:update?)
+  end
+
+  test "viewer cannot destroy account" do
+    policy = AccountPolicy.new(@account, user: users(:pat), account: @account)
+    assert_not policy.apply(:destroy?)
+  end
 end

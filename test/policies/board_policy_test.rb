@@ -110,4 +110,19 @@ class BoardPolicyTest < ActiveSupport::TestCase
     policy = BoardPolicy.new(@board, user: users(:jz), account: @account)
     assert_not policy.apply(:manage?)
   end
+
+  test "viewer can show accessible board" do
+    policy = BoardPolicy.new(@board, user: users(:pat), account: @account)
+    assert policy.apply(:show?)
+  end
+
+  test "viewer cannot create board" do
+    policy = BoardPolicy.new(Board, user: users(:pat), account: @account)
+    assert_not policy.apply(:create?)
+  end
+
+  test "viewer cannot manage board" do
+    policy = BoardPolicy.new(@board, user: users(:pat), account: @account)
+    assert_not policy.apply(:manage?)
+  end
 end

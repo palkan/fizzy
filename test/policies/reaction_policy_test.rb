@@ -21,4 +21,9 @@ class ReactionPolicyTest < ActiveSupport::TestCase
     policy = ReactionPolicy.new(reactions(:david), user: users(:kevin), account: @account)
     assert_not policy.apply(:manage?)
   end
+
+  test "viewer cannot create reaction" do
+    policy = ReactionPolicy.new(Reaction, user: users(:pat), account: @account)
+    assert_not policy.apply(:create?)
+  end
 end

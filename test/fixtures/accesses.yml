@@ -16,6 +16,12 @@ writebook_kevin:
   board: writebook_uuid
   user: kevin_uuid
 
+writebook_pat:
+  id: <%= ActiveRecord::FixtureSet.identify("writebook_pat", :uuid) %>
+  account: 37s_uuid
+  board: writebook_uuid
+  user: pat_uuid
+
 private_kevin:
   id: <%= ActiveRecord::FixtureSet.identify("private_kevin", :uuid) %>
   account: 37s_uuid

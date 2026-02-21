@@ -1,8 +1,13 @@
 <%= turbo_frame_tag "my_menu", target: "_top" do %>
   <%= render "my/menus/jump" do %>
     <%= render "my/menus/boards", boards: @boards %>
-    <%= render "my/menus/tags", tags: @tags %>
-    <%= render "my/menus/people", users: @users %>
+    <%# Viewer role exclusion: tags and people sections are hidden for viewers who cannot
+        manage content. No single resource to authorize against, so this uses a direct role
+        check as a deliberate exception to the policy-based pattern used elsewhere. %>
+    <% unless Current.user.viewer? %>
+      <%= render "my/menus/tags", tags: @tags %>
+      <%= render "my/menus/people", users: @users %>
+    <% end %>
     <%= render "my/menus/settings" %>
     <%= render "my/menus/shortcuts" %>
     <%= render "my/menus/accounts", accounts: @accounts %>

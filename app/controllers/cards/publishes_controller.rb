@@ -4,7 +4,7 @@ class Cards::PublishesController < ApplicationController
   verify_authorized
 
   def create
-    authorize! @card, to: :publish?
+    authorize! @card, to: :manage?
 
     @card.publish
 

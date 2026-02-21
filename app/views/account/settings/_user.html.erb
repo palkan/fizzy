@@ -11,11 +11,9 @@
 
   <%= form_with model: user, url: user_role_path(user), data: { controller: "form" }, method: :patch do | form | %>
     <span title="<%= role_display_name(user) %>">
-      <label class="btn btn--circle" for="<%= dom_id(user, :role) %>" aria-label="Role: <%= role_display_name(user) %>">
-        <%= icon_tag "crown" %>
-        <span class="for-screen-reader">Role: <%= role_display_name(user) %></span>
-        <%= form.check_box :role, { data: { action: "form#submit" }, disabled: !allowed_to?(:change_role?, user), checked: user.admin?, hidden: true, id: dom_id(user, :role) }, "admin", "member" %>
-      </label>
+      <%= form.select :role, [["Member", "member"], ["Admin", "admin"], ["Viewer", "viewer"]],
+            { selected: user.role },
+            { data: { action: "form#submit" }, disabled: !allowed_to?(:change_role?, user), class: "btn", "aria-label": "Role: #{role_display_name(user)}" } %>
     </span>
   <% end %>
 

@@ -6,7 +6,7 @@ class BoardPolicy < ApplicationPolicy
   end
 
   def create?
-    true
+    check?(:not_viewer?)
   end
 
   def show?

@@ -2,7 +2,7 @@ class ApplicationPolicy < ActionPolicy::Base
   authorize :user
   authorize :account
 
-  delegate :admin?, :owner?, to: :user
+  delegate :admin?, :owner?, :viewer?, to: :user
 
   def show?
     false
@@ -10,5 +10,9 @@ class ApplicationPolicy < ActionPolicy::Base
 
   def manage?
     false
+  end
+
+  def not_viewer?
+    !viewer?
   end
 end

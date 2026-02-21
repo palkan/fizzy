@@ -79,6 +79,26 @@ class CardPolicyTest < ActiveSupport::TestCase
     assert_not david_policy.apply(:show?)
   end
 
+  test "viewer can show card on accessible board" do
+    policy = CardPolicy.new(@card, user: users(:pat), account: @account)
+    assert policy.apply(:show?)
+  end
+
+  test "viewer cannot create card" do
+    policy = CardPolicy.new(board: @board, user: users(:pat), account: @account)
+    assert_not policy.apply(:create?)
+  end
+
+  test "viewer cannot manage card" do
+    policy = CardPolicy.new(@card, user: users(:pat), account: @account)
+    assert_not policy.apply(:manage?)
+  end
+
+  test "viewer cannot destroy card" do
+    policy = CardPolicy.new(@card, user: users(:pat), account: @account)
+    assert_not policy.apply(:destroy?)
+  end
+
   test "relation scope returns only cards from accessible boards" do
     david = users(:david)
     kevin = users(:kevin)

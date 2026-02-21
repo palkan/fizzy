@@ -4,7 +4,7 @@ class UserPolicy < ApplicationPolicy
   end
 
   relation_scope :assignable do |scope|
-    scope.where.not(role: :system)
+    scope.where.not(role: %i[ system viewer ])
   end
 
   def show?

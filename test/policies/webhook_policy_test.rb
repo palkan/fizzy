@@ -49,4 +49,19 @@ class WebhookPolicyTest < ActiveSupport::TestCase
     policy = WebhookPolicy.new(board: @board, user: users(:kevin), account: @account)
     assert policy.apply(:create?)
   end
+
+  test "viewer cannot view webhooks" do
+    policy = WebhookPolicy.new(@webhook, user: users(:pat), account: @account)
+    assert_not policy.apply(:show?)
+  end
+
+  test "viewer cannot create webhooks" do
+    policy = WebhookPolicy.new(board: @board, user: users(:pat), account: @account)
+    assert_not policy.apply(:create?)
+  end
+
+  test "viewer cannot manage webhooks" do
+    policy = WebhookPolicy.new(@webhook, user: users(:pat), account: @account)
+    assert_not policy.apply(:manage?)
+  end
 end

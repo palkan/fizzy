@@ -1,6 +1,6 @@
 class ReactionPolicy < ApplicationPolicy
   def create?
-    true
+    check?(:not_viewer?)
   end
 
   def manage?

@@ -47,4 +47,25 @@ class CommentPolicyTest < ActiveSupport::TestCase
     policy = CommentPolicy.new(@comment, user: users(:jz), account: @account)
     assert policy.apply(:edit?)
   end
+
+  test "viewer can create comment on triage card" do
+    triage_card = cards(:buy_domain)
+    assert triage_card.awaiting_triage?, "buy_domain card should be awaiting triage"
+
+    policy = CommentPolicy.new(card: triage_card, user: users(:pat), account: @account)
+    assert policy.apply(:create?)
+  end
+
+  test "viewer cannot create comment on triaged card" do
+    triaged_card = cards(:logo)
+    assert triaged_card.triaged?, "logo card should be triaged"
+
+    policy = CommentPolicy.new(card: triaged_card, user: users(:pat), account: @account)
+    assert_not policy.apply(:create?)
+  end
+
+  test "viewer cannot manage own comment" do
+    policy = CommentPolicy.new(@comment, user: users(:pat), account: @account)
+    assert_not policy.apply(:manage?)
+  end
 end

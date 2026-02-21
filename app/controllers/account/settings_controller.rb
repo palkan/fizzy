@@ -2,10 +2,9 @@ class Account::SettingsController < ApplicationController
   verify_authorized
 
   before_action :set_account
-  before_action :ensure_can_manage_account, only: :update
+  before_action :ensure_can_manage_account
 
   def show
-    authorize! @account, to: :show?
     @users = @account.users.active.alphabetically.includes(:identity)
   end
 
