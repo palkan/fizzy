@@ -1,29 +1,40 @@
 module Authentication
+  # @type instance: ActionController::Base & Authentication & LoginHelper
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(ActionController::Base)
     before_action :require_account # Checking and setting account must happen first
     before_action :require_authentication
     helper_method :authenticated?
     helper_method :email_address_pending_authentication
 
-    etag { Current.identity.id if authenticated? }
+    etag do
+      # @type self: ActionController::Base & Authentication
+      Current.identity!.id if authenticated?
+    end
 
+    # @rbs skip -- declared in sig/generated/inline.rbs
     include Authentication::ViaMagicLink, LoginHelper
   end
 
-  class_methods do
+  module ClassMethods
+    # @type instance: singleton(ActionController::Base) & Authentication::ClassMethods & Authorization::ClassMethods
+
+    #: (**untyped) -> void
     def require_unauthenticated_access(**options)
       allow_unauthenticated_access **options
       before_action :redirect_authenticated_user, **options
     end
 
+    #: (**untyped) -> void
     def allow_unauthenticated_access(**options)
       skip_before_action :require_authentication, **options
       before_action :resume_session, **options
       allow_unauthorized_access **options
     end
 
+    #: (**untyped) -> void
     def disallow_account_scope(**options)
       skip_before_action :require_account, **options
       before_action :redirect_tenanted_request, **options
@@ -31,6 +42,7 @@ module Authentication
   end
 
   private
+    #: () -> bool
     def authenticated?
       Current.identity.present?
     end
@@ -51,6 +63,7 @@ module Authentication
       end
     end
 
+    #: () -> Session?
     def find_session_by_cookie
       Session.find_signed(cookies.signed[:session_token])
     end
@@ -69,6 +82,7 @@ module Authentication
       end
     end
 
+    #: () -> bool
     def bearer_token_authenticatable_request?
       request.format.json?
     end
@@ -81,6 +95,7 @@ module Authentication
       redirect_to_login_url
     end
 
+    #: () -> String
     def after_authentication_url
       session.delete(:return_to_after_authenticating) || landing_url
     end
@@ -93,22 +108,26 @@ module Authentication
       redirect_to main_app.root_url if Current.account.present?
     end
 
+    #: (Identity) -> Session
     def start_new_session_for(identity)
       identity.sessions.create!(user_agent: request.user_agent, ip_address: request.remote_ip).tap do |session|
         set_current_session session
       end
     end
 
+    # @rbs session: Session
     def set_current_session(session)
       Current.session = session
       cookies.signed.permanent[:session_token] = { value: session.signed_id, httponly: true, same_site: :lax }
     end
 
+    #: () -> void
     def terminate_session
-      Current.session.destroy
+      Current.session!.destroy
       cookies.delete(:session_token)
     end
 
+    #: () -> String?
     def session_token
       cookies[:session_token]
     end

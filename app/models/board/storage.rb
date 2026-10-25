@@ -1,6 +1,7 @@
 module Board::Storage
+  # @type instance: Board
   extend ActiveSupport::Concern
-  include Storage::Totaled
+  include ::Storage::Totaled
 
   # Board's own embeds (public_description) count toward itself
   def board_for_storage_tracking

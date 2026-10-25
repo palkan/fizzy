@@ -1,7 +1,9 @@
 module Card::Triageable
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Card)
     belongs_to :column, optional: true, touch: true
 
     scope :awaiting_triage, -> { active.where.missing(:column) }

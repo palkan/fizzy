@@ -15,7 +15,7 @@ class CardsController < ApplicationController
   def create
     respond_to do |format|
       format.html do
-        card = Current.user.draft_new_card_in(@board)
+        card = Current.user!.draft_new_card_in(@board)
         redirect_to card_draft_path(card)
       end
 
@@ -52,11 +52,11 @@ class CardsController < ApplicationController
 
   private
     def set_board
-      @board = Current.user.boards.find params[:board_id]
+      @board = Current.user!.boards.find params[:board_id]
     end
 
     def set_card
-      @card = Current.user.accessible_cards.find_by!(number: params[:id])
+      @card = Current.user!.accessible_cards.find_by!(number: params[:id])
     end
 
     def redirect_if_drafted
@@ -64,7 +64,7 @@ class CardsController < ApplicationController
     end
 
     def ensure_permission_to_administer_card
-      head :forbidden unless Current.user.can_administer_card?(@card)
+      head :forbidden unless Current.user!.can_administer_card?(@card)
     end
 
     def card_params

@@ -1,4 +1,5 @@
 class AccountMailer < ApplicationMailer
+  #: (Account::Cancellation) -> void
   def cancellation(cancellation)
     @account = cancellation.account
     @user = cancellation.initiated_by

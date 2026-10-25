@@ -36,29 +36,31 @@ module ActionPack::WebAuthn
   class UnsupportedKeyTypeError < StandardError; end
   class InvalidOptionsError < StandardError; end
 
-  class << self
-    # Returns a new RelyingParty configured from the current request context.
-    def relying_party
-      RelyingParty.new
-    end
+  # Returns a new RelyingParty configured from the current request context.
+  #: () -> ActionPack::WebAuthn::RelyingParty
+  def self.relying_party
+    RelyingParty.new
+  end
 
-    # Returns the MessageVerifier used to sign and verify WebAuthn challenges.
-    def challenge_verifier
-      Rails.application.message_verifier("action_pack.webauthn.challenge")
-    end
+  # Returns the MessageVerifier used to sign and verify WebAuthn challenges.
+  #: () -> ActiveSupport::MessageVerifier
+  def self.challenge_verifier
+    Rails.application.message_verifier("action_pack.webauthn.challenge")
+  end
 
-    # Returns the registry of attestation format verifiers, keyed by format
-    # string (e.g., "none", "packed"). Only "none" is registered by default.
-    def attestation_verifiers
-      @attestation_verifiers ||= {
-        "none" => Authenticator::AttestationVerifiers::None.new
-      }
-    end
+  # Returns the registry of attestation format verifiers, keyed by format
+  # string (e.g., "none", "packed"). Only "none" is registered by default.
+  #: () -> Hash[String, ActionPack::WebAuthn::_AttestationVerifier]
+  def self.attestation_verifiers
+    @attestation_verifiers ||= {
+      "none" => Authenticator::AttestationVerifiers::None.new
+    }
+  end
 
-    # Registers a custom attestation verifier for the given +format+.
-    # The +verifier+ must respond to +verify!(attestation, client_data_json:)+.
-    def register_attestation_verifier(format, verifier)
-      attestation_verifiers[format.to_s] = verifier
-    end
+  # Registers a custom attestation verifier for the given +format+.
+  # The +verifier+ must respond to +verify!(attestation, client_data_json:)+.
+  #: (String | Symbol, ActionPack::WebAuthn::_AttestationVerifier) -> ActionPack::WebAuthn::_AttestationVerifier
+  def self.register_attestation_verifier(format, verifier)
+    attestation_verifiers[format.to_s] = verifier
   end
 end

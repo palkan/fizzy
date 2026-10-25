@@ -1,7 +1,9 @@
 module User::Configurable
+  # @type instance: User
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(User)
     has_one :settings, class_name: "User::Settings", dependent: :destroy
     has_many :push_subscriptions, class_name: "Push::Subscription", dependent: :delete_all
 

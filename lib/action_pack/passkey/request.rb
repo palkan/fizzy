@@ -46,9 +46,11 @@
 # host and origin.
 #
 module ActionPack::Passkey::Request
+  # @type instance: ActionController::Base
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(ActionController::Base)
     before_action do
       ActionPack::WebAuthn::Current.host = request.host
       ActionPack::WebAuthn::Current.origin = request.base_url
@@ -56,22 +58,26 @@ module ActionPack::Passkey::Request
   end
 
   # Returns strong parameters for the passkey registration ceremony.
+  #: (?param: Symbol | String) -> ActionController::Parameters
   def passkey_registration_params(param: :passkey)
     params.expect(param => [ :client_data_json, :attestation_object, transports: [] ])
   end
 
   # Returns strong parameters for the passkey authentication ceremony.
+  #: (?param: Symbol | String) -> ActionController::Parameters
   def passkey_authentication_params(param: :passkey)
     params.expect(param => [ :id, :client_data_json, :authenticator_data, :signature ])
   end
 
   # Returns RequestOptions for the authentication ceremony.
+  #: (**untyped) -> ActionPack::WebAuthn::PublicKeyCredential::RequestOptions
   def passkey_authentication_options(**options)
     ActionPack::Passkey.authentication_options(**options)
   end
 
   # Returns RegistrationOptions for the registration ceremony.
-  def passkey_registration_options(**options)
-    ActionPack::Passkey.registration_options(**options)
+  #: (holder: untyped, **untyped) -> ActionPack::WebAuthn::PublicKeyCredential::CreationOptions
+  def passkey_registration_options(holder:, **options)
+    ActionPack::Passkey.registration_options(holder:, **options)
   end
 end

@@ -1,0 +1,4 @@
+class ActiveJob::Base
+  # Added by solid_queue (SolidQueue::Concurrency)
+  def self.limits_concurrency: (key: untyped, ?to: Integer, ?group: untyped, ?duration: ActiveSupport::Duration, ?on_conflict: Symbol) -> void
+end

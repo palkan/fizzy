@@ -8,9 +8,11 @@
 #     configure_replica_connections
 #   end
 module ActiveRecordReplicaSupport
+  # @type instance: ActiveRecord::Base
   extend ActiveSupport::Concern
 
-  class_methods do
+  module ClassMethods
+    # @type instance: singleton(ActiveRecord::Base)
     # Automatically configures connects_to for read/write splitting if a replica
     # database is configured for the current environment. This is a no-op if no
     # replica configuration exists.
@@ -19,6 +21,7 @@ module ActiveRecordReplicaSupport
     #   class ApplicationRecord < ActiveRecord::Base
     #     configure_replica_connections
     #   end
+    #: () -> void
     def configure_replica_connections
       if replica_configured?
         connects_to database: { writing: :primary, reading: :replica }
@@ -31,6 +34,7 @@ module ActiveRecordReplicaSupport
     #
     # Example:
     #   ApplicationRecord.replica_configured? # => true for MySQL, false for SQLite
+    #: () -> bool
     def replica_configured?
       configurations.find_db_config("replica").present?
     end
@@ -39,6 +43,7 @@ module ActiveRecordReplicaSupport
     #
     # Example:
     #   ApplicationRecord.with_reading_role { User.count }
+    #: [T] () { () -> T } -> T
     def with_reading_role(&block)
       if replica_configured?
         connected_to(role: :reading, &block)
@@ -50,5 +55,6 @@ module ActiveRecordReplicaSupport
 end
 
 ActiveSupport.on_load(:active_record) do
+  # @type self: singleton(ActiveRecord::Base)
   include ActiveRecordReplicaSupport
 end

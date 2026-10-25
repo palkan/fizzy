@@ -1,4 +1,6 @@
 module FiltersHelper
+  # @type instance: ActionView::Base
+  #: (String, untyped params) -> ActiveSupport::SafeBuffer
   def filter_chip_tag(text, params)
     link_to cards_path(params), class: "btn txt-x-small btn--remove fill-selected flex-inline" do
       concat tag.span(text)
@@ -6,17 +8,20 @@ module FiltersHelper
     end
   end
 
+  #: (String | Symbol, untyped value) -> ActiveSupport::SafeBuffer
   def filter_hidden_field_tag(key, value)
     name = params[key].is_a?(Array) ? "#{key}[]" : key
     hidden_field_tag name, value, id: nil
   end
 
+  #: (User::Filtering) -> ActiveSupport::SafeBuffer
   def filter_selected_boards_title(user_filtering)
     user_filtering.selected_board_titles.collect { tag.strong it }.to_sentence.html_safe
   end
 
+  #: (String, String, String, ?new_window: bool, ?current: bool, ?turbo: bool) -> ActiveSupport::SafeBuffer
   def filter_place_menu_item(path, label, icon, new_window: false, current: false, turbo: true)
-    link_to_params = {}
+    link_to_params = {} #: Hash[Symbol, untyped]
     link_to_params.merge!({ target: "_blank" }) if new_window
     link_to_params.merge!({ data: { turbo: false } }) unless turbo
 
@@ -29,6 +34,7 @@ module FiltersHelper
     end
   end
 
+  #: (String) ?{ (?) -> untyped } -> ActiveSupport::SafeBuffer
   def filter_dialog(label, &block)
     tag.dialog class: "margin-block-start-half popup panel flex-column align-start gap-half fill-white shadow txt-small", data: {
       action: "turbo:before-cache@document->dialog#close keydown->navigable-list#navigate filter:changed->navigable-list#reset toggle->filter#filter",
@@ -40,10 +46,12 @@ module FiltersHelper
     }, &block
   end
 
+  #: (String) -> ActiveSupport::SafeBuffer
   def filter_title(title)
     tag.strong title, class: "popup__title pad-inline-half", tabindex: "-1", data: { dialog_target: "focusTouch" }
   end
 
+  #: (String, **untyped) { (?) -> untyped } -> ActiveSupport::SafeBuffer
   def collapsible_nav_section(title, **properties, &block)
     tag.details class: "nav__section popup__section", data: { action: "toggle->nav-section-expander#toggle", nav_section_expander_target: "section", nav_section_expander_key_value: title.parameterize }, open: true, **properties do
       concat(tag.summary(class: "popup__section-title") do
@@ -56,6 +64,7 @@ module FiltersHelper
     end
   end
 
+  #: (String, String, Integer | String, String) -> ActiveSupport::SafeBuffer
   def filter_hotkey_link(title, path, key, icon)
     link_to path, class: "popup__item btn borderless", id: "filter-hotkey-#{key}", role: "listitem", data: { filter_target: "item", navigable_list_target: "item", controller: "hotkey", action: "keydown.#{key}@document->hotkey#click keydown.shift+#{key}@document->hotkey#click" } do
       concat icon_tag(icon)
@@ -64,6 +73,7 @@ module FiltersHelper
     end
   end
 
+  #: (String) -> String
   def sorted_by_label(sort_value)
     case sort_value
     when "newest"

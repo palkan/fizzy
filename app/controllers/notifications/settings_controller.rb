@@ -4,7 +4,7 @@ class Notifications::SettingsController < ApplicationController
   before_action :set_settings
 
   def show
-    @boards = Current.user.boards.alphabetically
+    @boards = Current.user!.boards.alphabetically
   end
 
   def update
@@ -18,7 +18,7 @@ class Notifications::SettingsController < ApplicationController
 
   private
     def set_settings
-      @settings = Current.user.settings
+      @settings = Current.user!.settings
     end
 
     def settings_params

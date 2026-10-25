@@ -1,4 +1,5 @@
 class Webhook::Delivery < ApplicationRecord
+  # @rbs skip -- declared in sig/generated/inline.rbs
   include Rails.application.routes.url_helpers
 
   class ResponseTooLarge < StandardError; end
@@ -22,14 +23,17 @@ class Webhook::Delivery < ApplicationRecord
 
   after_create_commit :deliver_later
 
+  #: (?batch_size: Integer, ?pause: Float | Integer) -> void
   def self.cleanup(batch_size: 500, pause: 0.1)
     sleep pause until stale.limit(batch_size).delete_all.zero?
   end
 
+  #: () -> void
   def deliver_later
     Webhook::DeliveryJob.perform_later(self)
   end
 
+  #: () -> void
   def deliver
     in_progress!
 
@@ -44,27 +48,32 @@ class Webhook::Delivery < ApplicationRecord
     raise
   end
 
+  #: () -> { headers: Hash[String, String] }?
   def sanitized_request
     if headers = request&.dig("headers")&.except("X-Webhook-Signature")
       { headers: headers }
     end
   end
 
+  #: () -> { code: Integer?, error: Symbol? }?
   def response_summary
     if response.present?
       { code: response[:code], error: response[:error] }
     end
   end
 
+  #: () -> bool
   def failed?
     (errored? || completed?) && !succeeded?
   end
 
+  #: () -> bool
   def succeeded?
     completed? && response[:error].blank? && response[:code].between?(200, 299)
   end
 
   private
+    #: () -> Hash[Symbol, untyped]
     def perform_request
       if resolved_ip.nil?
         { error: :private_uri }
@@ -89,6 +98,7 @@ class Webhook::Delivery < ApplicationRecord
       { error: :failed_tls }
     end
 
+    #: (Net::HTTPResponse) -> void
     def stream_body_with_limit(response)
       bytes_read = 0
       response.read_body do |chunk|
@@ -97,17 +107,22 @@ class Webhook::Delivery < ApplicationRecord
       end
     end
 
+    #: () -> String?
     def resolved_ip
       return @resolved_ip if defined?(@resolved_ip)
       @resolved_ip = SsrfProtection.resolve_public_ip(uri.host)
     end
 
+    #: () -> URI::Generic
     def uri
       @uri ||= URI(webhook.url)
     end
 
+    #: () -> Net::HTTP
     def http
-      Net::HTTP.new(uri.host, uri.port).tap do |http|
+      # Only called once resolved_ip has resolved the host, so it's present
+      host = uri.host #: String
+      Net::HTTP.new(host, uri.port).tap do |http|
         http.ipaddr = resolved_ip
         http.use_ssl = (uri.scheme == "https")
         http.open_timeout = ENDPOINT_TIMEOUT
@@ -115,6 +130,7 @@ class Webhook::Delivery < ApplicationRecord
       end
     end
 
+    #: () -> Hash[String, String]
     def headers
       {
         "User-Agent" => USER_AGENT,
@@ -124,10 +140,12 @@ class Webhook::Delivery < ApplicationRecord
       }
     end
 
+    #: () -> String
     def signature
       OpenSSL::HMAC.hexdigest("SHA256", webhook.signing_secret, payload)
     end
 
+    #: () -> String
     def content_type
       if webhook.for_campfire?
         "text/html"
@@ -138,6 +156,7 @@ class Webhook::Delivery < ApplicationRecord
       end
     end
 
+    #: () -> String
     def payload
       @payload ||= if webhook.for_basecamp?
         { content: render_payload(formats: :html) }.to_query
@@ -150,15 +169,19 @@ class Webhook::Delivery < ApplicationRecord
       end
     end
 
+    #: (**untyped) -> String
     def render_payload(**options)
       webhook.renderer.render(layout: false, template: "webhooks/event", assigns: { event: event }, **options).strip
     end
 
+    #: (String) -> String
     def convert_html_to_mrkdwn(html)
       document = Nokogiri::HTML5(html)
 
       document.css("a").each do |a|
-        a.replace("<#{a["href"].strip}|#{a.text}>") if a["href"].present?
+        if href = a["href"].presence
+          a.replace("<#{href.strip}|#{a.text}>")
+        end
       end
 
       document.css("b").each do |b|
@@ -172,6 +195,7 @@ class Webhook::Delivery < ApplicationRecord
       document.text
     end
 
+    #: () -> String
     def slack_payload
       text = event.description_for(nil).to_plain_text
       url = polymorphic_url(event.eventable, base_url_options.merge(script_name: account.slug))
@@ -179,6 +203,7 @@ class Webhook::Delivery < ApplicationRecord
       { text: "#{text} <#{url}|Open in Fizzy>" }.to_json
     end
 
+    #: () -> Hash[Symbol, untyped]
     def base_url_options
       Rails.application.routes.default_url_options.presence ||
         Rails.application.config.action_mailer.default_url_options

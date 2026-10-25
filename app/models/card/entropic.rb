@@ -1,7 +1,9 @@
 module Card::Entropic
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Card)
     scope :postponing_soon, -> do
       now = Time.now
       active
@@ -15,7 +17,8 @@ module Card::Entropic
     delegate :auto_postpone_period, to: :board
   end
 
-  class_methods do
+  module ClassMethods
+    # @type instance: singleton(Card)
     # Iterates per account, grouping the account's boards by their effective
     # auto-postpone period (board override, else account default). Each group
     # queries with a single constant cutoff, so `account_id = ? AND

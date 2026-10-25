@@ -30,10 +30,13 @@
 #   response.validate!
 #
 class ActionPack::WebAuthn::Authenticator::Response
+  # @rbs @client_data: Hash[String, untyped]
+
   include ActiveModel::Validations
 
-  attr_reader :client_data_json
-  attr_accessor :origin, :user_verification
+  attr_reader :client_data_json #: String
+  attr_accessor :origin #: String?
+  attr_accessor :user_verification #: Symbol
 
   validate :challenge_must_be_present
   validate :challenge_must_not_be_expired
@@ -44,12 +47,14 @@ class ActionPack::WebAuthn::Authenticator::Response
   validate :user_must_be_present
   validate :user_must_be_verified_when_required
 
+  #: (client_data_json: String, ?origin: String?, ?user_verification: Symbol | String) -> void
   def initialize(client_data_json:, origin: nil, user_verification: :preferred)
     @client_data_json = client_data_json
     @origin = origin
     @user_verification = user_verification.to_sym
   end
 
+  #: () -> true
   def validate!
     super
   rescue ActiveModel::ValidationError
@@ -57,18 +62,21 @@ class ActionPack::WebAuthn::Authenticator::Response
   end
 
   # Returns the RelyingParty used for RP ID validation.
+  #: () -> ActionPack::WebAuthn::RelyingParty
   def relying_party
     ActionPack::WebAuthn.relying_party
   end
 
   # Parses the client data JSON string into a Hash. Raises
   # +InvalidResponseError+ if the JSON is malformed.
+  #: () -> Hash[String, untyped]
   def client_data
     @client_data ||= JSON.parse(client_data_json)
   rescue JSON::ParserError
     raise ActionPack::WebAuthn::InvalidResponseError, "Client data is not valid JSON"
   end
 
+  #: () -> ActionPack::WebAuthn::Authenticator::Data?
   def authenticator_data
     nil
   end
@@ -92,6 +100,7 @@ class ActionPack::WebAuthn::Authenticator::Response
       errors.add(:base, "Challenge is invalid")
     end
 
+    #: () -> String?
     def challenge_purpose
       nil
     end

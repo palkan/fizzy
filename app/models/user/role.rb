@@ -1,7 +1,9 @@
 module User::Role
+  # @type instance: User
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(User)
     enum :role, %i[ owner admin member system ].index_by(&:itself), scopes: false
 
     scope :owner, -> { where(active: true, role: :owner) }

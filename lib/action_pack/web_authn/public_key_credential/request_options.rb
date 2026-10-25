@@ -24,10 +24,11 @@
 #   The relying party (your application) configuration. Defaults to
 #   +ActionPack::WebAuthn.relying_party+.
 class ActionPack::WebAuthn::PublicKeyCredential::RequestOptions < ActionPack::WebAuthn::PublicKeyCredential::Options
-  attribute :credentials, default: -> { [] }
-  attribute :challenge_expiration, default: -> { Rails.configuration.action_pack.web_authn.request_challenge_expiration }
-  attribute :challenge_purpose, default: "authentication"
+  attribute :credentials, default: -> { [] } #: Array[ActionPack::WebAuthn::PublicKeyCredential]
+  attribute :challenge_expiration, default: -> { Rails.configuration.action_pack.web_authn.request_challenge_expiration } #: ActiveSupport::Duration?
+  attribute :challenge_purpose, default: "authentication" #: String?
 
+  #: (?Hash[Symbol, untyped]) -> void
   def initialize(attributes = {})
     super
     validate!
@@ -35,6 +36,7 @@ class ActionPack::WebAuthn::PublicKeyCredential::RequestOptions < ActionPack::We
 
   # Returns a Hash suitable for JSON serialization and passing to the
   # WebAuthn JavaScript API.
+  #: (?Hash[Symbol, untyped]?) -> Hash[String, untyped]
   def as_json(options = {})
     json = {
       challenge: challenge,
@@ -47,8 +49,9 @@ class ActionPack::WebAuthn::PublicKeyCredential::RequestOptions < ActionPack::We
   end
 
   private
+    #: (ActionPack::WebAuthn::PublicKeyCredential) -> Hash[Symbol, untyped]
     def allow_credential_json(credential)
-      hash = { type: "public-key", id: credential.id }
+      hash = { type: "public-key", id: credential.id } #: Hash[Symbol, untyped]
       hash[:transports] = credential.transports if credential.transports.any?
       hash
     end

@@ -7,6 +7,7 @@ module ApplicationCable
     end
 
     private
+      # @rbs return: User?
       def set_current_user
         if session = find_session_by_cookie
           account = Account.find_by(external_account_id: request.env["fizzy.external_account_id"])
@@ -15,6 +16,7 @@ module ApplicationCable
         end
       end
 
+      #: () -> Session?
       def find_session_by_cookie
         Session.find_signed(cookies.signed[:session_token])
       end

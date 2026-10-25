@@ -1,25 +1,27 @@
 class QrCodeLink
-  attr_reader :url
+  attr_reader :url #: String
 
-  class << self
-    def from_signed(signed)
-      new verifier.verify(signed, purpose: :qr_code)
-    end
-
-    def verifier
-      ActiveSupport::MessageVerifier.new(secret, url_safe: true)
-    end
-
-    private
-      def secret
-        Rails.application.key_generator.generate_key("qr_codes")
-      end
+  #: (String signed) -> QrCodeLink
+  def self.from_signed(signed)
+    new verifier.verify(signed, purpose: :qr_code)
   end
 
+  #: () -> ActiveSupport::MessageVerifier
+  def self.verifier
+    ActiveSupport::MessageVerifier.new(secret, url_safe: true)
+  end
+
+  #: () -> String
+  private_class_method def self.secret
+    Rails.application.key_generator.generate_key("qr_codes")
+  end
+
+  #: (String url) -> void
   def initialize(url)
     @url = url
   end
 
+  #: () -> String
   def signed
     self.class.verifier.generate(@url, purpose: :qr_code)
   end

@@ -1,0 +1,398 @@
+# resolve-type-names: false
+
+class ::Identity < ::ApplicationRecord
+  class ::Identity::AccessToken < ::ApplicationRecord
+    extend ::ActiveRecord::Base::ClassMethods[::Identity::AccessToken, ::Identity::AccessToken::ActiveRecord_Relation, ::String]
+
+    module ::Identity::AccessToken::GeneratedAttributeMethods
+      def id: () -> ::String
+
+      def id=: (::String) -> ::String
+
+      def id?: () -> bool
+
+      def id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def id_change: () -> [ ::String?, ::String? ]
+
+      def id_will_change!: () -> void
+
+      def id_was: () -> ::String?
+
+      def id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def id_previous_change: () -> ::Array[::String?]?
+
+      def id_previously_was: () -> ::String?
+
+      def id_before_last_save: () -> ::String?
+
+      def id_change_to_be_saved: () -> ::Array[::String?]?
+
+      def id_in_database: () -> ::String?
+
+      def saved_change_to_id: () -> ::Array[::String?]?
+
+      def saved_change_to_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_id!: () -> void
+
+      def clear_id_change: () -> void
+
+      def id_before_type_cast: () -> ::String
+
+      def id_for_database: () -> ::String
+
+      def created_at: () -> ::ActiveSupport::TimeWithZone
+
+      def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+      def created_at?: () -> bool
+
+      def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+      def created_at_will_change!: () -> void
+
+      def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+      def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+      def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def restore_created_at!: () -> void
+
+      def clear_created_at_change: () -> void
+
+      def created_at_before_type_cast: () -> ::Time
+
+      def created_at_for_database: () -> ::Time
+
+      def description: () -> ::String?
+
+      def description=: (::String?) -> ::String?
+
+      def description?: () -> bool
+
+      def description_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def description_change: () -> [ ::String?, ::String? ]
+
+      def description_will_change!: () -> void
+
+      def description_was: () -> ::String?
+
+      def description_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def description_previous_change: () -> ::Array[::String?]?
+
+      def description_previously_was: () -> ::String?
+
+      def description_before_last_save: () -> ::String?
+
+      def description_change_to_be_saved: () -> ::Array[::String?]?
+
+      def description_in_database: () -> ::String?
+
+      def saved_change_to_description: () -> ::Array[::String?]?
+
+      def saved_change_to_description?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_description?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_description!: () -> void
+
+      def clear_description_change: () -> void
+
+      def description_before_type_cast: () -> ::String?
+
+      def description_for_database: () -> ::String?
+
+      def identity_id: () -> ::String
+
+      def identity_id=: (::String) -> ::String
+
+      def identity_id?: () -> bool
+
+      def identity_id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def identity_id_change: () -> [ ::String?, ::String? ]
+
+      def identity_id_will_change!: () -> void
+
+      def identity_id_was: () -> ::String?
+
+      def identity_id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def identity_id_previous_change: () -> ::Array[::String?]?
+
+      def identity_id_previously_was: () -> ::String?
+
+      def identity_id_before_last_save: () -> ::String?
+
+      def identity_id_change_to_be_saved: () -> ::Array[::String?]?
+
+      def identity_id_in_database: () -> ::String?
+
+      def saved_change_to_identity_id: () -> ::Array[::String?]?
+
+      def saved_change_to_identity_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_identity_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_identity_id!: () -> void
+
+      def clear_identity_id_change: () -> void
+
+      def identity_id_before_type_cast: () -> ::String
+
+      def identity_id_for_database: () -> ::String
+
+      def permission: () -> ::String?
+
+      def permission=: (::String | ::String? | ::Symbol) -> ::String?
+
+      def permission?: () -> bool
+
+      def permission_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def permission_change: () -> [ ::String?, ::String? ]
+
+      def permission_will_change!: () -> void
+
+      def permission_was: () -> ::String?
+
+      def permission_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def permission_previous_change: () -> ::Array[::String?]?
+
+      def permission_previously_was: () -> ::String?
+
+      def permission_before_last_save: () -> ::String?
+
+      def permission_change_to_be_saved: () -> ::Array[::String?]?
+
+      def permission_in_database: () -> ::String?
+
+      def saved_change_to_permission: () -> ::Array[::String?]?
+
+      def saved_change_to_permission?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_permission?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_permission!: () -> void
+
+      def clear_permission_change: () -> void
+
+      def permission_before_type_cast: () -> ::String?
+
+      def permission_for_database: () -> ::String?
+
+      def token: () -> ::String?
+
+      def token=: (::String?) -> ::String?
+
+      def token?: () -> bool
+
+      def token_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def token_change: () -> [ ::String?, ::String? ]
+
+      def token_will_change!: () -> void
+
+      def token_was: () -> ::String?
+
+      def token_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def token_previous_change: () -> ::Array[::String?]?
+
+      def token_previously_was: () -> ::String?
+
+      def token_before_last_save: () -> ::String?
+
+      def token_change_to_be_saved: () -> ::Array[::String?]?
+
+      def token_in_database: () -> ::String?
+
+      def saved_change_to_token: () -> ::Array[::String?]?
+
+      def saved_change_to_token?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def will_save_change_to_token?: (?from: ::String?, ?to: ::String?) -> bool
+
+      def restore_token!: () -> void
+
+      def clear_token_change: () -> void
+
+      def token_before_type_cast: () -> ::String?
+
+      def token_for_database: () -> ::String?
+
+      def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+      def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+      def updated_at?: () -> bool
+
+      def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+      def updated_at_will_change!: () -> void
+
+      def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+      def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+      def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+      def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+      def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+      def restore_updated_at!: () -> void
+
+      def clear_updated_at_change: () -> void
+
+      def updated_at_before_type_cast: () -> ::Time
+
+      def updated_at_for_database: () -> ::Time
+    end
+    include ::Identity::AccessToken::GeneratedAttributeMethods
+    module ::Identity::AccessToken::GeneratedAliasAttributeMethods
+      include ::Identity::AccessToken::GeneratedAttributeMethods
+
+      alias id_value id
+
+      alias id_value= id=
+
+      alias id_value? id?
+
+      alias id_value_changed? id_changed?
+
+      alias id_value_change id_change
+
+      alias id_value_will_change! id_will_change!
+
+      alias id_value_was id_was
+
+      alias id_value_previously_changed? id_previously_changed?
+
+      alias id_value_previous_change id_previous_change
+
+      alias id_value_previously_was id_previously_was
+
+      alias id_value_before_last_save id_before_last_save
+
+      alias id_value_change_to_be_saved id_change_to_be_saved
+
+      alias id_value_in_database id_in_database
+
+      alias saved_change_to_id_value saved_change_to_id
+
+      alias saved_change_to_id_value? saved_change_to_id?
+
+      alias will_save_change_to_id_value? will_save_change_to_id?
+
+      alias restore_id_value! restore_id!
+
+      alias clear_id_value_change clear_id_change
+
+      alias id_value_before_type_cast id_before_type_cast
+
+      alias id_value_for_database id_for_database
+    end
+    include ::Identity::AccessToken::GeneratedAliasAttributeMethods
+
+    def identity: () -> ::Identity
+    def identity=: (::Identity?) -> ::Identity?
+    def reload_identity: () -> ::Identity?
+    def build_identity: (?untyped) -> ::Identity
+    def create_identity: (?untyped) -> ::Identity
+    def create_identity!: (?untyped) -> ::Identity
+
+    module ::Identity::AccessToken::GeneratedAssociationMethods
+    end
+    include ::Identity::AccessToken::GeneratedAssociationMethods
+
+    def read!: () -> bool
+    def read?: () -> bool
+    def write!: () -> bool
+    def write?: () -> bool
+    def self.permissions: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::String]
+    def self.read: () -> ::Identity::AccessToken::ActiveRecord_Relation
+    def self.not_read: () -> ::Identity::AccessToken::ActiveRecord_Relation
+    def self.write: () -> ::Identity::AccessToken::ActiveRecord_Relation
+    def self.not_write: () -> ::Identity::AccessToken::ActiveRecord_Relation
+
+    module ::Identity::AccessToken::GeneratedRelationMethods
+      def permissions: () -> ::ActiveSupport::HashWithIndifferentAccess[::String, ::String]
+
+      def read: () -> ::Identity::AccessToken::ActiveRecord_Relation
+
+      def not_read: () -> ::Identity::AccessToken::ActiveRecord_Relation
+
+      def write: () -> ::Identity::AccessToken::ActiveRecord_Relation
+
+      def not_write: () -> ::Identity::AccessToken::ActiveRecord_Relation
+    end
+
+    class ::Identity::AccessToken::ActiveRecord_Relation < ::ActiveRecord::Relation
+      include ::Enumerable[::Identity::AccessToken]
+      include ::Identity::AccessToken::GeneratedRelationMethods
+      include ::ActiveRecord::Relation::Methods[::Identity::AccessToken, ::String]
+    end
+
+    class ::Identity::AccessToken::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+      include ::Enumerable[::Identity::AccessToken]
+      include ::Identity::AccessToken::GeneratedRelationMethods
+      include ::ActiveRecord::Relation::Methods[::Identity::AccessToken, ::String]
+
+      def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Identity::AccessToken
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Identity::AccessToken]
+      def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Identity::AccessToken
+                | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Identity::AccessToken]
+      def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Identity::AccessToken
+                 | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Identity::AccessToken]
+      def reload: () -> ::Array[::Identity::AccessToken]
+
+      def replace: (::Array[::Identity::AccessToken]) -> void
+      def delete: (*::Identity::AccessToken | ::String) -> ::Array[::Identity::AccessToken]
+      def destroy: (*::Identity::AccessToken | ::String) -> ::Array[::Identity::AccessToken]
+      def <<: (*::Identity::AccessToken | ::Array[::Identity::AccessToken]) -> self
+      def prepend: (*::Identity::AccessToken | ::Array[::Identity::AccessToken]) -> self
+    end
+  end
+end
+
+class ::Identity < ::ApplicationRecord
+end
+class ::ApplicationRecord < ::ActiveRecord::Base
+end

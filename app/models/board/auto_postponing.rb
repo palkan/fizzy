@@ -1,7 +1,9 @@
 module Board::AutoPostponing
+  # @type instance: Board
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Board)
     before_create :set_default_auto_postpone_period
   end
 

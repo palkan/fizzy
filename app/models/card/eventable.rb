@@ -1,14 +1,17 @@
 module Card::Eventable
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   include ::Eventable
 
   included do
+    # @type self: singleton(Card)
     before_create { self.last_active_at ||= created_at || Time.current }
 
     after_save :track_title_change, if: :saved_change_to_title?
   end
 
+  #: (Event) -> void
   def event_was_created(event)
     transaction do
       create_system_comment_for(event)
@@ -16,6 +19,7 @@ module Card::Eventable
     end
   end
 
+  #: () -> void
   def touch_last_active_at
     # Not using touch so that we can detect attribute change on callbacks
     update!(last_active_at: Time.current)

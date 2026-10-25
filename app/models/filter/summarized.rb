@@ -1,4 +1,5 @@
 module Filter::Summarized
+  # @type instance: Filter
   def summary
     [ index_summary, sort_summary, tag_summary, assignee_summary, creator_summary, terms_summary ].compact.to_sentence
   end

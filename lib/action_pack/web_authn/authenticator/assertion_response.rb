@@ -30,14 +30,17 @@
 # * The signature is valid for the credential's public key
 #
 class ActionPack::WebAuthn::Authenticator::AssertionResponse < ActionPack::WebAuthn::Authenticator::Response
-  attr_reader :credential, :authenticator_data, :signature
+  attr_reader :credential #: ActionPack::WebAuthn::PublicKeyCredential
+  attr_reader :authenticator_data #: ActionPack::WebAuthn::Authenticator::Data
+  attr_reader :signature #: String
 
   validate :client_data_type_must_be_get
   validate :signature_must_be_valid
   validate :sign_count_must_increase
 
-  def initialize(credential:, authenticator_data:, signature:, **attributes)
-    super(**attributes)
+  #: (credential: ActionPack::WebAuthn::PublicKeyCredential, authenticator_data: ActionPack::WebAuthn::Authenticator::Data | String, signature: String, client_data_json: String, **untyped) -> void
+  def initialize(credential:, authenticator_data:, signature:, client_data_json:, **attributes)
+    super(client_data_json:, **attributes)
     @credential = credential
     @signature = signature
     @signature = Base64.urlsafe_decode64(@signature) unless @signature.encoding == Encoding::BINARY
@@ -47,6 +50,7 @@ class ActionPack::WebAuthn::Authenticator::AssertionResponse < ActionPack::WebAu
   end
 
   private
+    #: () -> String
     def challenge_purpose
       "authentication"
     end
@@ -75,6 +79,7 @@ class ActionPack::WebAuthn::Authenticator::AssertionResponse < ActionPack::WebAu
       end
     end
 
+    #: () -> bool
     def sign_count_increased?
       if authenticator_data.sign_count.zero? && credential.sign_count.zero?
         # Some authenticators always return 0 for the sign count, even after multiple authentications.

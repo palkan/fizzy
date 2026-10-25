@@ -1,7 +1,9 @@
 module Card::Taggable
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Card)
     has_many :taggings, dependent: :destroy
     has_many :tags, through: :taggings
 

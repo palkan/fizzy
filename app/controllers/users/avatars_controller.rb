@@ -25,11 +25,11 @@ class Users::AvatarsController < ApplicationController
 
   private
     def set_user
-      @user = Current.account.users.find(params[:user_id])
+      @user = Current.account!.users.find(params[:user_id])
     end
 
     def ensure_permission_to_administer_user
-      head :forbidden unless Current.user.can_change?(@user)
+      head :forbidden unless Current.user!.can_change?(@user)
     end
 
     def cache_control

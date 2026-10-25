@@ -20,7 +20,7 @@ class ActivitiesController < ApplicationController
 
   private
     def activities
-      Current.user.accessible_events
+      Current.user!.accessible_events
         .preloaded
         .where(action: ACTIONS)
         .for_creators(params[:creator_ids])

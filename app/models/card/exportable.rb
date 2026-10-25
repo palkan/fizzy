@@ -1,7 +1,9 @@
 module Card::Exportable
+  # @type instance: Card
   extend ActiveSupport::Concern
   include ActionView::Helpers::TagHelper
 
+  #: () -> String
   def export_json
     JSON.pretty_generate({
       number: number,
@@ -23,6 +25,7 @@ module Card::Exportable
     })
   end
 
+  #: () -> Array[{ path: String, blob: ActiveStorage::Blob }]
   def export_attachments
     collect_attachments.map do |attachment|
       { path: export_attachment_path(attachment.blob), blob: attachment.blob }
@@ -71,12 +74,11 @@ module Card::Exportable
     end
 
     def export_status
-      case
-      when closed?
+      if closed?
         "Done"
-      when postponed?
+      elsif postponed?
         "Not now"
-      when column.present?
+      elsif column = self.column
         column.name
       else
         "Maybe?"

@@ -13,7 +13,7 @@ class Account::ExportsController < ApplicationController
   end
 
   def create
-    @export = Current.account.exports.create!(user: Current.user)
+    @export = Current.account!.exports.create!(user: Current.user)
     @export.build_later
 
     respond_to do |format|
@@ -24,15 +24,15 @@ class Account::ExportsController < ApplicationController
 
   private
     def ensure_admin_or_owner
-      head :forbidden unless Current.user.admin? || Current.user.owner?
+      head :forbidden unless Current.user!.admin? || Current.user!.owner?
     end
 
     def ensure_export_limit_not_exceeded
-      head :too_many_requests if Current.account.exports.current.count >= CURRENT_EXPORT_LIMIT
+      head :too_many_requests if Current.account!.exports.current.count >= CURRENT_EXPORT_LIMIT
     end
 
     def set_export
-      scope = request.format.json? ? Current.account.exports : Current.account.exports.completed
+      scope = request.format.json? ? Current.account!.exports : Current.account!.exports.completed
       @export = scope.find_by(id: params[:id], user: Current.user)
     end
 end

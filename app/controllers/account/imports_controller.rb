@@ -24,7 +24,7 @@ class Account::ImportsController < ApplicationController
 
   private
     def set_import
-      @import = Current.account.imports.find(params[:id])
+      @import = Current.account!.imports.find(params[:id])
     end
 
     def ensure_accessed_by_owner
@@ -32,11 +32,8 @@ class Account::ImportsController < ApplicationController
     end
 
     def start_import(account)
-      import = nil
-
-      Current.set(account: account) do
-        import = account.imports.create!(identity: Current.identity, file: params[:file])
-        import.process_later
+      import = Current.set(account: account) do
+        account.imports.create!(identity: Current.identity, file: params[:file]).tap(&:process_later)
       end
 
       redirect_to account_import_path(import, script_name: account.slug)

@@ -1,4 +1,6 @@
 module AccessesHelper
+  # @type instance: ActionView::Base
+  #: (Board, **untyped) ?{ (?) -> untyped } -> ActiveSupport::SafeBuffer
   def access_menu_tag(board, **options, &)
     tag.menu class: [ options[:class], { "toggler--toggled": board.all_access? } ], data: {
       controller: "filter toggle-class navigable-list",
@@ -8,6 +10,7 @@ module AccessesHelper
       toggle_class_toggle_class: "toggler--toggled" }, &
   end
 
+  #: (Enumerable[User], selected: untyped, ?disabled: bool) -> String
   def access_toggles_for(users, selected:, disabled: false)
     render partial: "boards/access_toggle",
       collection: users, as: :user,
@@ -15,6 +18,7 @@ module AccessesHelper
       cached: ->(user) { [ user, selected, disabled ] }
   end
 
+  #: (Board, User, ?show_watchers: bool, ?icon_only: bool) -> ActiveSupport::SafeBuffer
   def access_involvement_advance_button(board, user, show_watchers: true, icon_only: false)
     access = board.access_for(user)
 
@@ -24,6 +28,7 @@ module AccessesHelper
     end
   end
 
+  #: (Board) -> ActiveSupport::SafeBuffer
   def board_watchers_list(board)
     watchers = board.watchers.with_avatars.load
 
@@ -41,6 +46,7 @@ module AccessesHelper
     end
   end
 
+  #: (Board, Access, bool show_watchers, bool icon_only) -> ActiveSupport::SafeBuffer
   def involvement_button(board, access, show_watchers, icon_only)
     label_text = access.access_only? ? "Watch this" : "Stop watching"
     button_to(
@@ -56,8 +62,10 @@ module AccessesHelper
   end
 
   private
+    #: (String | Symbol) -> String?
     def next_involvement(involvement)
       order = %w[ watching access_only ]
-      order[(order.index(involvement.to_s) + 1) % order.size]
+      index = order.index(involvement.to_s) #: Integer
+      order[(index + 1) % order.size]
     end
 end

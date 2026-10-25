@@ -1,7 +1,9 @@
 module Card::Searchable
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Card)
     include ::Searchable
 
     scope :mentioning, ->(query, user:) do

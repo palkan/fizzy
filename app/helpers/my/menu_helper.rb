@@ -1,4 +1,6 @@
 module My::MenuHelper
+  # @type instance: ActionView::Base
+  #: () -> ActiveSupport::SafeBuffer
   def jump_field_tag
     text_field_tag :search, nil,
       type: "search",
@@ -18,12 +20,14 @@ module My::MenuHelper
         action: "input->filter#filter" }
   end
 
+  #: (Board) -> ActiveSupport::SafeBuffer
   def my_menu_board_item(board)
     my_menu_item("board", board) do
       link_to(tag.span(board.name, class: "overflow-ellipsis"), board, class: "popup__btn btn")
     end
   end
 
+  #: (Tag) -> ActiveSupport::SafeBuffer
   def my_menu_tag_item(the_tag)
     my_menu_item("tag", tag) do
       link_to(tag.span(class: "overflow-ellipsis") do
@@ -32,12 +36,14 @@ module My::MenuHelper
     end
   end
 
+  #: (User) -> ActiveSupport::SafeBuffer
   def my_menu_user_item(user)
     my_menu_item("person", user) do
       link_to(tag.span(user.name, class: "overflow-ellipsis"), user, class: "popup__btn btn")
     end
   end
 
+  #: (Filter) -> ActiveSupport::SafeBuffer
   def my_menu_filter_item(filter)
     my_menu_item("bookmark", filter) do
       link_to(cards_path(filter_id: filter.id), class: "popup__btn btn") do
@@ -49,6 +55,7 @@ module My::MenuHelper
     end
   end
 
+  #: (String, untyped record) { () -> untyped } -> ActiveSupport::SafeBuffer
   def my_menu_item(item, record)
     tag.li(class: "popup__item", data: { filter_target: "item", navigable_list_target: "item", id: "filter-#{item}-#{record.id}" }) do
       icon_tag(item, class: "popup__icon") + yield

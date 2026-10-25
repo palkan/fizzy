@@ -19,23 +19,25 @@ class Notification::Bundle < ApplicationRecord
 
   validate :validate_no_overlapping
 
-  class << self
-    def deliver_all
-      due.in_batches do |batch|
-        jobs = batch.collect { DeliverJob.new(it) }
-        ActiveJob.perform_all_later jobs
-      end
-    end
-
-    def deliver_all_later
-      DeliverAllJob.perform_later
+  #: () -> void
+  def self.deliver_all
+    due.in_batches do |batch|
+      jobs = batch.collect { DeliverJob.new(it) }
+      ActiveJob.perform_all_later jobs
     end
   end
 
+  #: () -> void
+  def self.deliver_all_later
+    DeliverAllJob.perform_later
+  end
+
+  #: () -> Notification::ActiveRecord_Relation
   def notifications
     user.notifications.where(updated_at: window).unread
   end
 
+  #: () -> void
   def deliver
     user.in_time_zone do
       Current.with_account(user.account) do
@@ -48,18 +50,22 @@ class Notification::Bundle < ApplicationRecord
     end
   end
 
+  #: () -> void
   def deliver_later
     DeliverJob.perform_later(self)
   end
 
+  #: () -> void
   def flush
     update!(ends_at: Time.current)
     deliver_later
   end
 
+  #: () -> void
   def set_default_window
+    settings = user.settings #: User::Settings
     self.starts_at ||= Time.current
-    self.ends_at ||= self.starts_at + user.settings.bundle_aggregation_period
+    self.ends_at ||= self.starts_at + settings.bundle_aggregation_period
   end
 
   private
@@ -74,7 +80,8 @@ class Notification::Bundle < ApplicationRecord
     end
 
     def deliverable?
-      user.settings.bundling_emails? && notifications.any? && account.active?
+      settings = user.settings #: User::Settings
+      settings.bundling_emails? && notifications.any? && account.active?
     end
 
     def overlapping_bundles

@@ -1,4 +1,5 @@
 class Comment < ApplicationRecord
+  # @rbs skip -- declared in sig/generated/inline.rbs
   include Attachments, Eventable, Mentions, Promptable, Searchable, Storage::Tracked
 
   belongs_to :account, default: -> { card.account }
@@ -19,15 +20,18 @@ class Comment < ApplicationRecord
 
   delegate :publicly_accessible?, :accessible_to?, :board, :watch_by, to: :card
 
+  #: () -> String
   def to_partial_path
     "cards/#{super}"
   end
 
   private
+    #: () -> void
     def card_is_commentable
       errors.add(:card, "does not allow comments") unless card.commentable?
     end
 
+    #: () -> void
     def watch_card_by_creator
       card.watch_by creator
     end

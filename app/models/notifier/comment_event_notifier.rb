@@ -1,4 +1,6 @@
 class Notifier::CommentEventNotifier < Notifier
+  # @type instance: Notifier::CommentEventNotifier & Notifier::_EventSource
+
   delegate :creator, to: :source
 
   private

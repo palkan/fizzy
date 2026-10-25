@@ -14,12 +14,15 @@
 #   Event.joins(:recording).join_prefix(:events)
 
 module ActiveRecordBaseOptimizerHintExtensions
+  # @type instance: singleton(ActiveRecord::Base)
+
   # Pass index hints to the query optimizer
   #
   # @param indexes [Array<Symbol>] Index names to use
   # @return [ActiveRecord::Relation]
   # @example
   #   Card.use_index(:index_cards_on_account_id_and_board_id_and_status).where(...)
+  #: (*Symbol | String) -> ActiveRecord::Relation
   def use_index(*indexes)
     all.use_index(*indexes)
   end
@@ -30,12 +33,15 @@ module ActiveRecordBaseOptimizerHintExtensions
   # @return [ActiveRecord::Relation]
   # @example
   #   Event.joins(:recording).join_prefix(:events)
+  #: (Symbol | String) -> ActiveRecord::Relation
   def join_prefix(table)
     all.join_prefix(table)
   end
 end
 
 module ActiveRecordRelationOptimizerHintExtensions
+  # @type instance: ActiveRecord::Relation
+
   # Pass index hints to the query optimizer using SQL comment hints.
   # Uses MySQL 8.4 optimizer hint query comments. Other databases (MariaDB, SQLite, etc.)
   # ignore these comments, making this a safe no-op across all databases.
@@ -60,6 +66,7 @@ module ActiveRecordRelationOptimizerHintExtensions
   #   Card.use_index(:index_a).use_index(:index_b)
   #
   #   => Card Load (0.5ms)  SELECT /*+ INDEX(`cards` index_b) */ `cards`.* FROM `cards`
+  #: (*Symbol | String) -> ActiveRecord::Relation
   def use_index(*indexes)
     kept_hints = optimizer_hints_values.reject { |hint| hint.to_s.start_with?("INDEX(#{quoted_table_name} ") }
     except(:optimizer_hints).optimizer_hints(*kept_hints, "INDEX(#{quoted_table_name} #{indexes.join(', ')})")
@@ -77,6 +84,7 @@ module ActiveRecordRelationOptimizerHintExtensions
   #   => Event Load (0.9ms)  SELECT /*+ JOIN_PREFIX(`events`) */ `events`.* FROM `events`
   #      INNER JOIN `recordings` ON `recordings`.`id` = `events`.`recording_id`
   #
+  #: (Symbol | String) -> ActiveRecord::Relation
   def join_prefix(table)
     optimizer_hints "JOIN_PREFIX(#{connection.quote_table_name(table)})"
   end

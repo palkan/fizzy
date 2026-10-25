@@ -10,6 +10,7 @@
 
 # Module for MySQL-based adapters (Trilogy, Mysql2, etc.)
 module MysqlDateArithmetic
+  # @type instance: ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
   # Generates SQL for subtracting seconds from a date/time column in MySQL.
   #
   # @param date_column [String] The date/time column or expression
@@ -19,6 +20,7 @@ module MysqlDateArithmetic
   # Example:
   #   date_subtract("last_active_at", "COALESCE(auto_postpone_period, 3600)")
   #   # => "DATE_SUB(last_active_at, INTERVAL COALESCE(auto_postpone_period, 3600) SECOND)"
+  #: (String, String) -> String
   def date_subtract(date_column, seconds_expression)
     "DATE_SUB(#{date_column}, INTERVAL #{seconds_expression} SECOND)"
   end
@@ -26,6 +28,7 @@ end
 
 # Module for SQLite adapter
 module SqliteDateArithmetic
+  # @type instance: ActiveRecord::ConnectionAdapters::SQLite3Adapter
   # Generates SQL for subtracting seconds from a date/time column in SQLite.
   #
   # @param date_column [String] The date/time column or expression
@@ -35,6 +38,7 @@ module SqliteDateArithmetic
   # Example:
   #   date_subtract("last_active_at", "COALESCE(auto_postpone_period, 3600)")
   #   # => "datetime(last_active_at, '-' || (COALESCE(auto_postpone_period, 3600)) || ' seconds')"
+  #: (String, String) -> String
   def date_subtract(date_column, seconds_expression)
     "datetime(#{date_column}, '-' || (#{seconds_expression}) || ' seconds')"
   end

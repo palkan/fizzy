@@ -1,13 +1,16 @@
 class Signup::AccountNameGenerator
   SUFFIX = "Fizzy".freeze
 
-  attr_reader :identity, :name
+  attr_reader :identity #: Identity
+  attr_reader :name #: String
 
+  #: (identity: Identity, name: String) -> void
   def initialize(identity:, name:)
     @identity = identity
     @name = name
   end
 
+  #: () -> String
   def generate
     next_index = current_index + 1
 

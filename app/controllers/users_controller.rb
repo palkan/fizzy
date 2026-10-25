@@ -5,7 +5,7 @@ class UsersController < ApplicationController
   before_action :ensure_permission_to_change_user, only: %i[ update destroy ]
 
   def index
-    set_page_and_extract_portion_from Current.account.users.active.alphabetically.includes(:identity)
+    set_page_and_extract_portion_from Current.account!.users.active.alphabetically.includes(:identity)
   end
 
   def show
@@ -39,11 +39,11 @@ class UsersController < ApplicationController
 
   private
     def set_user
-      @user = Current.account.users.active.find(params[:id])
+      @user = Current.account!.users.active.find(params[:id])
     end
 
     def ensure_permission_to_change_user
-      head :forbidden unless Current.user.can_change?(@user)
+      head :forbidden unless Current.user!.can_change?(@user)
     end
 
     def user_params

@@ -1,7 +1,11 @@
 # This is in lib so we can use it in a thread pool without the Rails executor
 class WebPush::Pool
-  attr_reader :delivery_pool, :invalidation_pool, :connection, :invalid_subscription_handler
+  attr_reader :delivery_pool #: Concurrent::ThreadPoolExecutor
+  attr_reader :invalidation_pool #: Concurrent::FixedThreadPool
+  attr_reader :connection #: Net::HTTP::Persistent
+  attr_reader :invalid_subscription_handler #: ^(String) -> void
 
+  #: (invalid_subscription_handler: ^(String) -> void) -> void
   def initialize(invalid_subscription_handler:)
     @delivery_pool = Concurrent::ThreadPoolExecutor.new(max_threads: 50, queue_size: 10000)
     @invalidation_pool = Concurrent::FixedThreadPool.new(1)
@@ -9,12 +13,14 @@ class WebPush::Pool
     @invalid_subscription_handler = invalid_subscription_handler
   end
 
+  #: (Hash[Symbol, untyped], Push::Subscription::ActiveRecord_Relation | Push::Subscription::ActiveRecord_Associations_CollectionProxy) -> void
   def queue(payload, subscriptions)
     subscriptions.find_each do |subscription|
       deliver_later(payload, subscription)
     end
   end
 
+  #: () -> void
   def shutdown
     connection.shutdown
     shutdown_pool(delivery_pool)
@@ -22,9 +28,11 @@ class WebPush::Pool
   end
 
   private
+    #: (Hash[Symbol, untyped], Push::Subscription) -> void
     def deliver_later(payload, subscription)
       # Ensure any AR operations happen before we post to the thread pool
-      notification = subscription.notification(**payload)
+      # The payload hash carries the notification's required keywords, which Steep can't see through **
+      notification = subscription.notification(**payload) # steep:ignore InsufficientKeywordArguments
       subscription_id = subscription.id
 
       delivery_pool.post do
@@ -35,12 +43,14 @@ class WebPush::Pool
     rescue Concurrent::RejectedExecutionError
     end
 
+    #: (WebPush::Notification, String) -> void
     def deliver(notification, id)
       notification.deliver(connection: connection)
     rescue WebPush::ExpiredSubscription, OpenSSL::OpenSSLError => ex
       invalidate_subscription_later(id) if invalid_subscription_handler
     end
 
+    #: (String) -> void
     def invalidate_subscription_later(id)
       invalidation_pool.post do
         invalid_subscription_handler.call(id)
@@ -49,6 +59,7 @@ class WebPush::Pool
       end
     end
 
+    #: (Concurrent::ThreadPoolExecutor | Concurrent::FixedThreadPool) -> void
     def shutdown_pool(pool)
       pool.shutdown
       pool.kill unless pool.wait_for_termination(1)

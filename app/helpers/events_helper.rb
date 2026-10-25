@@ -1,4 +1,6 @@
 module EventsHelper
+  # @type instance: ActionView::Base
+  #: (Event) -> String
   def event_action_icon(event)
     case event.action
     when "card_assigned"
@@ -16,6 +18,7 @@ module EventsHelper
     end
   end
 
+  #: (untyped column, Integer hour) { (?) -> untyped } -> ActiveSupport::SafeBuffer
   def events_at_hour_container(column, hour, &block)
     tag.div class: "events__time-block", style: "grid-area: #{25 - hour}/#{column.index}", &block
   end

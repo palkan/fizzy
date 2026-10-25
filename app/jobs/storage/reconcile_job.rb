@@ -8,6 +8,7 @@ class Storage::ReconcileJob < ApplicationJob
 
   retry_on ReconcileAborted, wait: 1.minute, attempts: 3
 
+  #: (Account | Board) -> void
   def perform(owner)
     raise ReconcileAborted, "Could not get stable snapshot for #{owner.class}##{owner.id}" unless owner.reconcile_storage
   end

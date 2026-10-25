@@ -1,4 +1,6 @@
 class Notifier::CardEventNotifier < Notifier
+  # @type instance: Notifier::CardEventNotifier & Notifier::_EventSource
+
   delegate :creator, to: :source
   delegate :board, to: :card
 

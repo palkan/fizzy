@@ -1,4 +1,5 @@
 class Card < ApplicationRecord
+  # @rbs skip -- declared in sig/generated/inline.rbs
   include Accessible, Assignable, Attachments, Broadcastable, Closeable, Colored, Commentable,
     Entropic, Eventable, Exportable, Golden, Mentions, Multistep, Pinnable, Postponable, Promptable,
     Readable, Searchable, Stallable, Statuses, Storage::Tracked, Taggable, Triageable, Watchable
@@ -47,14 +48,17 @@ class Card < ApplicationRecord
     end
   end
 
+  #: () -> Card
   def card
     self
   end
 
+  #: () -> String
   def to_param
     number.to_s
   end
 
+  #: (Board) -> void
   def move_to(new_board)
     transaction do
       card.update!(board: new_board)
@@ -63,17 +67,20 @@ class Card < ApplicationRecord
     end
   end
 
+  #: () -> bool
   def filled?
     title.present? || description.present?
   end
 
   private
+    #: () -> void
     def set_default_title
       self.title = "Untitled" if title.blank?
     end
 
+    #: () -> void
     def handle_board_change
-      old_board = account.boards.find_by(id: board_id_before_last_save)
+      old_board = account.boards.find_by(id: board_id_before_last_save) #: Board
 
       transaction do
         update! column: nil
@@ -85,10 +92,12 @@ class Card < ApplicationRecord
       clean_inaccessible_data_later
     end
 
+    #: (String) -> void
     def track_board_change_event(old_board_name)
       track_event "board_changed", particulars: { old_board: old_board_name, new_board: board.name }
     end
 
+    #: () -> void
     def assign_number
       self.number ||= account.with_lock { account.increment!(:cards_count).cards_count }
     end

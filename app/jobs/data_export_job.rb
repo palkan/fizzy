@@ -3,6 +3,7 @@ class DataExportJob < ApplicationJob
 
   discard_on ActiveJob::DeserializationError
 
+  #: (Export) -> void
   def perform(export)
     export.build
   end

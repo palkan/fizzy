@@ -1,17 +1,23 @@
 class Account::DataTransfer::ActiveStorage::FileRecordSet < Account::DataTransfer::RecordSet
+  # @rbs @old_key_to_blob_id: Hash[String, String]?
+
+  #: (Account) -> void
   def initialize(account)
     super(account: account, model: ::ActiveStorage::Blob)
   end
 
   private
+    #: () -> ActiveRecord::Relation
     def records
       ::ActiveStorage::Blob.where(account: account).where.not(id: excluded_blob_ids)
     end
 
+    #: () -> ActiveRecord::Relation
     def excluded_blob_ids
       ::ActiveStorage::Attachment.where(account: account, record_type: INTERNAL_RECORD_TYPES).select(:blob_id)
     end
 
+    #: (ActiveStorage::Blob) -> void
     def export_record(blob)
       if blob.service.exist?(blob.key)
         zip.add_file("storage/#{blob.key}", compress: false) do |out|
@@ -39,12 +45,16 @@ class Account::DataTransfer::ActiveStorage::FileRecordSet < Account::DataTransfe
       end
     end
 
+    #: () -> Hash[String, String]
     def old_key_to_blob_id
       @old_key_to_blob_id ||= build_old_key_to_blob_id
     end
 
+    #: () -> Hash[String, String]
     def build_old_key_to_blob_id
-      zip.glob("data/active_storage_blobs/*.json").each_with_object({}) do |file, map|
+      blob_ids_by_old_key = {} #: Hash[String, String]
+
+      zip.glob("data/active_storage_blobs/*.json").each_with_object(blob_ids_by_old_key) do |file, map|
         data = load(file)
         old_key = data["key"]
         if map.key?(old_key)

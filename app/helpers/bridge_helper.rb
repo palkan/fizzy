@@ -1,8 +1,11 @@
 module BridgeHelper
+  # @type instance: ActionView::Base
+  #: (String) -> String
   def bridge_icon(name)
     asset_url("#{name}.svg")
   end
 
+  #: (Board) -> ActiveSupport::SafeBuffer
   def bridged_button_to_board(board)
     link_to "Go to #{board.name}", board, hidden: true, data: {
       bridge__buttons_target: "button",
@@ -11,6 +14,7 @@ module BridgeHelper
     }
   end
 
+  #: (?String?) -> ActiveSupport::SafeBuffer
   def bridged_share_url_button(description = nil)
     tag.button "Share", hidden: true, data: {
       controller: "bridge--share",
@@ -21,6 +25,7 @@ module BridgeHelper
     }
   end
 
+  #: (Card) -> String
   def bridge_share_card_description(card)
     date_added = card.created_at.strftime("%b %e")
     date_updated = card.last_active_at.strftime("%b %e")
@@ -29,6 +34,7 @@ module BridgeHelper
     "Added #{date_added} by #{author} and #{assignees}. Updated #{date_updated}"
   end
 
+  #: (Board) -> String
   def bridge_share_board_description(board)
     count_open = board.cards.active.count
     count_in_stream = board.cards.awaiting_triage.count

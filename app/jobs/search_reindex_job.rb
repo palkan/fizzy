@@ -17,6 +17,7 @@ class SearchReindexJob < ApplicationJob
 
   queue_as :backend
 
+  #: (?batch_size: Integer, ?log_every: Integer, ?rich_text_limit: Integer) -> void
   def perform(batch_size: 100, log_every: 1000, rich_text_limit: 100_000)
     step :cards do |step|
       processed = 0
@@ -48,12 +49,14 @@ class SearchReindexJob < ApplicationJob
   end
 
   private
+    #: (Card | Comment) -> void
     def safely_reindex(record)
       record.reindex
     rescue StandardError => e
       Rails.error.report(e, context: { record_type: record.class.name, record_id: record.id })
     end
 
+    #: (Symbol, Integer, String) -> void
     def log_progress(step_name, count, cursor)
       Rails.logger.info { "SearchReindexJob: step=#{step_name} processed=#{count} cursor=#{cursor}" }
     end

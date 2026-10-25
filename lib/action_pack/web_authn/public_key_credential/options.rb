@@ -27,25 +27,29 @@
 #   (configured in the Railtie).
 #
 class ActionPack::WebAuthn::PublicKeyCredential::Options
+  # @rbs @challenge: String
+
   include ActiveModel::API
   include ActiveModel::Attributes
 
   CHALLENGE_LENGTH = 32
   USER_VERIFICATION_OPTIONS = %i[ required preferred discouraged ].freeze
 
-  attribute :user_verification, default: :preferred
-  attribute :relying_party, default: -> { ActionPack::WebAuthn.relying_party }
-  attribute :challenge_expiration
-  attribute :challenge_purpose
+  attribute :user_verification, default: :preferred #: Symbol
+  attribute :relying_party, default: -> { ActionPack::WebAuthn.relying_party } #: ActionPack::WebAuthn::RelyingParty
+  attribute :challenge_expiration #: ActiveSupport::Duration?
+  attribute :challenge_purpose #: String?
 
   validates :user_verification, inclusion: { in: USER_VERIFICATION_OPTIONS }
 
+  #: (?Hash[Symbol, untyped]) -> void
   def initialize(attributes = {})
     super
     self.user_verification = user_verification.to_sym
   end
 
   # Validates the options, raising +InvalidOptionsError+ if any are invalid.
+  #: () -> true
   def validate!
     super
   rescue ActiveModel::ValidationError
@@ -53,6 +57,7 @@ class ActionPack::WebAuthn::PublicKeyCredential::Options
   end
 
   # Returns a human-readable representation of the options.
+  #: () -> String
   def inspect
     attributes_string = attributes.map { |name, value| "#{name}: #{value.inspect}" }.join(", ")
     "#<#{self.class.name} #{attributes_string}>"
@@ -67,6 +72,7 @@ class ActionPack::WebAuthn::PublicKeyCredential::Options
   # +config.action_pack.web_authn.creation_challenge_expiration+ and
   # +config.action_pack.web_authn.request_challenge_expiration+, or per-instance
   # via the +challenge_expiration+ attribute.
+  #: () -> String
   def challenge
     @challenge ||= Base64.urlsafe_encode64(
       ActionPack::WebAuthn.challenge_verifier.generate(

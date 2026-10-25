@@ -18,3 +18,7 @@ Style/NegatedIf:
   Enabled: true
 Style/NegatedUnless:
   Enabled: true
+
+# Allow inline RBS type annotations (`#: Type`, `#[Type]`)
+Layout/LeadingCommentSpace:
+  AllowRBSInlineAnnotation: true

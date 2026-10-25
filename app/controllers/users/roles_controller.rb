@@ -15,11 +15,11 @@ class Users::RolesController < ApplicationController
 
   private
     def set_user
-      @user = Current.account.users.active.find(params[:user_id])
+      @user = Current.account!.users.active.find(params[:user_id])
     end
 
     def ensure_permission_to_administer_user
-      head :forbidden unless Current.user.can_administer?(@user)
+      head :forbidden unless Current.user!.can_administer?(@user)
     end
 
     def role_params

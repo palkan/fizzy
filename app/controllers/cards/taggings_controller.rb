@@ -3,7 +3,7 @@ class Cards::TaggingsController < ApplicationController
 
   def new
     @tagged_with = @card.tags.alphabetically
-    @tags = Current.account.tags.all.alphabetically.where.not(id: @tagged_with)
+    @tags = Current.account!.tags.all.alphabetically.where.not(id: @tagged_with)
     fresh_when etag: [ @tags, @card.tags ]
   end
 

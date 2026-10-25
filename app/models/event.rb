@@ -1,4 +1,5 @@
 class Event < ApplicationRecord
+  # @rbs skip -- declared in sig/generated/inline.rbs
   include Notifiable, Particulars, Promptable
 
   belongs_to :account, default: -> { board.account }
@@ -28,19 +29,23 @@ class Event < ApplicationRecord
 
   delegate :card, to: :eventable
 
+  #: () -> (ActiveSupport::StringInquirer & Event::_Action)
   def action
-    super.inquiry
+    super.inquiry #: ActiveSupport::StringInquirer & Event::_Action
   end
 
+  #: () -> ApplicationRecord
   def notifiable_target
     eventable
   end
 
+  #: (User?) -> Event::Description
   def description_for(user)
     Event::Description.new(self, user)
   end
 
   private
+    #: () -> void
     def dispatch_webhooks
       Event::WebhookDispatchJob.perform_later(self)
     end

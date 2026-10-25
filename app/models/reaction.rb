@@ -10,6 +10,7 @@ class Reaction < ApplicationRecord
   delegate :all_emoji?, to: :content
 
   private
+    #: () -> void
     def register_card_activity
       reactable.card.touch_last_active_at
     end

@@ -29,37 +29,44 @@ class Notification < ApplicationRecord
   delegate :notifiable_target, to: :source
   delegate :identity, to: :user
 
-  class << self
-    def read_all
-      all.each(&:read)
-    end
-
-    def unread_all
-      all.each(&:unread)
-    end
+  #: () -> void
+  def self.read_all
+    all.each(&:read)
   end
 
+  #: () -> void
+  def self.unread_all
+    all.each(&:unread)
+  end
+
+  #: () -> void
   def read
     update!(read_at: Time.current, unread_count: 0)
   end
 
+  #: () -> void
   def unread
     update!(read_at: nil, unread_count: 1)
   end
 
+  #: () -> bool
   def read?
     read_at.present?
   end
 
   private
+    #: () -> void
     def set_card
       self.card = source.card
     end
 
+    #: () -> void
     def bundle
-      user.bundle(self) if user.settings.bundling_emails?
+      settings = user.settings #: User::Settings
+      user.bundle(self) if settings.bundling_emails?
     end
 
+    #: () -> void
     def broadcast_update
       if read?
         broadcast_remove_to(user, :notifications)

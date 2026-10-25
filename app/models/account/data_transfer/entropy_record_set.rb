@@ -1,4 +1,5 @@
 class Account::DataTransfer::EntropyRecordSet < Account::DataTransfer::RecordSet
+  #: (Account) -> void
   def initialize(account)
     super(account: account, model: Entropy)
   end
@@ -23,7 +24,7 @@ class Account::DataTransfer::EntropyRecordSet < Account::DataTransfer::RecordSet
 
       to_update.each do |data|
         Entropy
-          .find_by(account_id: account.id, container_type: data["container_type"], container_id: data["container_id"])
+          .find_by(account_id: account.id, container_type: data["container_type"], container_id: data["container_id"]) #: Entropy
           .update!(data.slice("auto_postpone_period"))
       end
 

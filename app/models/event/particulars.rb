@@ -1,14 +1,18 @@
 module Event::Particulars
+  # @type instance: Event
   extend ActiveSupport::Concern
 
   included do
-    store_accessor :particulars, :assignee_ids
+    # @type self: singleton(Event)
+    store_accessor :particulars, :assignee_ids #: Array[String]?
   end
 
+  #: () -> User::ActiveRecord_Relation
   def assignees
     @assignees ||= User.where id: assignee_ids
   end
 
+  #: () -> Hash[String, untyped]
   def api_particulars
     nested = particulars.dig("particulars") || {}
 

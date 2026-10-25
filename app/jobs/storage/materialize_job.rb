@@ -4,6 +4,7 @@ class Storage::MaterializeJob < ApplicationJob
 
   discard_on ActiveJob::DeserializationError
 
+  #: (Account | Board) -> void
   def perform(owner)
     owner.materialize_storage
   end

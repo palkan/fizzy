@@ -1,7 +1,9 @@
 module User::Searcher
+  # @type instance: User
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(User)
     has_many :search_queries, class_name: "Search::Query", dependent: :destroy
   end
 

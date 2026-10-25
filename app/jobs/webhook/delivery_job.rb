@@ -3,6 +3,7 @@ class Webhook::DeliveryJob < ApplicationJob
 
   discard_on ActiveJob::DeserializationError
 
+  #: (Webhook::Delivery) -> void
   def perform(delivery)
     delivery.deliver
   end

@@ -1,7 +1,9 @@
 module DayTimelinesScoped
+  # @type instance: ApplicationController & DayTimelinesScoped & FilterScoped
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(ApplicationController)
     include FilterScoped
 
     before_action :set_day_timeline
@@ -9,7 +11,7 @@ module DayTimelinesScoped
 
   private
     def set_day_timeline
-      @day_timeline = Current.user.timeline_for(day, filter: @filter)
+      @day_timeline = Current.user!.timeline_for(day, filter: @filter)
     end
 
     def day

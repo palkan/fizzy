@@ -46,19 +46,20 @@ class ActionPack::WebAuthn::PublicKeyCredential::CreationOptions < ActionPack::W
   RESIDENT_KEY_OPTIONS = %i[ preferred required discouraged ].freeze
   ATTESTATION_PREFERENCES = %i[ none indirect direct enterprise ].freeze
 
-  attribute :id
-  attribute :name
-  attribute :display_name
-  attribute :resident_key, default: :required
-  attribute :exclude_credentials, default: -> { [] }
-  attribute :attestation, default: :none
-  attribute :challenge_expiration, default: -> { Rails.configuration.action_pack.web_authn.creation_challenge_expiration }
-  attribute :challenge_purpose, default: "registration"
+  attribute :id #: _ToS?
+  attribute :name #: String?
+  attribute :display_name #: String?
+  attribute :resident_key, default: :required #: Symbol
+  attribute :exclude_credentials, default: -> { [] } #: Array[ActionPack::WebAuthn::PublicKeyCredential]
+  attribute :attestation, default: :none #: Symbol
+  attribute :challenge_expiration, default: -> { Rails.configuration.action_pack.web_authn.creation_challenge_expiration } #: ActiveSupport::Duration?
+  attribute :challenge_purpose, default: "registration" #: String?
 
   validates :id, :name, :display_name, presence: true
   validates :resident_key, inclusion: { in: RESIDENT_KEY_OPTIONS }
   validates :attestation, inclusion: { in: ATTESTATION_PREFERENCES }
 
+  #: (?Hash[Symbol, untyped]) -> void
   def initialize(attributes = {})
     super
     self.resident_key = resident_key.to_sym
@@ -68,6 +69,7 @@ class ActionPack::WebAuthn::PublicKeyCredential::CreationOptions < ActionPack::W
 
   # Returns a Hash suitable for JSON serialization and passing to the
   # WebAuthn JavaScript API.
+  #: (?Hash[Symbol, untyped]?) -> Hash[String, untyped]
   def as_json(options = {})
     json = {
       challenge: challenge,
@@ -101,8 +103,9 @@ class ActionPack::WebAuthn::PublicKeyCredential::CreationOptions < ActionPack::W
   end
 
   private
+    #: (ActionPack::WebAuthn::PublicKeyCredential) -> Hash[Symbol, untyped]
     def exclude_credential_json(credential)
-      hash = { type: "public-key", id: credential.id }
+      hash = { type: "public-key", id: credential.id } #: Hash[Symbol, untyped]
       hash[:transports] = credential.transports if credential.transports.any?
       hash
     end

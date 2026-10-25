@@ -1,10 +1,12 @@
 class Card::ActivitySpike::Detector
-  attr_reader :card
+  attr_reader :card #: Card
 
+  #: (Card) -> void
   def initialize(card)
     @card = card
   end
 
+  #: () -> bool
   def detect
     if has_activity_spike?
       register_activity_spike

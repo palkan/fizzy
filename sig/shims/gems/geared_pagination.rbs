@@ -1,0 +1,31 @@
+# geared_pagination ships no signatures and isn't in gem_rbs_collection
+module GearedPagination
+  module Controller
+    @page: GearedPagination::Page
+
+    private
+
+    def set_page_and_extract_portion_from: (untyped records, ?ordered_by: untyped, ?per_page: untyped) -> untyped
+    def current_page_from: (untyped records, ?ordered_by: untyped, ?per_page: untyped) -> GearedPagination::Page
+    def set_paginated_headers: () -> void
+    def geared_page?: () -> bool
+    def current_page_param: () -> untyped
+  end
+
+  class Page
+    def number: () -> Integer
+    def records: () -> untyped
+    def used?: () -> bool
+    def empty?: () -> bool
+    def first?: () -> bool
+    def only?: () -> bool
+    def last?: () -> bool
+    def before_last?: () -> bool
+    def next_param: () -> untyped
+    def cache_key: () -> String
+  end
+end
+
+class ActionController::Base
+  include GearedPagination::Controller
+end

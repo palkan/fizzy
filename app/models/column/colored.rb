@@ -1,9 +1,11 @@
 module Column::Colored
+  # @type instance: Column
   extend ActiveSupport::Concern
 
   DEFAULT_COLOR = Color::COLORS.first
 
   included do
+    # @type self: singleton(Column)
     before_validation -> { self[:color] ||= DEFAULT_COLOR.value }
   end
 

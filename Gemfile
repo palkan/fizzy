@@ -55,6 +55,11 @@ end
 
 group :development do
   gem "web-console", github: "rails/web-console"
+
+  # Type checking
+  gem "rbs", "~> 4.2", require: false
+  gem "rbs_rails", require: false
+  gem "steep", require: false
 end
 
 group :test do

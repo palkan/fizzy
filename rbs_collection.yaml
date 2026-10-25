@@ -1,0 +1,23 @@
+# Download sources
+sources:
+  - type: git
+    name: ruby/gem_rbs_collection
+    remote: https://github.com/ruby/gem_rbs_collection.git
+    revision: main
+    repo_dir: gems
+
+# A directory to install the downloaded RBSs
+path: .gem_rbs_collection
+
+gems:
+  # Standard libraries the app requires without a Gemfile entry
+  - name: ipaddr
+  - name: net-http
+  - name: open-uri
+  - name: resolv
+  # Ships an RBS that redeclares ::Ractor as a module, clashing with core
+  - name: ractor-dispatch
+    ignore: true
+  # Development and test tooling, not referenced from app/ or lib/
+  - name: faker
+    ignore: true

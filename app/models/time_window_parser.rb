@@ -1,5 +1,5 @@
 class TimeWindowParser
-  attr_reader :now
+  attr_reader :now #: ActiveSupport::TimeWithZone
 
   HUMAN_NAMES_BY_VALUE = {
     "today" => "Today",
@@ -14,20 +14,22 @@ class TimeWindowParser
 
   VALUES = HUMAN_NAMES_BY_VALUE.keys
 
-  class << self
-    def parse(string)
-      new.parse(string)
-    end
-
-    def human_name_for(value)
-      HUMAN_NAMES_BY_VALUE[value]
-    end
+  #: (String? string) -> Range[ActiveSupport::TimeWithZone]?
+  def self.parse(string)
+    new.parse(string)
   end
 
+  #: (String value) -> String?
+  def self.human_name_for(value)
+    HUMAN_NAMES_BY_VALUE[value]
+  end
+
+  #: (?now: ActiveSupport::TimeWithZone) -> void
   def initialize(now: Time.current)
     @now = now
   end
 
+  #: (String? string) -> Range[ActiveSupport::TimeWithZone]?
   def parse(string)
     case normalize(string)
     when "today"
@@ -50,6 +52,7 @@ class TimeWindowParser
   end
 
   private
+    #: (String? string) -> String?
     def normalize(string)
       if string
         string.downcase.gsub(/[\s_\-]/, "")

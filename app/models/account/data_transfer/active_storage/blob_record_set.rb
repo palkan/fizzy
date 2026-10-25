@@ -1,4 +1,5 @@
 class Account::DataTransfer::ActiveStorage::BlobRecordSet < Account::DataTransfer::RecordSet
+  #: (Account) -> void
   def initialize(account)
     super(
       account: account,
@@ -8,10 +9,12 @@ class Account::DataTransfer::ActiveStorage::BlobRecordSet < Account::DataTransfe
   end
 
   private
+    #: () -> ActiveRecord::Relation
     def records
       ::ActiveStorage::Blob.where(account: account).where.not(id: excluded_blob_ids)
     end
 
+    #: () -> ActiveRecord::Relation
     def excluded_blob_ids
       ::ActiveStorage::Attachment.where(account: account, record_type: INTERNAL_RECORD_TYPES).select(:blob_id)
     end

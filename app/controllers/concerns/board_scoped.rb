@@ -1,17 +1,19 @@
 module BoardScoped
+  # @type instance: ApplicationController
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(ApplicationController)
     before_action :set_board
   end
 
   private
     def set_board
-      @board = Current.user.boards.find(params[:board_id])
+      @board = Current.user!.boards.find(params[:board_id])
     end
 
     def ensure_permission_to_admin_board
-      unless Current.user.can_administer_board?(@board)
+      unless Current.user!.can_administer_board?(@board)
         head :forbidden
       end
     end

@@ -1,7 +1,9 @@
 module Card::Assignable
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Card)
     has_many :assignments, dependent: :delete_all
     has_many :assignees, through: :assignments
 

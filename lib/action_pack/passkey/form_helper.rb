@@ -1,5 +1,7 @@
 # View helpers for rendering passkey registration and sign-in buttons.
 module ActionPack::Passkey::FormHelper
+  # @type instance: ActionView::Base
+
   REGISTRATION_ERROR_MESSAGE = "Something went wrong while registering your passkey."
   REGISTRATION_CANCELLED_MESSAGE = "Passkey registration was cancelled. Try again when you are ready."
   REGISTRATION_DUPLICATE_MESSAGE = "You already have a passkey registered on this device. Remove the existing one first and try again."
@@ -20,6 +22,7 @@ module ActionPack::Passkey::FormHelper
   # - +cancellation+: HTML attributes for the cancellation message +<div>+. Supports a
   #   +:message+ key to override the default cancellation text
   # - All other options are passed to the +<button>+ tag
+  #: (?String? name, ?String? url, **untyped options) ?{ (*untyped) -> untyped } -> ActiveSupport::SafeBuffer
   def passkey_registration_button(name = nil, url = nil, **options, &block)
     url, name = name, block ? capture(&block) : nil if block_given?
     component_options, form_options, button_options, error_options = partition_passkey_options(url, options)
@@ -54,6 +57,7 @@ module ActionPack::Passkey::FormHelper
   # - +cancellation+: HTML attributes for the cancellation message +<div>+. Supports a
   #   +:message+ key to override the default cancellation text
   # - All other options are passed to the +<button>+ tag
+  #: (?String? name, ?String? url, **untyped options) ?{ (*untyped) -> untyped } -> ActiveSupport::SafeBuffer
   def passkey_sign_in_button(name = nil, url = nil, **options, &block)
     url, name = name, block ? capture(&block) : nil if block_given?
     component_options, form_options, button_options, error_options = partition_passkey_options(url, options)
@@ -74,6 +78,7 @@ module ActionPack::Passkey::FormHelper
   end
 
   private
+    #: (String? url, Hash[Symbol, untyped] options) -> [Hash[Symbol, untyped], Hash[Symbol, untyped], Hash[Symbol, untyped], Hash[Symbol, Hash[Symbol, untyped]]]
     def partition_passkey_options(url, options)
       passkey_options = options.fetch(:options, {})
       wrapper_options = options.fetch(:wrapper, {})
@@ -93,14 +98,16 @@ module ActionPack::Passkey::FormHelper
       [ wrapper_options.merge(component_options), form_options, button_options, error_options ]
     end
 
+    #: () -> String
     def default_passkey_challenge_url
-      if challenge_url = Rails.configuration.action_pack.passkey.challenge_url
+      if challenge_url = Rails.configuration.action_pack.passkey.challenge_url #: (^() [self: ActionView::Base] -> String)?
         instance_exec(&challenge_url)
       else
         passkey_challenge_path
       end
     end
 
+    #: (?error: Hash[Symbol, untyped], ?cancellation: Hash[Symbol, untyped], ?duplicate: Hash[Symbol, untyped]) -> ActiveSupport::SafeBuffer
     def passkey_error_messages(error: {}, cancellation: {}, duplicate: {})
       error_message, error_attributes = build_passkey_error_options("error", error)
       cancellation_message, cancellation_attributes = build_passkey_error_options("cancelled", cancellation)
@@ -116,6 +123,7 @@ module ActionPack::Passkey::FormHelper
       messages
     end
 
+    #: (String type, Hash[Symbol, untyped] options) -> [String?, Hash[Symbol, untyped]]
     def build_passkey_error_options(type, options)
       message = options[:message]
 

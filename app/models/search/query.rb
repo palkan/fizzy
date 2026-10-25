@@ -7,13 +7,12 @@ class Search::Query < ApplicationRecord
 
   delegate :to_s, to: :terms
 
-  class << self
-    def wrap(query)
-      if query.is_a?(self)
-        query
-      else
-        self.new(terms: query)
-      end
+  #: (Search::Query | String | nil) -> Search::Query
+  def self.wrap(query)
+    if query.is_a?(self)
+      query #: Search::Query
+    else
+      self.new(terms: query)
     end
   end
 

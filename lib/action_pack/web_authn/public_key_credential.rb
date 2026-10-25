@@ -54,62 +54,69 @@
 #   Transport hints (e.g., "internal", "usb", "ble", "nfc").
 #
 class ActionPack::WebAuthn::PublicKeyCredential
-  attr_reader :id, :public_key, :sign_count, :aaguid, :backed_up, :transports
+  attr_reader :id #: String
+  attr_reader :public_key #: OpenSSL::PKey::PKey
+  attr_reader :sign_count #: Integer
+  attr_reader :aaguid #: String?
+  attr_reader :backed_up #: bool?
+  attr_reader :transports #: Array[String]
 
-  class << self
-    # Returns a RequestOptions object for the authentication ceremony.
-    # Credentials responding to +to_public_key_credential+ are automatically
-    # transformed.
-    def request_options(**attributes)
-      attributes[:credentials] = transform_credentials(attributes[:credentials]) if attributes[:credentials]
+  # Returns a RequestOptions object for the authentication ceremony.
+  # Credentials responding to +to_public_key_credential+ are automatically
+  # transformed.
+  #: (**untyped) -> ActionPack::WebAuthn::PublicKeyCredential::RequestOptions
+  def self.request_options(**attributes)
+    attributes[:credentials] = transform_credentials(attributes[:credentials]) if attributes[:credentials]
 
-      ActionPack::WebAuthn::PublicKeyCredential::RequestOptions.new(**attributes)
-    end
-
-    # Returns a CreationOptions object for the registration ceremony.
-    # Credentials in +exclude_credentials+ responding to
-    # +to_public_key_credential+ are automatically transformed.
-    def creation_options(**attributes)
-      attributes[:exclude_credentials] = transform_credentials(attributes[:exclude_credentials]) if attributes[:exclude_credentials]
-
-      ActionPack::WebAuthn::PublicKeyCredential::CreationOptions.new(**attributes)
-    end
-
-    # Verifies an attestation response from the browser and returns a new
-    # PublicKeyCredential with the registered credential data.
-    #
-    # Raises +InvalidResponseError+ if the attestation is invalid.
-    def register(params, origin: ActionPack::WebAuthn::Current.origin)
-      response = ActionPack::WebAuthn::Authenticator::AttestationResponse.new(
-        client_data_json: params[:client_data_json],
-        attestation_object: params[:attestation_object],
-        origin: origin
-      )
-
-      response.validate!
-
-      new(
-        id: response.attestation.credential_id,
-        public_key: response.attestation.public_key,
-        sign_count: response.attestation.sign_count,
-        aaguid: response.attestation.aaguid,
-        backed_up: response.attestation.backed_up?,
-        transports: Array(params[:transports])
-      )
-    end
-
-    private
-      def transform_credentials(credentials)
-        Array(credentials).map do |credential|
-          if credential.respond_to?(:to_public_key_credential)
-            credential.to_public_key_credential
-          else
-            credential
-          end
-        end
-      end
+    ActionPack::WebAuthn::PublicKeyCredential::RequestOptions.new(**attributes)
   end
 
+  # Returns a CreationOptions object for the registration ceremony.
+  # Credentials in +exclude_credentials+ responding to
+  # +to_public_key_credential+ are automatically transformed.
+  #: (**untyped) -> ActionPack::WebAuthn::PublicKeyCredential::CreationOptions
+  def self.creation_options(**attributes)
+    attributes[:exclude_credentials] = transform_credentials(attributes[:exclude_credentials]) if attributes[:exclude_credentials]
+
+    ActionPack::WebAuthn::PublicKeyCredential::CreationOptions.new(**attributes)
+  end
+
+  # Verifies an attestation response from the browser and returns a new
+  # PublicKeyCredential with the registered credential data.
+  #
+  # Raises +InvalidResponseError+ if the attestation is invalid.
+  #: (Hash[Symbol, untyped] | ActionController::Parameters, ?origin: String?) -> ActionPack::WebAuthn::PublicKeyCredential
+  def self.register(params, origin: ActionPack::WebAuthn::Current.origin)
+    response = ActionPack::WebAuthn::Authenticator::AttestationResponse.new(
+      client_data_json: params[:client_data_json],
+      attestation_object: params[:attestation_object],
+      origin: origin
+    )
+
+    response.validate!
+
+    new(
+      id: response.attestation.credential_id,
+      public_key: response.attestation.public_key,
+      sign_count: response.attestation.sign_count,
+      aaguid: response.attestation.aaguid,
+      backed_up: response.attestation.backed_up?,
+      transports: Array(params[:transports])
+    )
+  end
+
+  #: (Enumerable[untyped]) -> Array[untyped]
+  private_class_method def self.transform_credentials(credentials)
+    Array(credentials).map do |credential|
+      if credential.respond_to?(:to_public_key_credential)
+        credential.to_public_key_credential
+      else
+        credential
+      end
+    end
+  end
+
+  #: (id: String, public_key: OpenSSL::PKey::PKey | String, sign_count: Integer, ?aaguid: String?, ?backed_up: bool?, ?transports: Array[String]) -> void
   def initialize(id:, public_key:, sign_count:, aaguid: nil, backed_up: nil, transports: [])
     @id = id
     @public_key = public_key
@@ -124,6 +131,7 @@ class ActionPack::WebAuthn::PublicKeyCredential
   # Updates +sign_count+ and +backed_up+ on success.
   #
   # Raises +InvalidResponseError+ if the assertion is invalid.
+  #: (Hash[Symbol, untyped] | ActionController::Parameters, ?origin: String?) -> bool
   def authenticate(params, origin: ActionPack::WebAuthn::Current.origin)
     response = ActionPack::WebAuthn::Authenticator::AssertionResponse.new(
       client_data_json: params[:client_data_json],
@@ -140,6 +148,7 @@ class ActionPack::WebAuthn::PublicKeyCredential
   end
 
   # Returns a Hash of the credential data suitable for persisting.
+  #: () -> { credential_id: String, public_key: String, sign_count: Integer, aaguid: String?, backed_up: bool?, transports: Array[String] }
   def to_h
     {
       credential_id: id,

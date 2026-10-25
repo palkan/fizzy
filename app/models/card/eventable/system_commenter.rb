@@ -1,12 +1,15 @@
 class Card::Eventable::SystemCommenter
   include ERB::Util
 
-  attr_reader :card, :event
+  attr_reader :card #: Card
+  attr_reader :event #: Event
 
+  #: (Card, Event) -> void
   def initialize(card, event)
     @card, @event = card, event
   end
 
+  #: () -> Comment?
   def comment
     return unless comment_body.present?
 

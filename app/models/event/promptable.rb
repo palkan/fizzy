@@ -1,4 +1,5 @@
 module Event::Promptable
+  # @type instance: Event
   extend ActiveSupport::Concern
 
   def to_prompt

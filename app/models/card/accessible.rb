@@ -1,14 +1,18 @@
 module Card::Accessible
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Card)
     delegate :accessible_to?, to: :board
   end
 
+  #: () -> bool
   def publicly_accessible?
     published? && board.publicly_accessible?
   end
 
+  #: () -> void
   def clean_inaccessible_data
     accessible_user_ids = board.accesses.pluck(:user_id)
     pins.where.not(user_id: accessible_user_ids).in_batches.destroy_all

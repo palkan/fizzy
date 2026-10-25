@@ -1,4 +1,5 @@
 class MagicLinkMailer < ApplicationMailer
+  #: (MagicLink) -> void
   def sign_in_instructions(magic_link)
     @magic_link = magic_link
     @identity = @magic_link.identity

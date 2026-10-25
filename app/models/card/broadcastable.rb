@@ -1,7 +1,9 @@
 module Card::Broadcastable
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Card)
     broadcasts_refreshes
 
     before_update :remember_if_preview_changed

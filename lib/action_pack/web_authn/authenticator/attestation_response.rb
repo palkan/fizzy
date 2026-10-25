@@ -27,28 +27,34 @@
 # * The attestation statement passes format-specific verification
 #
 class ActionPack::WebAuthn::Authenticator::AttestationResponse < ActionPack::WebAuthn::Authenticator::Response
-  attr_reader :attestation_object
+  # @rbs @attestation: ActionPack::WebAuthn::Authenticator::Attestation
+
+  attr_reader :attestation_object #: ActionPack::WebAuthn::Authenticator::Attestation | String
 
   validate :client_data_type_must_be_create
   validate :attestation_must_be_valid
 
-  def initialize(attestation_object:, **attributes)
-    super(**attributes)
+  #: (attestation_object: ActionPack::WebAuthn::Authenticator::Attestation | String, client_data_json: String, **untyped) -> void
+  def initialize(attestation_object:, client_data_json:, **attributes)
+    super(client_data_json:, **attributes)
     @attestation_object = attestation_object
   end
 
   # Returns the decoded Attestation object, lazily parsed from the raw
   # attestation object bytes.
+  #: () -> ActionPack::WebAuthn::Authenticator::Attestation
   def attestation
     @attestation ||= ActionPack::WebAuthn::Authenticator::Attestation.wrap(attestation_object)
   end
 
   # Returns the authenticator data extracted from the attestation object.
+  #: () -> ActionPack::WebAuthn::Authenticator::Data
   def authenticator_data
     attestation.authenticator_data
   end
 
   private
+    #: () -> String
     def challenge_purpose
       "registration"
     end

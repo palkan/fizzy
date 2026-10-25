@@ -21,11 +21,13 @@ class ActionPack::Passkey::ChallengesController < ActionController::Base
   # Generates a fresh challenge and returns it as JSON. Accepts an optional
   # +purpose+ parameter ("registration" or "authentication") to select the
   # appropriate challenge expiration. Defaults to "authentication".
+  #: () -> void
   def create
     render json: { challenge: create_passkey_challenge }
   end
 
   private
+    #: () -> String
     def create_passkey_challenge
       ActionPack::WebAuthn::PublicKeyCredential::Options.new(
         challenge_expiration: challenge_expiration,
@@ -33,10 +35,12 @@ class ActionPack::Passkey::ChallengesController < ActionController::Base
       ).challenge
     end
 
+    #: () -> String
     def challenge_purpose
       params[:purpose] == "registration" ? "registration" : "authentication"
     end
 
+    #: () -> ActiveSupport::Duration
     def challenge_expiration
       config = Rails.configuration.action_pack.web_authn
 

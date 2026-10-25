@@ -7,6 +7,7 @@ class User::Settings < ApplicationRecord
 
   after_update :review_pending_bundles, if: :saved_change_to_bundle_email_frequency?
 
+  #: () -> ActiveSupport::Duration
   def bundle_aggregation_period
     case bundle_email_frequency
     when "every_few_hours"
@@ -20,12 +21,14 @@ class User::Settings < ApplicationRecord
     end
   end
 
+  #: () -> bool
   def bundling_emails?
     !bundle_email_never? && !user.system? && user.active? && user.verified?
   end
 
+  #: () -> ActiveSupport::TimeZone
   def timezone
-    if timezone_name.present?
+    if timezone_name = self.timezone_name.presence
       ActiveSupport::TimeZone[timezone_name] || default_timezone
     else
       default_timezone

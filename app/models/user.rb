@@ -1,4 +1,5 @@
 class User < ApplicationRecord
+  # @rbs skip -- declared in sig/generated/inline.rbs
   include Accessor, Assignee, Attachable, Avatar, Configurable, EmailAddressChangeable,
     Mentionable, Named, Notifiable, Role, Searcher, Watcher
   include Timelined # Depends on Accessor
@@ -16,6 +17,7 @@ class User < ApplicationRecord
   has_many :pinned_cards, through: :pins, source: :card
   has_many :data_exports, class_name: "User::DataExport", dependent: :destroy
 
+  #: () -> void
   def deactivate
     transaction do
       accesses.destroy_all
@@ -24,19 +26,24 @@ class User < ApplicationRecord
     end
   end
 
+  #: () -> bool
   def setup?
+    identity = self.identity #: Identity
     name != identity.email_address
   end
 
+  #: () -> bool
   def verified?
     verified_at.present?
   end
 
+  #: () -> void
   def verify
     update!(verified_at: Time.current) unless verified?
   end
 
   private
+    #: () -> void
     def close_remote_connections
       ActionCable.server.remote_connections.where(current_user: self).disconnect(reconnect: false)
     end

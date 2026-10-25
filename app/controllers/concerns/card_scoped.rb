@@ -1,13 +1,15 @@
 module CardScoped
+  # @type instance: ApplicationController
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(ApplicationController)
     before_action :set_card, :set_board
   end
 
   private
     def set_card
-      @card = Current.user.accessible_cards.find_by!(number: params[:card_id])
+      @card = Current.user!.accessible_cards.find_by!(number: params[:card_id])
     end
 
     def set_board

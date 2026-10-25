@@ -1,0 +1,5 @@
+
+# `identified_by :current_user`
+class ApplicationCable::Connection
+  attr_accessor current_user: User?
+end

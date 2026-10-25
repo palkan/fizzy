@@ -10,8 +10,9 @@ class Entropy < ApplicationRecord
 
   after_commit -> { container.cards.touch_all if container }
 
+  #: () -> Integer
   def auto_postpone_period_in_days
-    days = auto_postpone_period / 1.day.to_i
+    days = auto_postpone_period / 1.day.to_i #: Integer
 
     if days.in?(AUTO_POSTPONE_PERIODS_IN_DAYS)
       days
@@ -20,11 +21,13 @@ class Entropy < ApplicationRecord
     end
   end
 
+  #: (Integer | String) -> void
   def auto_postpone_period_in_days=(new_value)
     self.auto_postpone_period = new_value.to_i.days.to_i
   end
 
   private
+    #: () -> Integer
     def default_auto_postpone_period_in_days
       if container.is_a?(Board)
         container.account.entropy.auto_postpone_period_in_days

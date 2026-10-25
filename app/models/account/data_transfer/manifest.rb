@@ -1,10 +1,14 @@
 class Account::DataTransfer::Manifest
-  attr_reader :account
+  attr_reader :account #: Account
 
+  #: (Account) -> void
   def initialize(account)
     @account = account
   end
 
+  # @rbs start: [String, String]? -- the model name and the last file processed of the record set to resume from
+  # @rbs &: (Account::DataTransfer::RecordSet, ?String?) -> void
+  # @rbs return: void
   def each_record_set(start: nil)
     raise ArgumentError, "No block given" unless block_given?
 
@@ -22,6 +26,7 @@ class Account::DataTransfer::Manifest
   end
 
   private
+    #: () -> Array[Account::DataTransfer::RecordSet]
     def record_sets
       [
         Account::DataTransfer::AccountRecordSet.new(account),
@@ -65,16 +70,19 @@ class Account::DataTransfer::Manifest
       ].then { set_importable_model_names(it) }
     end
 
+    #: (*Account::DataTransfer::RecordSet::model) -> Array[Account::DataTransfer::RecordSet]
     def record_sets_for(*models)
       models.map do |model|
         record_set_for(model)
       end
     end
 
+    #: (Account::DataTransfer::RecordSet::model) -> Account::DataTransfer::RecordSet
     def record_set_for(model)
       Account::DataTransfer::RecordSet.new(account: account, model: model)
     end
 
+    #: (Array[Account::DataTransfer::RecordSet]) -> Array[Account::DataTransfer::RecordSet]
     def set_importable_model_names(record_sets)
       model_names = record_sets.filter_map { |record_set| record_set.model&.name }
       record_sets.each { |record_set| record_set.importable_model_names = model_names }

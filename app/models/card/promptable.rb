@@ -1,10 +1,14 @@
 module Card::Promptable
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Card)
+    # @rbs skip -- declared in sig/generated/inline.rbs
     include Rails.application.routes.url_helpers
   end
 
+  #: () -> String
   def to_prompt
     <<~PROMPT
       BEGIN OF CARD #{id}

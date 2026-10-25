@@ -10,15 +10,18 @@ class Mention < ApplicationRecord
 
   delegate :card, to: :source
 
+  #: () -> bool
   def self_mention?
     mentioner == mentionee
   end
 
+  #: () -> ApplicationRecord
   def notifiable_target
     source
   end
 
   private
+    #: () -> void
     def watch_source_by_mentionee
       source.watch_by(mentionee)
     end

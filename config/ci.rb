@@ -10,6 +10,7 @@ CI.run do
   step "Setup", "bin/setup --skip-server"
 
   step "Style: Ruby", "bin/rubocop -f simple"
+  step "Types: Ruby", "bin/steep check"
 
   step "Gemfile: Drift check", "bin/bundle-drift check"
   step "Security: Gem audit", "bin/bundler-audit check --update"

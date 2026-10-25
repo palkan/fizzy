@@ -1,9 +1,11 @@
 class Account::Export < Export
   private
+    #: () -> String
     def filename
       "fizzy-account-#{account_id}-export-#{id}.zip"
     end
 
+    #: (ZipFile::Writer) -> void
     def populate_zip(zip)
       Account::DataTransfer::Manifest.new(account).each_record_set do |record_set|
         record_set.export(to: zip)

@@ -1,4 +1,5 @@
 class Board < ApplicationRecord
+  # @rbs skip -- declared in sig/generated/inline.rbs
   include Accessible, AutoPostponing, Board::Storage, Broadcastable, Cards, Entropic, Filterable, Publishable, ::Storage::Tracked, Triageable
 
   belongs_to :creator, class_name: "User", default: -> { Current.user }

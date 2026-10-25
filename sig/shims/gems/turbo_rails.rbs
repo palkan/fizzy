@@ -1,0 +1,86 @@
+# turbo-rails ships no signatures and isn't in gem_rbs_collection
+module Turbo
+  module DriveHelper
+    def turbo_exempts_page_from_cache: () -> void
+    def turbo_exempts_page_from_cache_tag: () -> ActiveSupport::SafeBuffer
+    def turbo_exempts_page_from_preview: () -> void
+    def turbo_exempts_page_from_preview_tag: () -> ActiveSupport::SafeBuffer
+    def turbo_page_requires_reload: () -> void
+    def turbo_page_requires_reload_tag: () -> ActiveSupport::SafeBuffer
+    def turbo_refreshes_with: (?method: Symbol, ?scroll: Symbol) -> void
+    def turbo_refresh_method_tag: (?Symbol method) -> ActiveSupport::SafeBuffer
+    def turbo_refresh_scroll_tag: (?Symbol scroll) -> ActiveSupport::SafeBuffer
+  end
+end
+
+module Turbo
+  # Included into ActiveRecord::Base by turbo-rails
+  module Broadcastable
+    module ClassMethods
+      def broadcasts_refreshes: (?untyped stream) -> void
+      def broadcasts_refreshes_to: (untyped stream) -> void
+      def broadcasts: (?untyped stream, **untyped) -> void
+      def broadcasts_to: (untyped stream, **untyped) -> void
+      def suppressing_turbo_broadcasts: [T] () { () -> T } -> T
+      def suppressed_turbo_broadcasts?: () -> bool
+    end
+
+    def broadcast_remove_to: (*untyped streamables, **untyped) -> void
+    def broadcast_remove: (**untyped) -> void
+    def broadcast_replace_to: (*untyped streamables, **untyped) -> void
+    def broadcast_replace: (**untyped) -> void
+    def broadcast_update_to: (*untyped streamables, **untyped) -> void
+    def broadcast_update: (**untyped) -> void
+    def broadcast_before_to: (*untyped streamables, **untyped) -> void
+    def broadcast_after_to: (*untyped streamables, **untyped) -> void
+    def broadcast_append_to: (*untyped streamables, **untyped) -> void
+    def broadcast_append: (**untyped) -> void
+    def broadcast_prepend_to: (*untyped streamables, **untyped) -> void
+    def broadcast_prepend: (**untyped) -> void
+    def broadcast_refresh_to: (*untyped streamables, **untyped) -> void
+    def broadcast_refresh: () -> void
+    def broadcast_action_to: (*untyped streamables, action: Symbol | String, **untyped) -> void
+    def broadcast_replace_later_to: (*untyped streamables, **untyped) -> void
+    def broadcast_replace_later: (**untyped) -> void
+    def broadcast_update_later_to: (*untyped streamables, **untyped) -> void
+    def broadcast_update_later: (**untyped) -> void
+    def broadcast_append_later_to: (*untyped streamables, **untyped) -> void
+    def broadcast_append_later: (**untyped) -> void
+    def broadcast_prepend_later_to: (*untyped streamables, **untyped) -> void
+    def broadcast_prepend_later: (**untyped) -> void
+    def broadcast_refresh_later_to: (*untyped streamables, **untyped) -> void
+    def broadcast_refresh_later: () -> void
+    def broadcast_render_to: (*untyped streamables, **untyped) -> void
+    def broadcast_render_later_to: (*untyped streamables, **untyped) -> void
+  end
+
+  module StreamsHelper
+    def turbo_stream: () -> untyped
+    def turbo_stream_from: (*untyped streamables, **untyped attributes) -> ActiveSupport::SafeBuffer
+  end
+
+  module FramesHelper
+    def turbo_frame_tag: (*untyped ids, ?src: untyped, ?target: untyped, **untyped attributes) ?{ () -> untyped } -> ActiveSupport::SafeBuffer
+  end
+
+  module Streams
+    module TurboStreamsTagBuilder
+      def turbo_stream: () -> untyped
+    end
+  end
+end
+
+class ActiveRecord::Base
+  include Turbo::Broadcastable
+  extend Turbo::Broadcastable::ClassMethods
+end
+
+class ActionController::Base
+  include Turbo::Streams::TurboStreamsTagBuilder
+end
+
+class ActionView::Base
+  include Turbo::DriveHelper
+  include Turbo::FramesHelper
+  include Turbo::StreamsHelper
+end

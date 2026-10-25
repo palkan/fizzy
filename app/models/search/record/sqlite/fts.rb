@@ -11,6 +11,7 @@ class Search::Record::SQLite::Fts < ApplicationRecord
   # We need to explicitly select it when loading records
   scope :with_rowid, -> { select(:rowid, :title, :content) }
 
+  #: (Integer, String?, String?) -> ActiveRecord::Result
   def self.upsert(rowid, title, content)
     connection.exec_query(
       "INSERT OR REPLACE INTO search_records_fts(rowid, title, content) VALUES (?, ?, ?)",

@@ -1,4 +1,6 @@
 module ApplicationHelper
+  # @type instance: ActionView::Base
+  #: () -> ActiveSupport::SafeBuffer
   def page_title_tag
     account_name = if Current.account && Current.session&.identity&.users&.many?
       Current.account&.name
@@ -6,10 +8,12 @@ module ApplicationHelper
     tag.title [ @page_title, account_name, "Fizzy" ].compact.join(" | ")
   end
 
+  #: (String | Symbol, **untyped) -> ActiveSupport::SafeBuffer
   def icon_tag(name, **options)
     tag.span class: class_names("icon icon--#{name}", options.delete(:class)), "aria-hidden": true, **options
   end
 
+  #: (String label, untyped url, String action, ?prefer_referrer: Array[String], **untyped) -> ActiveSupport::SafeBuffer
   def back_link_to(label, url, action, prefer_referrer: [], **options)
     data = { controller: "hotkey", action: action }
     if prefer_referrer.any?

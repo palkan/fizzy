@@ -1,17 +1,21 @@
 class Account::Seeder
-  attr_reader :account, :creator
+  attr_reader :account #: Account
+  attr_reader :creator #: User?
 
+  #: (Account, User?) -> void
   def initialize(account, creator)
     @account = account
     @creator = creator
   end
 
+  #: () -> void
   def seed
     Current.set(user: creator, account: account) do
       populate
     end
   end
 
+  #: () -> void
   def seed!
     raise "You can't run in production environments" unless Rails.env.local?
 

@@ -1,7 +1,9 @@
 module CurrentRequest
+  # @type instance: ApplicationController
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(ApplicationController)
     before_action do
       Current.http_method = request.method
       Current.request_id  = request.uuid

@@ -43,3 +43,6 @@
 .DS_Store
 .dockerdev/.claude.json
 .claude/*.local.*
+
+# RBS collection (installed via `bin/rbs collection install`)
+/.gem_rbs_collection

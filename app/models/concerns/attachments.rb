@@ -1,4 +1,9 @@
 module Attachments
+  # @rbs @remote_images: Array[ActionText::Attachables::RemoteImage]?
+  # @rbs @remote_videos: Array[ActionText::Attachables::RemoteVideo]?
+  # @rbs @rich_text_record: ActionText::RichText?
+
+  # @type instance: Attachments & ApplicationRecord
   extend ActiveSupport::Concern
 
   # Variants used by ActionText embeds. Processed immediately on attachment to avoid
@@ -17,31 +22,38 @@ module Attachments
     large: { loader: { n: -1 }, resize_to_limit: [ 1024, 768 ] }
   }
 
+  #: () -> (ActiveStorage::Attached::Many | Array[ActiveStorage::Attachment])
   def attachments
     rich_text_record&.embeds || []
   end
 
+  #: () -> bool
   def has_attachments?
     attachments.any?
   end
 
+  #: () -> Array[ActionText::Attachables::RemoteImage]
   def remote_images
     @remote_images ||= rich_text_record&.body&.attachables&.grep(ActionText::Attachables::RemoteImage) || []
   end
 
+  #: () -> bool
   def has_remote_images?
     remote_images.any?
   end
 
+  #: () -> Array[ActionText::Attachables::RemoteVideo]
   def remote_videos
     @remote_videos ||= rich_text_record&.body&.attachables&.grep(ActionText::Attachables::RemoteVideo) || []
   end
 
+  #: () -> bool
   def has_remote_videos?
     remote_videos.any?
   end
 
   private
+    #: () -> ActionText::RichText?
     def rich_text_record
       @rich_text_record ||= begin
         association = self.class.reflect_on_all_associations(:has_one).find { it.klass == ActionText::RichText }

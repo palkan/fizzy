@@ -1,15 +1,21 @@
 module Authorization
+  # @type instance: ActionController::Base & Authentication & Authorization
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(ActionController::Base)
     before_action :ensure_can_access_account, if: :authenticated_account_access?
   end
 
-  class_methods do
+  module ClassMethods
+    # @type instance: singleton(ActionController::Base) & Authorization::ClassMethods
+
+    #: (**untyped) -> void
     def allow_unauthorized_access(**options)
       skip_before_action :ensure_can_access_account, **options
     end
 
+    #: (**untyped) -> void
     def require_access_without_a_user(**options)
       skip_before_action :ensure_can_access_account, **options
       before_action :redirect_existing_user, **options
@@ -18,19 +24,20 @@ module Authorization
 
   private
     def ensure_admin
-      head :forbidden unless Current.user.admin?
+      head :forbidden unless Current.user!.admin?
     end
 
     def ensure_staff
-      head :forbidden unless Current.identity.staff?
+      head :forbidden unless Current.identity!.staff?
     end
 
+    #: () -> bool
     def authenticated_account_access?
       Current.account.present? && authenticated?
     end
 
     def ensure_can_access_account
-      unless Current.account.active? && Current.user&.active?
+      unless Current.account!.active? && Current.user&.active?
         respond_to do |format|
           format.html { redirect_to session_menu_path(script_name: nil) }
           format.json { head :forbidden }

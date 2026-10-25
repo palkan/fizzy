@@ -2,32 +2,39 @@
 # Original upload bytes only; variants/previews/derivatives excluded.
 # Physical storage optimizations (deduplication, compression) don't affect quotas.
 module Storage::Tracked
+  # @type instance: Storage::Tracked & Storage::Tracked::_Includer & ApplicationRecord
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(ApplicationRecord)
     before_update :track_board_transfer, if: :board_transfer?
   end
 
   # Return self as the trackable record for storage entries
+  #: () -> self
   def storage_tracked_record
     self
   end
 
   # Override in models where board is determined differently (e.g., Board itself)
+  #: () -> Board
   def board_for_storage_tracking
     board
   end
 
   # Total bytes for all attachments on this record
+  #: () -> Integer
   def storage_bytes
     attachments_for_storage.sum { |a| a.blob.byte_size }
   end
 
   private
+    #: () -> bool
     def board_transfer?
-      respond_to?(:will_save_change_to_board_id?) && will_save_change_to_board_id?
+      will_save_change_to_attribute?(:board_id)
     end
 
+    #: () -> void
     def track_board_transfer
       old_board = Board.find_by(id: attribute_in_database(:board_id))
       records = storage_transfer_records.compact
@@ -59,15 +66,18 @@ module Storage::Tracked
       end
     end
 
+    #: () -> Array[ApplicationRecord?]
     def storage_transfer_records
       [ self ]
     end
 
     # Override if needed. Default = all direct attachments
+    #: (?ApplicationRecord recordable) -> Array[ActiveStorage::Attachment]
     def attachments_for_storage(recordable = self)
       storage_attachments_for_records([ recordable ]).fetch(recordable, [])
     end
 
+    #: (ApplicationRecord? | Array[ApplicationRecord?] recordables) -> Hash[ApplicationRecord, Array[ActiveStorage::Attachment]]
     def storage_attachments_for_records(recordables)
       records = Array(recordables).compact
       return {} if records.empty?

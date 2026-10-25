@@ -25,7 +25,7 @@ class Users::DataExportsController < ApplicationController
 
   private
     def set_user
-      @user = Current.account.users.find(params[:user_id])
+      @user = Current.account!.users.find(params[:user_id])
     end
 
     def ensure_current_user

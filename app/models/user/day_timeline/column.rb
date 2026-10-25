@@ -1,8 +1,14 @@
 class User::DayTimeline::Column
+  # @rbs skip -- declared in sig/generated/inline.rbs
   include ActionView::Helpers::TagHelper, ActionView::Helpers::OutputSafetyHelper, TimeHelper
 
-  attr_reader :index, :id, :base_title, :day_timeline, :events
+  attr_reader :index #: Integer
+  attr_reader :id #: Symbol
+  attr_reader :base_title #: String
+  attr_reader :day_timeline #: User::DayTimeline
+  attr_reader :events #: Event::ActiveRecord_Relation
 
+  #: (User::DayTimeline, Symbol, String, Integer, Event::ActiveRecord_Relation) -> void
   def initialize(day_timeline, id, base_title, index, events)
     @id = id
     @day_timeline = day_timeline
@@ -22,14 +28,17 @@ class User::DayTimeline::Column
     limited_events.group_by { it.created_at.hour }
   end
 
+  #: () -> bool
   def has_more_events?
     limited_events.count < full_events_count
   end
 
+  #: () -> Integer
   def hidden_events_count
     full_events_count - limited_events.count
   end
 
+  #: () -> Symbol
   def to_param
     id
   end

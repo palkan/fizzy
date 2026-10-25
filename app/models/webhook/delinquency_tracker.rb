@@ -5,6 +5,7 @@ class Webhook::DelinquencyTracker < ApplicationRecord
   belongs_to :account, default: -> { webhook.account }
   belongs_to :webhook
 
+  #: (Webhook::Delivery) -> void
   def record_delivery_of(delivery)
     if delivery.succeeded?
       reset
@@ -25,18 +26,21 @@ class Webhook::DelinquencyTracker < ApplicationRecord
       update_columns first_failure_at: Time.current
     end
 
+    #: () -> bool
     def delinquent?
       failing_for_too_long? && too_many_consecutive_failures?
     end
 
+    #: () -> bool
     def failing_for_too_long?
-      if first_failure_at
+      if first_failure_at = self.first_failure_at
         first_failure_at.before?(DELINQUENCY_DURATION.ago)
       else
         false
       end
     end
 
+    #: () -> bool
     def too_many_consecutive_failures?
       consecutive_failures_count >= DELINQUENCY_THRESHOLD
     end

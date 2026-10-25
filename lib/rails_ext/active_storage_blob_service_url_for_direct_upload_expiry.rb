@@ -2,10 +2,12 @@
 #  see https://github.com/basecamp/haystack/pull/7862
 #
 module ActiveStorage
-  mattr_accessor :service_urls_for_direct_uploads_expire_in, default: 48.hours
+  mattr_accessor :service_urls_for_direct_uploads_expire_in, default: 48.hours #: ActiveSupport::Duration
 end
 
 module ActiveStorageBlobServiceUrlForDirectUploadExpiry
+  # @type instance: ActiveStorage::Blob
+
   # Override default expires_in to accommodate long upload URL expiry
   # without having to lengthen download URL expiry.
   #
@@ -19,5 +21,6 @@ module ActiveStorageBlobServiceUrlForDirectUploadExpiry
 end
 
 ActiveSupport.on_load :active_storage_blob do
+  # @type self: singleton(ActiveStorage::Blob)
   prepend ::ActiveStorageBlobServiceUrlForDirectUploadExpiry
 end

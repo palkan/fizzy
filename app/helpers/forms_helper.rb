@@ -1,4 +1,6 @@
 module FormsHelper
+  # @type instance: ActionView::Base
+  #: (**untyped) ?{ (ActionView::Helpers::FormBuilder) -> untyped } -> String
   def auto_submit_form_with(**attributes, &)
     data = attributes.delete(:data) || {}
     data[:controller] = "auto-submit #{data[:controller]}".strip
@@ -10,6 +12,7 @@ module FormsHelper
     end
   end
 
+  #: (**untyped) ?{ (ActionView::Helpers::FormBuilder) -> untyped } -> String
   def bridged_form_with(**attributes, &)
     data = attributes.delete(:data) || {}
     controllers = [ data[:controller], "bridge--form" ].compact.join(" ").strip

@@ -1,7 +1,9 @@
 module SmtpDeliveryErrorHandling
+  # @type instance: ActiveJob::Base
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(ActiveJob::Base)
     # Retry delivery to possibly-unavailable remote mailservers.
     retry_on Net::OpenTimeout, Net::ReadTimeout, Socket::ResolutionError, wait: :polynomially_longer
 

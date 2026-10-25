@@ -15,6 +15,7 @@
 # +client_data_json+ bytes. Raise +InvalidResponseError+ if verification fails.
 #
 class ActionPack::WebAuthn::Authenticator::AttestationVerifiers::None
+  #: (ActionPack::WebAuthn::Authenticator::Attestation, client_data_json: String) -> void
   def verify!(attestation, client_data_json:)
     if attestation.attestation_statement.present?
       raise ActionPack::WebAuthn::InvalidResponseError,

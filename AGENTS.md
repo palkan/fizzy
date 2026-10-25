@@ -70,3 +70,20 @@ Allow people to move between OSS and SAAS Fizzy instances:
 ## Coding style
 
 Before editing or reviewing code, read STYLE.md.
+
+## Types (RBS + Steep)
+
+Ruby code in `app/` and `lib/` is typed with inline RBS annotations and checked with Steep.
+
+- Run `bin/steep check` (the whole project, no paths) after changing Ruby code. It must pass.
+- Annotate the code you write, and use the types to learn what methods take and return.
+- After changing the schema, routes, associations, scopes, macros, or mixins, run `bin/rails rbs:generate`.
+
+Before writing or reviewing code, read TYPES.md. It covers:
+
+- **Commands**: checking, querying types at a position, and regenerating signatures
+- **Where signatures live**: inline annotations, generated files (`sig/rbs_rails/`, `sig/generated/`), hand-written shims (`sig/shims/`), and gem signatures
+- **Writing annotations**: syntax and rules, such as always annotating `initialize` and overrides
+- **Rails patterns**: concerns, class methods, mixins, typed macros, `instance_exec` lambdas, `Current.user!` and friends, narrowing nils
+- **Limitations to know**: inline RBS and Steep pitfalls that silently weaken checking
+- **Ignoring diagnostics**: when `steep:ignore` is acceptable, and when it isn't

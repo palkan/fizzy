@@ -17,7 +17,7 @@ class Users::EmailAddressesController < ApplicationController
 
   private
     def set_user
-      @user = Current.identity.users.find(params[:user_id])
+      @user = Current.identity!.users.find(params[:user_id])
     end
 
     def ensure_valid_email_address

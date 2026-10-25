@@ -10,6 +10,7 @@ class Assignment < ApplicationRecord
   validate :within_limit, on: :create
 
   private
+    #: () -> void
     def within_limit
       if card.assignments.count >= LIMIT
         errors.add(:base, "Card already has the maximum of #{LIMIT} assignees")

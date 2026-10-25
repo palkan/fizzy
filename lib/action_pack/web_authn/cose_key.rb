@@ -69,23 +69,25 @@ class ActionPack::WebAuthn::CoseKey
   # OpenSSL types
   UNCOMPRESSED_POINT_MARKER = 0x04
 
-  attr_reader :key_type, :algorithm, :parameters
+  attr_reader :key_type #: Integer?
+  attr_reader :algorithm #: Integer?
+  attr_reader :parameters #: Hash[Integer, untyped]
 
-  class << self
-    # Decodes a COSE key from CBOR-encoded bytes.
-    #
-    #   cose_key = ActionPack::WebAuthn::CoseKey.decode(cbor_bytes)
-    #   cose_key.algorithm # => -7 (ES256)
-    def decode(bytes)
-      data = ActionPack::WebAuthn::CborDecoder.decode(bytes)
-      new(
-        key_type: data[KEY_TYPE_LABEL],
-        algorithm: data[ALGORITHM_LABEL],
-        parameters: data
-      )
-    end
+  # Decodes a COSE key from CBOR-encoded bytes.
+  #
+  #   cose_key = ActionPack::WebAuthn::CoseKey.decode(cbor_bytes)
+  #   cose_key.algorithm # => -7 (ES256)
+  #: (String) -> ActionPack::WebAuthn::CoseKey
+  def self.decode(bytes)
+    data = ActionPack::WebAuthn::CborDecoder.decode(bytes)
+    new(
+      key_type: data[KEY_TYPE_LABEL],
+      algorithm: data[ALGORITHM_LABEL],
+      parameters: data
+    )
   end
 
+  #: (key_type: Integer?, algorithm: Integer?, parameters: Hash[Integer, untyped]) -> void
   def initialize(key_type:, algorithm:, parameters:) # :nodoc:
     @key_type = key_type
     @algorithm = algorithm
@@ -100,6 +102,7 @@ class ActionPack::WebAuthn::CoseKey
   #
   # Raises +UnsupportedKeyTypeError+ if the key type, algorithm, or curve
   # is not supported.
+  #: () -> OpenSSL::PKey::PKey
   def to_openssl_key
     case [ key_type, algorithm ]
     when [ EC2, ES256 ] then build_ec2_es256_key

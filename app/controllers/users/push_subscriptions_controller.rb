@@ -26,7 +26,7 @@ class Users::PushSubscriptionsController < ApplicationController
 
   private
     def set_push_subscriptions
-      @push_subscriptions = Current.user.push_subscriptions
+      @push_subscriptions = Current.user!.push_subscriptions
     end
 
     def push_subscription_params

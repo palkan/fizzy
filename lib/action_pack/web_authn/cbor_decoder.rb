@@ -51,6 +51,11 @@
 #
 # Raises +InvalidCborError+ when encountering malformed or unsupported CBOR data.
 class ActionPack::WebAuthn::CborDecoder
+  # @rbs @bytes: Array[Integer]
+  # @rbs @max_depth: Integer
+  # @rbs @position: Integer
+  # @rbs @depth: Integer
+
   # Major types
   UNSIGNED_INTEGER_TYPE = 0
   NEGATIVE_INTEGER_TYPE = 1
@@ -87,17 +92,17 @@ class ActionPack::WebAuthn::CborDecoder
   POSITIVE_BIGNUM_TAG = 2
   NEGATIVE_BIGNUM_TAG = 3
 
-  class << self
-    # Decodes a CBOR-encoded byte sequence into a Ruby object.
-    #
-    #   ActionPack::WebAuthn::CborDecoder.decode("\xa2\x61a\x01\x61b\x02")
-    #   # => {"a" => 1, "b" => 2}
-    def decode(bytes, **args)
-      bytes = bytes.bytes if bytes.respond_to?(:bytes)
-      new(bytes, **args).decode
-    end
+  # Decodes a CBOR-encoded byte sequence into a Ruby object.
+  #
+  #   ActionPack::WebAuthn::CborDecoder.decode("\xa2\x61a\x01\x61b\x02")
+  #   # => {"a" => 1, "b" => 2}
+  #: (String | Array[Integer], ?max_depth: Integer, ?max_size: Integer) -> untyped
+  def self.decode(bytes, **args)
+    bytes = bytes.bytes if bytes.is_a?(String)
+    new(bytes, **args).decode
   end
 
+  #: (Array[Integer], ?max_depth: Integer, ?max_size: Integer) -> void
   def initialize(bytes, max_depth: MAX_DEPTH, max_size: MAX_SIZE) # :nodoc:
     raise ActionPack::WebAuthn::InvalidCborError, "Input exceeds maximum size" if bytes.length > max_size
 
@@ -108,6 +113,7 @@ class ActionPack::WebAuthn::CborDecoder
   end
 
   # Decodes the next CBOR data item from the byte sequence.
+  #: () -> untyped
   def decode
     raise ActionPack::WebAuthn::InvalidCborError, "Unexpected end of input" if @position >= @bytes.length
     raise ActionPack::WebAuthn::InvalidCborError, "Maximum nesting depth exceeded" if @depth >= @max_depth

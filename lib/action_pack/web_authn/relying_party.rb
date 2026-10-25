@@ -27,7 +27,8 @@
 #   A human-readable name for your application, displayed by authenticators
 #   during ceremonies. Defaults to +Rails.application.name+.
 class ActionPack::WebAuthn::RelyingParty
-  attr_reader :id, :name
+  attr_reader :id #: String
+  attr_reader :name #: String
 
   # Creates a new relying party configuration.
   #
@@ -38,12 +39,14 @@ class ActionPack::WebAuthn::RelyingParty
   #
   # [+:name+]
   #   Optional. The application display name.
+  #: (?id: String, ?name: String) -> void
   def initialize(id: ActionPack::WebAuthn::Current.host, name: Rails.application.name)
     @id = id
     @name = name
   end
 
   # Returns a Hash suitable for JSON serialization.
+  #: (*untyped) -> { id: String, name: String }
   def as_json(*)
     { id: id, name: name }
   end

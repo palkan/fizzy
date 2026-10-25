@@ -1,4 +1,6 @@
 module CardsHelper
+  # @type instance: ActionView::Base
+  #: (Card, ?id: String, ?data: Hash[Symbol, untyped], **untyped) ?{ (?) -> untyped } -> ActiveSupport::SafeBuffer
   def card_article_tag(card, id: dom_id(card, :article), data: {}, **options, &block)
     classes = [
       options.delete(:class),
@@ -18,6 +20,7 @@ module CardsHelper
       &block
   end
 
+  #: (Card) -> String
   def card_title_tag(card)
     title = [
       card.title,
@@ -28,10 +31,12 @@ module CardsHelper
     title.join(" ")
   end
 
+  #: (Card) -> String
   def card_drafted_or_added(card)
     card.drafted? ? "Drafted" : "Added"
   end
 
+  #: (Card) -> ActiveSupport::SafeBuffer
   def card_social_tags(card)
     tag.meta(property: "og:title", content: "#{card.title} | #{card.board.name}") +
     tag.meta(property: "og:description", content: format_excerpt(card&.description, length: 200)) +
@@ -39,6 +44,7 @@ module CardsHelper
     tag.meta(property: "og:url", content: card_url(card))
   end
 
+  #: (Card) -> ActiveSupport::SafeBuffer
   def button_to_remove_card_image(card)
     button_to(card_image_path(card), method: :delete, class: "btn", data: { controller: "tooltip", action: "dialog#close" }) do
       icon_tag("trash") + tag.span("Remove background image", class: "for-screen-reader")

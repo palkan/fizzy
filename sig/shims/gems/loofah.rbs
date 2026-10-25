@@ -1,0 +1,24 @@
+# loofah ships no signatures and isn't in gem_rbs_collection
+module Loofah
+  class Scrubber
+    CONTINUE: Object
+    STOP: Object
+
+    attr_reader direction: Symbol
+    attr_reader block: (^(Nokogiri::XML::Node) -> untyped)?
+
+    def initialize: (?Hash[Symbol, untyped] options) ?{ (Nokogiri::XML::Node) -> untyped } -> void
+    def scrub: (Nokogiri::XML::Node node) -> untyped
+    def append_attribute: (Nokogiri::XML::Node node, String attribute, String value) -> untyped
+  end
+end
+
+module Loofah
+  module HTML5
+    class DocumentFragment
+      def self.parse: (String? tags, ?String? encoding) -> DocumentFragment
+      def scrub!: (Loofah::Scrubber | Symbol scrubber) -> self
+      def to_html: (*untyped) -> String
+    end
+  end
+end

@@ -10,19 +10,23 @@ class Account::DataTransfer::AccountRecordSet < Account::DataTransfer::RecordSet
     usage_limit
   ]
 
+  #: (Account) -> void
   def initialize(account)
     super(account: account, model: Account)
   end
 
   private
+    #: () -> Array[Account]
     def records
       [ account ]
     end
 
+    #: (Account) -> void
     def export_record(account)
       zip.add_file "data/account.json", account.as_json.merge(join_code: account.join_code.as_json).to_json
     end
 
+    #: () -> Array[String]
     def files
       [ "data/account.json" ]
     end

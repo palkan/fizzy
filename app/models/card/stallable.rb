@@ -1,9 +1,11 @@
 module Card::Stallable
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   STALLED_AFTER_LAST_SPIKE_PERIOD = 14.days
 
   included do
+    # @type self: singleton(Card)
     has_one :activity_spike, class_name: "Card::ActivitySpike", dependent: :destroy
 
     scope :with_activity_spikes, -> { joins(:activity_spike) }
@@ -14,16 +16,19 @@ module Card::Stallable
   end
 
   # Keep in sync with #isStalled in app/javascript/controllers/bubble_controller.js
+  #: () -> bool?
   def stalled?
-    if activity_spike.present?
-      open? && last_activity_spike_at < STALLED_AFTER_LAST_SPIKE_PERIOD.ago && updated_at < STALLED_AFTER_LAST_SPIKE_PERIOD.ago
+    if activity_spike = self.activity_spike
+      open? && activity_spike.updated_at < STALLED_AFTER_LAST_SPIKE_PERIOD.ago && updated_at < STALLED_AFTER_LAST_SPIKE_PERIOD.ago
     end
   end
 
+  #: () -> ActiveSupport::TimeWithZone?
   def last_activity_spike_at
     activity_spike&.updated_at
   end
 
+  #: () -> bool
   def detect_activity_spikes
     Card::ActivitySpike::Detector.new(self).detect
   end

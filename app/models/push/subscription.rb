@@ -13,33 +13,44 @@ class Push::Subscription < ApplicationRecord
   validates :endpoint, presence: true
   validate :validate_endpoint_url
 
-  def notification(**params)
+  #: (title: String, body: String, url: String) -> WebPush::Notification
+  def notification(title:, body:, url:)
     WebPush::Notification.new(
-      **params,
+      title: title,
+      body: body,
+      url: url,
       badge: user.notifications.unread.count,
-      endpoint: endpoint,
+      endpoint: endpoint, #: String
       endpoint_ip: resolved_endpoint_ip,
-      p256dh_key: p256dh_key,
-      auth_key: auth_key
+      p256dh_key: p256dh_key, #: String
+      auth_key: auth_key #: String
     )
   end
 
+  #: () -> String?
   def resolved_endpoint_ip
     return @resolved_endpoint_ip if defined?(@resolved_endpoint_ip)
-    @resolved_endpoint_ip = SsrfProtection.resolve_public_ip(endpoint_uri&.host)
+    # Only resolved for endpoints with a permitted host (see #validate_endpoint_url)
+    host = endpoint_uri&.host #: String
+    @resolved_endpoint_ip = SsrfProtection.resolve_public_ip(host)
   end
 
   private
+    #: () -> URI::Generic?
     def endpoint_uri
-      @endpoint_uri ||= URI.parse(endpoint) if endpoint.present?
+      if endpoint = self.endpoint.presence
+        @endpoint_uri ||= URI.parse(endpoint)
+      end
     rescue URI::InvalidURIError
       nil
     end
 
     def validate_endpoint_url
-      if endpoint_uri.nil?
+      uri = endpoint_uri
+
+      if uri.nil?
         errors.add(:endpoint, "is not a valid URL")
-      elsif endpoint_uri.scheme != "https"
+      elsif uri.scheme != "https"
         errors.add(:endpoint, "must use HTTPS")
       elsif !permitted_endpoint_host?
         errors.add(:endpoint, "is not a permitted push service")
@@ -48,6 +59,7 @@ class Push::Subscription < ApplicationRecord
       end
     end
 
+    #: () -> bool
     def permitted_endpoint_host?
       host = endpoint_uri&.host&.downcase
       PERMITTED_ENDPOINT_HOSTS.any? { |permitted| host&.end_with?(permitted) }

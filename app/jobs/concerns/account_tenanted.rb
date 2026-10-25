@@ -5,28 +5,34 @@
 # that missing accounts raise DeserializationError inside the
 # execution path where discard_on can handle it.
 module AccountTenanted
+  # @type instance: ApplicationJob
   extend ActiveSupport::Concern
 
   prepended do
+    # @type self: singleton(ApplicationJob)
     attr_reader :account
     around_perform :with_account_context
   end
 
+  #: (*untyped) -> void
   def initialize(...)
     super
     @account = Current.account
   end
 
+  #: () -> Hash[String, untyped]
   def serialize
     super.merge({ "account" => @account&.to_gid })
   end
 
+  #: (Hash[String, untyped]) -> void
   def deserialize(job_data)
     super
     @account_gid = job_data["account"]
   end
 
   private
+    #: () { () -> untyped } -> untyped
     def with_account_context(&block)
       resolve_account!
 
@@ -37,6 +43,7 @@ module AccountTenanted
       end
     end
 
+    #: () -> void
     def resolve_account!
       if @account_gid
         @account = GlobalID::Locator.locate(@account_gid)

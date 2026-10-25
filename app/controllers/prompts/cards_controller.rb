@@ -26,11 +26,11 @@ class Prompts::CardsController < ApplicationController
     end
 
     def published_cards
-      Current.user.accessible_cards.published
+      Current.user!.accessible_cards.published
     end
 
     def prepending_exact_matches_by_id(cards)
-      if card_by_id = Current.user.accessible_cards.find_by(number: params[:filter])
+      if card_by_id = Current.user!.accessible_cards.find_by(number: params[:filter])
         [ card_by_id ] + cards
       else
         cards

@@ -20,6 +20,7 @@ class AutoLinkScrubber < Loofah::Scrubber
 
   MAX_TEXT_NODE_LENGTH = 10_000
 
+  #: () -> void
   def initialize
     @direction = :top_down
   end
@@ -36,6 +37,7 @@ class AutoLinkScrubber < Loofah::Scrubber
   end
 
   private
+    #: (Nokogiri::XML::Node) -> Nokogiri::XML::NodeSet?
     def autolink_text_node(node)
       text = node.text
       links = find_links(text)
@@ -56,14 +58,15 @@ class AutoLinkScrubber < Loofah::Scrubber
       nodes
     end
 
+    #: (String) -> Array[{ start: Integer, length: Integer, text: String, href: String }]
     def find_links(text)
       return [] if text.length > MAX_TEXT_NODE_LENGTH
 
-      links = []
+      links = [] #: Array[{ start: Integer, length: Integer, text: String, href: String }]
 
       text.scan(AUTOLINK_REGEXP) do
-        match_data = Regexp.last_match
-        start_pos = match_data.begin(0)
+        match_data = Regexp.last_match #: MatchData
+        start_pos = match_data.begin(0) #: Integer
 
         if match_data[:url]
           url = clean_url(match_data[:url])
@@ -80,6 +83,7 @@ class AutoLinkScrubber < Loofah::Scrubber
       []
     end
 
+    #: (String) -> String
     def clean_url(url)
       url.sub(TRAILING_PUNCTUATION_REGEXP, "")
     end

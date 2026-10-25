@@ -1,7 +1,9 @@
 module Authentication::ViaMagicLink
+  # @type instance: ActionController::Base & Authentication::ViaMagicLink
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(ActionController::Base)
     after_action :ensure_development_magic_link_not_leaked
   end
 
@@ -12,6 +14,7 @@ module Authentication::ViaMagicLink
       end
     end
 
+    #: (String, **untyped) -> void
     def redirect_to_fake_session_magic_link(email_address, **options)
       fake_magic_link = MagicLink.new(
         identity: Identity.new(email_address: email_address),
@@ -22,6 +25,7 @@ module Authentication::ViaMagicLink
       redirect_to_session_magic_link fake_magic_link, **options
     end
 
+    #: (MagicLink, ?return_to: String?) -> void
     def redirect_to_session_magic_link(magic_link, return_to: nil)
       serve_development_magic_link(magic_link)
       set_pending_authentication_token(magic_link)
@@ -33,6 +37,7 @@ module Authentication::ViaMagicLink
       end
     end
 
+    #: (MagicLink?) -> void
     def serve_development_magic_link(magic_link)
       if Rails.env.development? && magic_link.present?
         flash[:magic_link_code] = magic_link.code
@@ -40,6 +45,7 @@ module Authentication::ViaMagicLink
       end
     end
 
+    #: (MagicLink) -> void
     def set_pending_authentication_token(magic_link)
       cookies[:pending_authentication_token] = {
         value: pending_authentication_token_verifier.generate(magic_link.identity.email_address, expires_at: magic_link.expires_at),
@@ -49,18 +55,22 @@ module Authentication::ViaMagicLink
       }
     end
 
+    #: () -> String?
     def email_address_pending_authentication
       pending_authentication_token_verifier.verified(pending_authentication_token)
     end
 
+    #: () -> ActiveSupport::MessageVerifier
     def pending_authentication_token_verifier
       Rails.application.message_verifier(:pending_authentication)
     end
 
+    #: () -> String?
     def pending_authentication_token
       cookies[:pending_authentication_token]
     end
 
+    #: () -> void
     def clear_pending_authentication_token
       cookies.delete(:pending_authentication_token)
     end

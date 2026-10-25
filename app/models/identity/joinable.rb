@@ -1,6 +1,10 @@
 module Identity::Joinable
+  # @type instance: Identity
   extend ActiveSupport::Concern
 
+  # @rbs account: Account
+  # @rbs **attributes: untyped
+  # @rbs return: bool
   def join(account, **attributes)
     attributes[:name] ||= email_address
 

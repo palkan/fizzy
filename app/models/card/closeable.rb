@@ -1,7 +1,9 @@
 module Card::Closeable
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Card)
     has_one :closure, dependent: :destroy
 
     scope :closed, -> { joins(:closure) }

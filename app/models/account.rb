@@ -1,4 +1,5 @@
 class Account < ApplicationRecord
+  # @rbs skip -- declared in sig/generated/inline.rbs
   include Account::Storage, Cancellable, Entropic, Incineratable, MultiTenantable, Searchable, Seedeable
 
   has_one :join_code, dependent: :destroy
@@ -20,36 +21,42 @@ class Account < ApplicationRecord
 
   validates :name, presence: true
 
-  class << self
-    def create_with_owner(account:, owner:)
-      create!(**account).tap do |account|
-        account.users.create!(role: :system, name: "System")
-        account.users.create!(**owner.with_defaults(role: :owner, verified_at: Time.current))
-      end
+  #: (account: Hash[Symbol, untyped], owner: Hash[Symbol, untyped]) -> Account
+  def self.create_with_owner(account:, owner:)
+    create!(**account).tap do |account|
+      account.users.create!(role: :system, name: "System")
+      account.users.create!(owner.with_defaults(role: :owner, verified_at: Time.current))
     end
   end
 
+  #: () -> String
   def slug
+    external_account_id = self.external_account_id #: Integer
     "/#{AccountSlug.encode(external_account_id)}"
   end
 
+  #: () -> Account
   def account
     self
   end
 
+  #: () -> User
   def system_user
     users.find_by!(role: :system)
   end
 
+  #: () -> bool
   def active?
     !cancelled? && !importing?
   end
 
+  #: () -> bool
   def importing?
     imports.where(status: %i[pending processing failed]).exists?
   end
 
   private
+    #: () -> void
     def assign_external_account_id
       self.external_account_id ||= ExternalIdSequence.next
     end

@@ -7,7 +7,7 @@ class Users::JoinsController < ApplicationController
   end
 
   def create
-    Current.user.update!(user_params)
+    Current.user!.update!(user_params)
 
     respond_to do |format|
       format.html { redirect_to landing_path }

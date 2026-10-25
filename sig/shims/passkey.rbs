@@ -1,0 +1,11 @@
+# app/models/passkey/authenticator.rb inherits from Data.define, which inline RBS can't declare
+class Passkey::Authenticator < Data
+  attr_reader aaguids: Array[String]
+  attr_reader name: String
+  attr_reader icon: String?
+
+  def self.new: (aaguids: Array[String], name: String, icon: String?) -> Passkey::Authenticator
+  def self.find_by_aaguid: (String? aaguid) -> Passkey::Authenticator?
+  def self.registry: () -> Hash[String, Passkey::Authenticator]
+  def self.all: () -> Array[Passkey::Authenticator]
+end

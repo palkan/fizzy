@@ -1,4 +1,6 @@
 class Webhook < ApplicationRecord
+  # @rbs @renderer: ActionController::Renderer?
+
   include Triggerable
 
   SLACK_WEBHOOK_URL_REGEX = %r{//hooks\.slack\.com/services/T[^\/]+/B[^\/]+/[^\/]+\Z}i
@@ -41,35 +43,42 @@ class Webhook < ApplicationRecord
   validates :name, presence: true
   validate :validate_url
 
+  #: () -> void
   def activate
     update! active: true unless active?
   end
 
+  #: () -> void
   def deactivate
     update! active: false
   end
 
+  #: () -> ActionController::Renderer
   def renderer
     @renderer ||= ApplicationController.renderer.new(script_name: account.slug, https: !Rails.env.local?)
   end
 
+  #: () -> bool
   def for_basecamp?
     url.match? BASECAMP_CAMPFIRE_WEBHOOK_URL_REGEX
   end
 
+  #: () -> bool
   def for_campfire?
     url.match? CAMPFIRE_WEBHOOK_URL_REGEX
   end
 
+  #: () -> bool
   def for_slack?
     url.match? SLACK_WEBHOOK_URL_REGEX
   end
 
   private
+    #: () -> void
     def validate_url
-      uri = URI.parse(url.presence)
-
-      if PERMITTED_SCHEMES.exclude?(uri.scheme)
+      if url.blank?
+        errors.add :url, "not a URL"
+      elsif PERMITTED_SCHEMES.exclude?(URI.parse(url).scheme)
         errors.add :url, "must use #{PERMITTED_SCHEMES.to_choice_sentence}"
       end
     rescue URI::InvalidURIError

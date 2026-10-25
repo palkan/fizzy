@@ -5,7 +5,7 @@ class Users::VerificationsController < ApplicationController
   end
 
   def create
-    Current.user.verify
+    Current.user!.verify
     redirect_to new_users_join_path
   end
 end

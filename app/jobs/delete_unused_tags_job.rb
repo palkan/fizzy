@@ -1,4 +1,5 @@
 class DeleteUnusedTagsJob < ApplicationJob
+  #: () -> void
   def perform
     Tag.unused.find_each do |tag|
       tag.destroy!

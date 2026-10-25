@@ -3,6 +3,7 @@ class Account::IncinerateDueJob < ApplicationJob
 
   queue_as :incineration
 
+  #: () -> void
   def perform
     step :incineration do |step|
       Account.due_for_incineration.find_each do |account|

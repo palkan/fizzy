@@ -1,0 +1,56 @@
+# Search::Record includes the adapter module matching its connection at boot
+# (`include const_get(connection.adapter_name)`), so both are declared here.
+class Search::Record
+  include Search::Record::SQLite
+  include Search::Record::Trilogy
+  extend Search::Record::SQLite::ClassMethods
+  extend Search::Record::Trilogy::ClassMethods
+
+  # Virtual attributes populated by the SQLite adapter's search query
+  def result_title: () -> String?
+  def result_content: () -> String?
+end
+
+# Search::Result has no table, so rbs_rails doesn't generate its attributes and associations.
+class Search::Result
+  def card_id: () -> String?
+  def card: () -> Card?
+  def comment_id: () -> String?
+  def comment: () -> Comment?
+  def creator_id: () -> String?
+  def creator: () -> User
+
+  # Virtual attribute selected by the search query
+  def query: () -> String
+end
+
+class Search::Record
+  # Virtual attributes populated by the Trilogy adapter's search query
+  def query: () -> String
+end
+
+class Search::Record::ActiveRecord_Relation
+  # Relations delegate to the model's class methods
+  def search_fields: (Search::Query query) -> Array[String]
+end
+
+class Search::Record
+  # Column of the MySQL shard tables only
+  def account_key: () -> String?
+  def account_key=: (String?) -> String?
+end
+
+# The FTS5 virtual table isn't in db/schema.rb, so rbs_rails doesn't generate the model.
+# Its scopes and class methods are generated into sig/generated/inline.rbs.
+class Search::Record::SQLite::Fts
+  extend ActiveRecord::Base::ClassMethods[Search::Record::SQLite::Fts, Search::Record::SQLite::Fts::ActiveRecord_Relation, Integer]
+
+  module GeneratedRelationMethods
+  end
+
+  class ActiveRecord_Relation < ActiveRecord::Relation
+    include Enumerable[Search::Record::SQLite::Fts]
+    include GeneratedRelationMethods
+    include ActiveRecord::Relation::Methods[Search::Record::SQLite::Fts, Integer]
+  end
+end

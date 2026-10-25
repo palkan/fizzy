@@ -1,4 +1,5 @@
 class Search::Record < ApplicationRecord
+  # @rbs skip -- adapter-specific methods are declared in sig/shims/search.rbs
   include const_get(connection.adapter_name)
 
   belongs_to :searchable, polymorphic: true
@@ -6,20 +7,20 @@ class Search::Record < ApplicationRecord
 
   validates :account_id, :searchable_type, :searchable_id, :card_id, :board_id, :created_at, presence: true
 
-  class << self
-    def upsert!(attributes)
-      record = find_by(searchable_type: attributes[:searchable_type], searchable_id: attributes[:searchable_id])
-      if record
-        record.update!(attributes)
-        record
-      else
-        create!(attributes)
-      end
+  #: (Hash[Symbol, untyped]) -> Search::Record
+  def self.upsert!(attributes)
+    record = find_by(searchable_type: attributes[:searchable_type], searchable_id: attributes[:searchable_id])
+    if record
+      record.update!(attributes)
+      record
+    else
+      create!(attributes)
     end
+  end
 
-    def card_join
-      "INNER JOIN #{table_name} ON #{table_name}.card_id = cards.id"
-    end
+  #: () -> String
+  def self.card_join
+    "INNER JOIN #{table_name} ON #{table_name}.card_id = cards.id"
   end
 
   scope :for_query, ->(query, user:) do
@@ -41,10 +42,12 @@ class Search::Record < ApplicationRecord
       .select(:id, :account_id, :searchable_type, :searchable_id, :card_id, :board_id, :title, :content, :created_at, *search_fields(query))
   end
 
+  #: () -> (Card | Comment)
   def source
     searchable_type == "Comment" ? searchable : card
   end
 
+  #: () -> Comment?
   def comment
     searchable if searchable_type == "Comment"
   end

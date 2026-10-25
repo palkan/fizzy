@@ -6,6 +6,7 @@ class Step < ApplicationRecord
 
   validates :content, presence: true
 
+  #: () -> bool
   def completed?
     completed
   end

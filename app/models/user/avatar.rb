@@ -1,6 +1,7 @@
 require "zlib"
 
 module User::Avatar
+  # @type instance: User
   extend ActiveSupport::Concern
 
   ALLOWED_AVATAR_CONTENT_TYPES = %w[ image/jpeg image/png image/gif image/webp ].freeze
@@ -11,6 +12,7 @@ module User::Avatar
   ].freeze
 
   included do
+    # @type self: singleton(User)
     has_one_attached :avatar, dependent: :purge_later do |attachable|
       attachable.variant :thumb, resize_to_fill: [ 256, 256 ], process: :immediately
     end
@@ -20,6 +22,7 @@ module User::Avatar
     validate :avatar_content_type_allowed, :avatar_dimensions_allowed, if: :avatar_attached?
   end
 
+  #: () -> bool
   def avatar_attached?
     avatar.attached?
   end
@@ -28,11 +31,13 @@ module User::Avatar
     avatar.variable? ? avatar.variant(:thumb) : avatar
   end
 
+  #: () -> String
   def avatar_background_color
-    AVATAR_COLORS[Zlib.crc32(to_param) % AVATAR_COLORS.size]
+    AVATAR_COLORS[Zlib.crc32(to_param.to_s) % AVATAR_COLORS.size]
   end
 
   # Avatars are always publicly accessible
+  #: () -> bool
   def publicly_accessible?
     true
   end

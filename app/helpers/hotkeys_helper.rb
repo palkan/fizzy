@@ -1,5 +1,7 @@
 module HotkeysHelper
+  # @type instance: ActionView::Base
   # Pass in an array of chorded keys, e.g. ["ctrl", "shift", "J"]
+  #: (Array[String]) -> String
   def hotkey_label(hotkey)
     hotkey.map do |key|
       if key == "ctrl" && platform.mac?

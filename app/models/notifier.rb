@@ -1,17 +1,17 @@
 class Notifier
-  attr_reader :source
+  attr_reader :source #: Event | Mention
 
-  class << self
-    def for(source)
-      case source
-      when Event
-        "Notifier::#{source.eventable.class}EventNotifier".safe_constantize&.new(source)
-      when Mention
-        MentionNotifier.new(source)
-      end
+  #: (ApplicationRecord source) -> Notifier?
+  def self.for(source)
+    case source
+    when Event
+      "Notifier::#{source.eventable.class}EventNotifier".safe_constantize&.new(source)
+    when Mention
+      MentionNotifier.new(source)
     end
   end
 
+  #: () -> Array[Notification]?
   def notify
     if should_notify?
       # Processing recipients in order avoids deadlocks if notifications overlap.
@@ -38,10 +38,12 @@ class Notifier
   end
 
   private
+    #: (Event | Mention) -> void
     def initialize(source)
       @source = source
     end
 
+    #: () -> bool
     def should_notify?
       !creator.system?
     end

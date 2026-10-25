@@ -5,7 +5,7 @@ class Cards::BoardsController < ApplicationController
   before_action :set_card
 
   def edit
-    @boards = Current.user.boards.ordered_by_recently_accessed
+    @boards = Current.user!.boards.ordered_by_recently_accessed
     fresh_when @boards
   end
 
@@ -20,6 +20,6 @@ class Cards::BoardsController < ApplicationController
 
   private
     def set_card
-      @card = Current.user.accessible_cards.find_by!(number: params[:card_id])
+      @card = Current.user!.accessible_cards.find_by!(number: params[:card_id])
     end
 end

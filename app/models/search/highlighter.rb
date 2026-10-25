@@ -1,14 +1,18 @@
 class Search::Highlighter
+  # @rbs @terms: Array[String]?
+
   OPENING_MARK = "<mark class=\"circled-text\"><span></span>"
   CLOSING_MARK = "</mark>"
   ELIPSIS = "..."
 
-  attr_reader :query
+  attr_reader :query #: String
 
+  #: (String) -> void
   def initialize(query)
     @query = query
   end
 
+  #: (String) -> ActiveSupport::SafeBuffer
   def highlight(text)
     result = text.dup
 
@@ -21,6 +25,7 @@ class Search::Highlighter
     escape_highlight_marks(result)
   end
 
+  #: (String, ?max_words: Integer) -> String
   def snippet(text, max_words: 20)
     words = text.split(/\s+/)
     match_index = words.index { |word| terms.any? { |term| word.downcase.include?(term.downcase) } }
@@ -31,7 +36,9 @@ class Search::Highlighter
       start_index = [ 0, match_index - max_words / 2 ].max
       end_index = [ words.length - 1, start_index + max_words - 1 ].min
 
-      snippet_text = words[start_index..end_index].join(" ")
+      # The range is within bounds
+      snippet_words = words[start_index..end_index] #: Array[String]
+      snippet_text = snippet_words.join(" ")
       snippet_text = "...#{snippet_text}" if start_index > 0
       snippet_text = "#{snippet_text}..." if end_index < words.length - 1
 
@@ -42,9 +49,10 @@ class Search::Highlighter
   end
 
   private
+    #: () -> Array[String]
     def terms
       @terms ||= begin
-        terms = []
+        terms = [] #: Array[String]
 
         query.scan(/"([^"]+)"/) do |phrase|
           terms << phrase.first
@@ -59,6 +67,7 @@ class Search::Highlighter
       end
     end
 
+    #: (String) -> ActiveSupport::SafeBuffer
     def escape_highlight_marks(html)
       CGI.escapeHTML(html)
         .gsub(CGI.escapeHTML(OPENING_MARK), OPENING_MARK.html_safe)

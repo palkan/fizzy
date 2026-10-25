@@ -3,6 +3,8 @@
 # A better option would be to disable touching with +touch_attachment_records+ but
 # there is currently a bug https://github.com/rails/rails/issues/55144
 module ActiveStorageAnalyzeJobSuppressBroadcasts
+  # @type instance: ActiveStorage::AnalyzeJob
+  #: (ActiveStorage::Blob) -> void
   def perform(blob)
     Board.suppressing_turbo_broadcasts do
       Card.suppressing_turbo_broadcasts do

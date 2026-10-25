@@ -11,14 +11,17 @@ class Account::Import < ApplicationRecord
 
   scope :expired, -> { where(completed_at: ...24.hours.ago).or(where(status: :failed, created_at: ...7.days.ago)) }
 
+  #: () -> void
   def self.cleanup
     expired.each(&:cleanup)
   end
 
+  #: () -> void
   def process_later
     Account::DataImportJob.perform_later(self)
   end
 
+  #: (?start: [String, String]?, ?callback: (^(record_set: Account::DataTransfer::RecordSet, file: String) -> void)?) -> void
   def check(start: nil, callback: nil)
     processing!
 
@@ -38,6 +41,7 @@ class Account::Import < ApplicationRecord
     raise e
   end
 
+  #: (?start: [String, String]?, ?callback: (^(record_set: Account::DataTransfer::RecordSet, files: Array[String]) -> void)?) -> void
   def process(start: nil, callback: nil)
     processing!
 
@@ -63,6 +67,7 @@ class Account::Import < ApplicationRecord
     raise e
   end
 
+  #: () -> void
   def cleanup
     destroy
     account.destroy if failed?
@@ -74,6 +79,7 @@ class Account::Import < ApplicationRecord
       ImportMailer.completed(identity, account).deliver_later
     end
 
+    #: (?(:conflict | :invalid_export)?) -> void
     def mark_as_failed(failure_reason = nil)
       update!(status: :failed, failure_reason: failure_reason)
       ImportMailer.failed(self).deliver_later

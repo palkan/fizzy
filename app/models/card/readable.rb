@@ -1,4 +1,5 @@
 module Card::Readable
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   def read_by(user)

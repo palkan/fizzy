@@ -15,5 +15,5 @@
 #   +origin+ field in the authenticator's client data.
 #
 class ActionPack::WebAuthn::Current < ActiveSupport::CurrentAttributes
-  attribute :host, :origin
+  attribute :host, :origin #: String?
 end

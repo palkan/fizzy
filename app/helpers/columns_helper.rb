@@ -1,4 +1,6 @@
 module ColumnsHelper
+  # @type instance: ActionView::Base
+  #: (Card, Column) -> ActiveSupport::SafeBuffer
   def button_to_set_column(card, column)
     button_to \
       tag.span(column.name, class: "overflow-ellipsis"),
@@ -11,6 +13,7 @@ module ColumnsHelper
       data: { turbo_frame: "_top", scroll_to_target: column == card.column && card.open? ? "target" : nil }
   end
 
+  #: (id: String, name: String, drop_url: String, ?collapsed: bool, ?selected: bool?, ?card_color: String, ?data: Hash[Symbol, untyped], **untyped) ?{ (?) -> untyped } -> ActiveSupport::SafeBuffer
   def column_tag(id:, name:, drop_url:, collapsed: true, selected: nil, card_color: "var(--color-card-default)", data: {}, **properties, &block)
     classes = token_list("cards", properties.delete(:class), "is-collapsed": collapsed, "is-expanded": !collapsed)
     hotkeys_disabled = data[:card_hotkeys_disabled]
@@ -45,6 +48,7 @@ module ColumnsHelper
     end
   end
 
+  #: (String | Symbol, ?src: String?, ?data: Hash[Symbol, untyped], **untyped) ?{ (?) -> untyped } -> ActiveSupport::SafeBuffer
   def column_frame_tag(id, src: nil, data: {}, **options, &block)
     data = data.with_defaults \
       drag_and_drop_refresh: true,

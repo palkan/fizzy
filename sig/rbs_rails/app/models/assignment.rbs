@@ -1,0 +1,399 @@
+# resolve-type-names: false
+
+class ::Assignment < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::Assignment, ::Assignment::ActiveRecord_Relation, ::String]
+
+  module ::Assignment::GeneratedAttributeMethods
+    def id: () -> ::String
+
+    def id=: (::String) -> ::String
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def id_change: () -> [ ::String?, ::String? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::String?
+
+    def id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def id_previous_change: () -> ::Array[::String?]?
+
+    def id_previously_was: () -> ::String?
+
+    def id_before_last_save: () -> ::String?
+
+    def id_change_to_be_saved: () -> ::Array[::String?]?
+
+    def id_in_database: () -> ::String?
+
+    def saved_change_to_id: () -> ::Array[::String?]?
+
+    def saved_change_to_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::String
+
+    def id_for_database: () -> ::String
+
+    def account_id: () -> ::String
+
+    def account_id=: (::String) -> ::String
+
+    def account_id?: () -> bool
+
+    def account_id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def account_id_change: () -> [ ::String?, ::String? ]
+
+    def account_id_will_change!: () -> void
+
+    def account_id_was: () -> ::String?
+
+    def account_id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def account_id_previous_change: () -> ::Array[::String?]?
+
+    def account_id_previously_was: () -> ::String?
+
+    def account_id_before_last_save: () -> ::String?
+
+    def account_id_change_to_be_saved: () -> ::Array[::String?]?
+
+    def account_id_in_database: () -> ::String?
+
+    def saved_change_to_account_id: () -> ::Array[::String?]?
+
+    def saved_change_to_account_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_account_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_account_id!: () -> void
+
+    def clear_account_id_change: () -> void
+
+    def account_id_before_type_cast: () -> ::String
+
+    def account_id_for_database: () -> ::String
+
+    def assignee_id: () -> ::String
+
+    def assignee_id=: (::String) -> ::String
+
+    def assignee_id?: () -> bool
+
+    def assignee_id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def assignee_id_change: () -> [ ::String?, ::String? ]
+
+    def assignee_id_will_change!: () -> void
+
+    def assignee_id_was: () -> ::String?
+
+    def assignee_id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def assignee_id_previous_change: () -> ::Array[::String?]?
+
+    def assignee_id_previously_was: () -> ::String?
+
+    def assignee_id_before_last_save: () -> ::String?
+
+    def assignee_id_change_to_be_saved: () -> ::Array[::String?]?
+
+    def assignee_id_in_database: () -> ::String?
+
+    def saved_change_to_assignee_id: () -> ::Array[::String?]?
+
+    def saved_change_to_assignee_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_assignee_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_assignee_id!: () -> void
+
+    def clear_assignee_id_change: () -> void
+
+    def assignee_id_before_type_cast: () -> ::String
+
+    def assignee_id_for_database: () -> ::String
+
+    def assigner_id: () -> ::String
+
+    def assigner_id=: (::String) -> ::String
+
+    def assigner_id?: () -> bool
+
+    def assigner_id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def assigner_id_change: () -> [ ::String?, ::String? ]
+
+    def assigner_id_will_change!: () -> void
+
+    def assigner_id_was: () -> ::String?
+
+    def assigner_id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def assigner_id_previous_change: () -> ::Array[::String?]?
+
+    def assigner_id_previously_was: () -> ::String?
+
+    def assigner_id_before_last_save: () -> ::String?
+
+    def assigner_id_change_to_be_saved: () -> ::Array[::String?]?
+
+    def assigner_id_in_database: () -> ::String?
+
+    def saved_change_to_assigner_id: () -> ::Array[::String?]?
+
+    def saved_change_to_assigner_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_assigner_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_assigner_id!: () -> void
+
+    def clear_assigner_id_change: () -> void
+
+    def assigner_id_before_type_cast: () -> ::String
+
+    def assigner_id_for_database: () -> ::String
+
+    def card_id: () -> ::String
+
+    def card_id=: (::String) -> ::String
+
+    def card_id?: () -> bool
+
+    def card_id_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def card_id_change: () -> [ ::String?, ::String? ]
+
+    def card_id_will_change!: () -> void
+
+    def card_id_was: () -> ::String?
+
+    def card_id_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def card_id_previous_change: () -> ::Array[::String?]?
+
+    def card_id_previously_was: () -> ::String?
+
+    def card_id_before_last_save: () -> ::String?
+
+    def card_id_change_to_be_saved: () -> ::Array[::String?]?
+
+    def card_id_in_database: () -> ::String?
+
+    def saved_change_to_card_id: () -> ::Array[::String?]?
+
+    def saved_change_to_card_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_card_id?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_card_id!: () -> void
+
+    def clear_card_id_change: () -> void
+
+    def card_id_before_type_cast: () -> ::String
+
+    def card_id_for_database: () -> ::String
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
+  end
+  include ::Assignment::GeneratedAttributeMethods
+  module ::Assignment::GeneratedAliasAttributeMethods
+    include ::Assignment::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::Assignment::GeneratedAliasAttributeMethods
+
+  def account: () -> ::Account
+  def account=: (::Account?) -> ::Account?
+  def reload_account: () -> ::Account?
+  def build_account: (?untyped) -> ::Account
+  def create_account: (?untyped) -> ::Account
+  def create_account!: (?untyped) -> ::Account
+  def card: () -> ::Card
+  def card=: (::Card?) -> ::Card?
+  def reload_card: () -> ::Card?
+  def build_card: (?untyped) -> ::Card
+  def create_card: (?untyped) -> ::Card
+  def create_card!: (?untyped) -> ::Card
+  def assignee: () -> ::User
+  def assignee=: (::User?) -> ::User?
+  def reload_assignee: () -> ::User?
+  def build_assignee: (?untyped) -> ::User
+  def create_assignee: (?untyped) -> ::User
+  def create_assignee!: (?untyped) -> ::User
+  def assigner: () -> ::User
+  def assigner=: (::User?) -> ::User?
+  def reload_assigner: () -> ::User?
+  def build_assigner: (?untyped) -> ::User
+  def create_assigner: (?untyped) -> ::User
+  def create_assigner!: (?untyped) -> ::User
+
+  module ::Assignment::GeneratedAssociationMethods
+  end
+  include ::Assignment::GeneratedAssociationMethods
+
+  module ::Assignment::GeneratedRelationMethods
+  end
+
+  class ::Assignment::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::Assignment]
+    include ::Assignment::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::Assignment, ::String]
+  end
+
+  class ::Assignment::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::Assignment]
+    include ::Assignment::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::Assignment, ::String]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Assignment
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Assignment]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Assignment
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Assignment]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::Assignment
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::Assignment]
+    def reload: () -> ::Array[::Assignment]
+
+    def replace: (::Array[::Assignment]) -> void
+    def delete: (*::Assignment | ::String) -> ::Array[::Assignment]
+    def destroy: (*::Assignment | ::String) -> ::Array[::Assignment]
+    def <<: (*::Assignment | ::Array[::Assignment]) -> self
+    def prepend: (*::Assignment | ::Array[::Assignment]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::Account < ::ApplicationRecord
+end
+class ::Card < ::ApplicationRecord
+end
+class ::User < ::ApplicationRecord
+end

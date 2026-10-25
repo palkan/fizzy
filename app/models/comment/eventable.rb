@@ -1,9 +1,11 @@
 module Comment::Eventable
+  # @type instance: Comment
   extend ActiveSupport::Concern
 
   include ::Eventable
 
   included do
+    # @type self: singleton(Comment)
     after_create_commit :track_creation
   end
 

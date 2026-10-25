@@ -1,10 +1,13 @@
 module Card::Commentable
+  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Card)
     has_many :comments, dependent: :destroy
   end
 
+  #: () -> bool
   def commentable?
     published?
   end
@@ -26,8 +29,8 @@ module Card::Commentable
     end
 
     def storage_comment_ids_with_attachments
-      direct = []
-      rich_text_map = {}
+      direct = [] #: Array[String]
+      rich_text_map = {} #: Hash[String, String]
 
       # Stream comment IDs in batches to avoid loading all into memory
       comments.in_batches(of: STORAGE_BATCH_SIZE) do |batch|
@@ -53,7 +56,7 @@ module Card::Commentable
             .pluck(:record_id)
         end.filter_map { |rt_id| rich_text_map[rt_id] }
       else
-        []
+        [] #: Array[String]
       end
 
       (direct + embed_comment_ids).uniq

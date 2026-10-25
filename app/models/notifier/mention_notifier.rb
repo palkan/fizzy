@@ -1,4 +1,6 @@
 class Notifier::MentionNotifier < Notifier
+  # @type instance: Notifier::MentionNotifier & Notifier::_MentionSource
+
   alias mention source
 
   private

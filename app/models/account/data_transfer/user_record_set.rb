@@ -10,15 +10,18 @@ class Account::DataTransfer::UserRecordSet < Account::DataTransfer::RecordSet
     updated_at
   ]
 
+  #: (Account) -> void
   def initialize(account)
     super(account: account, model: User)
   end
 
   private
+    #: () -> User::ActiveRecord_Relation
     def records
       User.where(account: account)
     end
 
+    #: (User) -> void
     def export_record(user)
       zip.add_file "data/users/#{user.id}.json", user.as_json.merge(email_address: user.identity&.email_address).to_json
     end

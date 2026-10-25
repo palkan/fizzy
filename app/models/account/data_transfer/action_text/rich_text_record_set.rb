@@ -10,15 +10,18 @@ class Account::DataTransfer::ActionText::RichTextRecordSet < Account::DataTransf
     updated_at
   ].freeze
 
+  #: (Account) -> void
   def initialize(account)
     super(account: account, model: ::ActionText::RichText)
   end
 
   private
+    #: () -> ActiveRecord::Relation
     def records
       ::ActionText::RichText.where(account: account)
     end
 
+    #: (ActionText::RichText) -> void
     def export_record(rich_text)
       data = rich_text.as_json.merge("body" => transform_body_for_export(rich_text.body))
       zip.add_file "data/action_text_rich_texts/#{rich_text.id}.json", data.to_json
@@ -54,6 +57,7 @@ class Account::DataTransfer::ActionText::RichTextRecordSet < Account::DataTransf
       check_associations_dont_exist(data)
     end
 
+    #: (ActionText::Content?) -> String?
     def transform_body_for_export(content)
       return nil if content.blank?
 
@@ -61,6 +65,7 @@ class Account::DataTransfer::ActionText::RichTextRecordSet < Account::DataTransf
       relativize_urls(html)
     end
 
+    #: (ActionText::Content) -> String
     def convert_sgids_to_gids(content)
       content.send(:attachment_nodes).each do |node|
         sgid = SignedGlobalID.parse(node["sgid"], for: ::ActionText::Attachable::LOCATOR_NAME)
@@ -80,6 +85,7 @@ class Account::DataTransfer::ActionText::RichTextRecordSet < Account::DataTransf
       content.fragment.source.to_html
     end
 
+    #: (String) -> String
     def relativize_urls(html)
       host = Rails.application.routes.default_url_options[:host]
       return html unless host
@@ -87,18 +93,23 @@ class Account::DataTransfer::ActionText::RichTextRecordSet < Account::DataTransf
       fragment = Nokogiri::HTML.fragment(html)
 
       fragment.css("a[href]").each do |link|
-        uri = URI.parse(link["href"]) rescue nil
+        # The selector only matches links with an href
+        href = link["href"] #: String
+        uri = URI.parse(href) rescue nil
 
-        if uri.respond_to?(:host) && uri.host == host
-          link["href"] = uri.path
-          link["href"] += "?#{uri.query}" if uri.query
-          link["href"] += "##{uri.fragment}" if uri.fragment
+        if uri && uri.host == host
+          # URIs with a host have a path
+          path = uri.path #: String
+          path += "?#{uri.query}" if uri.query
+          path += "##{uri.fragment}" if uri.fragment
+          link["href"] = path
         end
       end
 
       fragment.to_html
     end
 
+    #: (String?) -> String?
     def transform_body_for_import(body)
       return body if body.blank?
 
@@ -108,6 +119,7 @@ class Account::DataTransfer::ActionText::RichTextRecordSet < Account::DataTransf
         .to_html
     end
 
+    #: (Nokogiri::HTML::DocumentFragment) -> Nokogiri::HTML::DocumentFragment
     def convert_gids_to_sgids(fragment)
       fragment.css("action-text-attachment[gid]").each do |node|
         gid = GlobalID.parse(node["gid"])
@@ -129,9 +141,12 @@ class Account::DataTransfer::ActionText::RichTextRecordSet < Account::DataTransf
       fragment
     end
 
+    #: (Nokogiri::HTML::DocumentFragment) -> Nokogiri::HTML::DocumentFragment
     def replace_account_slugs(fragment)
       fragment.css("a[href]").each do |link|
-        match = link["href"].match(AccountSlug::PATH_INFO_MATCH)
+        # The selector only matches links with an href
+        href = link["href"] #: String
+        match = href.match(AccountSlug::PATH_INFO_MATCH)
 
         if match
           path = match.post_match.presence || "/"

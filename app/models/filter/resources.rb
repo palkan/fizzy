@@ -1,7 +1,9 @@
 module Filter::Resources
+  # @type instance: Filter
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Filter)
     has_and_belongs_to_many :tags
     has_and_belongs_to_many :boards
     has_and_belongs_to_many :assignees, class_name: "User", join_table: "assignees_filters", association_foreign_key: "assignee_id"
@@ -18,18 +20,21 @@ module Filter::Resources
     destroy!
   end
 
+  #: () -> Board::ActiveRecord_Associations_CollectionProxy
   def boards
     @boards ||= creator.boards.where id: super.ids
   end
 
+  #: () -> Array[String]
   def board_titles
     if boards.none?
-      creator.boards.one? ? [ creator.boards.first.name ] : [ "all boards" ]
+      creator.boards.one? ? [ creator.boards.first!.name ] : [ "all boards" ]
     else
       boards.map(&:name)
     end
   end
 
+  #: () -> String
   def boards_label
     board_titles.to_sentence
   end

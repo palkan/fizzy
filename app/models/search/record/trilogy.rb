@@ -1,9 +1,11 @@
 module Search::Record::Trilogy
+  # @type instance: Search::Record
   extend ActiveSupport::Concern
 
   SHARD_COUNT = 16
 
   included do
+    # @type self: singleton(Search::Record)
     self.abstract_class = true
     before_save :set_account_key, :stem_content
 
@@ -14,6 +16,7 @@ module Search::Record::Trilogy
 
     SHARD_CLASSES = SHARD_COUNT.times.map do |shard_id|
       Class.new(self) do
+        # @type self: singleton(Search::Record)
         self.table_name = "search_records_#{shard_id}"
 
         def self.name
@@ -23,30 +26,39 @@ module Search::Record::Trilogy
     end.freeze
   end
 
-  class_methods do
+  module ClassMethods
+    # @type instance: singleton(Search::Record)
+    #: (String) -> Integer
     def shard_id_for_account(account_id)
       Zlib.crc32(account_id.to_s) % SHARD_COUNT
     end
 
+    #: (Search::Query) -> Array[String]
     def search_fields(query)
-      "#{connection.quote(query.terms)} AS query"
+      [ "#{connection.quote(query.terms)} AS query" ]
     end
 
+    #: (String) -> singleton(Search::Record)
     def for(account_id)
       SHARD_CLASSES[shard_id_for_account(account_id)]
     end
   end
 
+  #: () -> String?
   def card_title
     highlight(card.title, show: :full) if card_id
   end
 
+  #: () -> String?
   def card_description
     highlight(card.description.to_plain_text, show: :snippet) if card_id
   end
 
+  #: () -> String?
   def comment_body
-    highlight(comment.body.to_plain_text, show: :snippet) if comment
+    if comment = self.comment
+      highlight(comment.body.to_plain_text, show: :snippet)
+    end
   end
 
   private
@@ -59,6 +71,7 @@ module Search::Record::Trilogy
       self.account_key = "account#{account_id}"
     end
 
+    #: (String?, show: :full | :snippet) -> String?
     def highlight(text, show:)
       if text.present? && attribute?(:query)
         highlighter = Search::Highlighter.new(query)

@@ -1,26 +1,36 @@
 class Signup
+  # @rbs @tenant: Integer?
+
   include ActiveModel::Model
   include ActiveModel::Attributes
   include ActiveModel::Validations
 
-  attr_accessor :full_name, :email_address, :identity, :skip_account_seeding
-  attr_reader :account, :user
+  attr_accessor :full_name, :email_address #: String?
+  attr_accessor :identity #: Identity?
+  attr_accessor :skip_account_seeding #: boolish
+  attr_reader :account #: Account?
+  attr_reader :user #: User?
 
   validates :email_address, format: { with: URI::MailTo::EMAIL_REGEXP }, on: :identity_creation
   validates :full_name, :identity, presence: true, on: :completion
   validates :full_name, length: { maximum: 240 }
 
+  #: (?Hash[Symbol, untyped] attributes) -> void
   def initialize(...)
+    # @type ivar @identity: Identity
     super
 
     @email_address = @identity.email_address if @identity
   end
 
+  #: () -> MagicLink
   def create_identity
+    # @type ivar @identity: Identity
     @identity = Identity.find_or_create_by!(email_address: email_address)
     @identity.send_magic_link for: :sign_up
   end
 
+  #: () -> bool
   def complete
     if valid?(:completion)
       begin
@@ -45,15 +55,19 @@ class Signup
 
   private
     # Override to customize the handling of external accounts associated to the account.
+    #: () -> Integer?
     def create_tenant
       nil
     end
 
     # Override to inject custom handling for account creation errors
+    #: (StandardError error) -> void
     def handle_account_creation_error(error)
     end
 
+    #: () -> void
     def create_account
+      # @type ivar @account: Account
       @account = Account.create_with_owner(
         account: {
           external_account_id: @tenant,
@@ -68,11 +82,15 @@ class Signup
       @account.setup_customer_template unless skip_account_seeding
     end
 
+    #: () -> String
     def generate_account_name
+      identity = self.identity #: Identity
+      full_name = self.full_name #: String
       AccountNameGenerator.new(identity: identity, name: full_name).generate
     end
 
 
+    #: () -> void
     def destroy_account
       @account&.destroy!
 
@@ -81,20 +99,16 @@ class Signup
       @tenant = nil
     end
 
+    #: () -> Hash[Symbol, untyped]
     def subscription_attributes
-      subscription = FreeV1Subscription
+      # FreeV1Subscription is defined by the SaaS engine
+      subscription = FreeV1Subscription # steep:ignore UnknownConstant
 
-      {}.tap do |attributes|
-        attributes[:name]  = subscription.to_param
-        attributes[:price] = subscription.price
-      end
+      { name: subscription.to_param, price: subscription.price }
     end
 
+    #: () -> Hash[Symbol, untyped]
     def request_attributes
-      {}.tap do |attributes|
-        attributes[:remote_address] = Current.ip_address
-        attributes[:user_agent]     = Current.user_agent
-        attributes[:referrer]       = Current.referrer
-      end
+      { remote_address: Current.ip_address, user_agent: Current.user_agent, referrer: Current.referrer }
     end
 end

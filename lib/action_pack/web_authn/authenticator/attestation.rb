@@ -36,15 +36,18 @@
 # * +sign_count+ - Signature counter for replay detection
 #
 class ActionPack::WebAuthn::Authenticator::Attestation
-  attr_reader :authenticator_data, :format, :attestation_statement
+  attr_reader :authenticator_data #: ActionPack::WebAuthn::Authenticator::Data
+  attr_reader :format #: String
+  attr_reader :attestation_statement #: Hash[String, untyped]
 
   delegate :credential_id, :public_key, :public_key_bytes, :sign_count, :aaguid, :backed_up?, to: :authenticator_data
 
   # Wraps raw attestation data into an Attestation instance. Accepts an
   # existing Attestation object (returned as-is), a Base64URL-encoded string,
   # or raw binary.
+  #: (ActionPack::WebAuthn::Authenticator::Attestation | String) -> ActionPack::WebAuthn::Authenticator::Attestation
   def self.wrap(data)
-    if data.is_a?(self)
+    if data.is_a?(ActionPack::WebAuthn::Authenticator::Attestation)
       data
     else
       data = Base64.urlsafe_decode64(data) unless data.encoding == Encoding::BINARY
@@ -55,6 +58,7 @@ class ActionPack::WebAuthn::Authenticator::Attestation
   end
 
   # Decodes a CBOR-encoded attestation object into an Attestation instance.
+  #: (String) -> ActionPack::WebAuthn::Authenticator::Attestation
   def self.decode(bytes)
     cbor = ActionPack::WebAuthn::CborDecoder.decode(bytes)
 
@@ -65,6 +69,7 @@ class ActionPack::WebAuthn::Authenticator::Attestation
     )
   end
 
+  #: (authenticator_data: ActionPack::WebAuthn::Authenticator::Data, format: String, attestation_statement: Hash[String, untyped]) -> void
   def initialize(authenticator_data:, format:, attestation_statement:)
     @authenticator_data = authenticator_data
     @format = format

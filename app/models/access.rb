@@ -9,15 +9,18 @@ class Access < ApplicationRecord
 
   after_destroy_commit :clean_inaccessible_data_later
 
+  #: () -> void
   def accessed
     touch :accessed_at unless recently_accessed?
   end
 
   private
+    #: () -> bool?
     def recently_accessed?
       accessed_at&.> 5.minutes.ago
     end
 
+    #: () -> void
     def clean_inaccessible_data_later
       Board::CleanInaccessibleDataJob.perform_later(user, board) unless user.destroyed?
     end

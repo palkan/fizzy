@@ -3,6 +3,7 @@ class Notification::BundleMailer < ApplicationMailer
 
   helper NotificationsHelper
 
+  #: (Notification::Bundle) -> void
   def notification(bundle)
     @user = bundle.user
     @bundle = bundle
@@ -12,9 +13,12 @@ class Notification::BundleMailer < ApplicationMailer
     @unsubscribe_token = @user.generate_token_for(:unsubscribe)
 
     if @notifications.any?
+      # Bundles only go to active users, who always have an identity
+      identity = bundle.user.identity #: Identity
+
       mail \
-        to: bundle.user.identity.email_address,
-        subject: "Fizzy#{ " (#{ Current.account.name })" if @user.identity.accounts.many? }: New notifications"
+        to: identity.email_address,
+        subject: "Fizzy#{ " (#{ Current.account!.name })" if identity.accounts.many? }: New notifications"
     end
   end
 end

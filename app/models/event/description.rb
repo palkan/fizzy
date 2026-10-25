@@ -2,22 +2,27 @@ class Event::Description
   include ActionView::Helpers::TagHelper
   include ERB::Util
 
-  attr_reader :event, :user
+  attr_reader :event #: Event
+  attr_reader :user #: User?
 
+  #: (Event, User?) -> void
   def initialize(event, user)
     @event = event
     @user = user
   end
 
+  #: () -> ActiveSupport::SafeBuffer
   def to_html
     to_sentence(creator_tag, card_title_tag).html_safe
   end
 
+  #: () -> ActiveSupport::SafeBuffer
   def to_plain_text
     to_sentence(creator_name, quoted(card.title)).html_safe
   end
 
   private
+    #: (String, String) -> String
     def to_sentence(creator, card_title)
       if event.action.comment_created?
         comment_sentence(creator, card_title)

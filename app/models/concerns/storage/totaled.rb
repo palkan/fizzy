@@ -1,32 +1,40 @@
 module Storage::Totaled
+  # @type instance: Storage::Totaled & Storage::Totaled::_Includer & ApplicationRecord
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(ApplicationRecord) & Storage::Totaled::ClassMethods
     has_one :storage_total, as: :owner, class_name: "Storage::Total", dependent: :destroy
     has_many :storage_entries, class_name: "Storage::Entry", foreign_key: foreign_key_for_storage
   end
 
-  class_methods do
+  module ClassMethods
+    # @type instance: singleton(ApplicationRecord)
+    #: () -> String
     def foreign_key_for_storage
       "#{model_name.singular}_id"
     end
   end
 
   # Fast: materialized snapshot (may be slightly stale)
+  #: () -> Integer
   def bytes_used
     storage_total&.bytes_stored || 0
   end
 
   # Exact: snapshot + pending entries
+  #: () -> Integer
   def bytes_used_exact
     create_or_find_storage_total.current_usage
   end
 
+  #: () -> void
   def materialize_storage_later
     Storage::MaterializeJob.perform_later(self)
   end
 
   # Materialize all pending entries into snapshot
+  #: () -> void
   def materialize_storage
     total = create_or_find_storage_total
 
@@ -51,6 +59,7 @@ module Storage::Totaled
   #
   # Returns true if reconciled successfully, false if aborted due to concurrent
   # writes. Caller (ReconcileJob) handles retries to avoid amplification.
+  #: () -> bool
   def reconcile_storage
     cursor_before = storage_entries.maximum(:id)
     real_bytes = calculate_real_storage_bytes
@@ -66,8 +75,8 @@ module Storage::Totaled
       if diff.nonzero?
         Rails.logger.info "[Storage] Reconcile #{self.class}##{id}: adjusting by #{diff} bytes"
         Storage::Entry.record \
-          account: is_a?(Account) ? self : account,
-          board: is_a?(Board) ? self : nil,
+          account: is_a?(Account) ? self : account, #: Account
+          board: is_a?(Board) ? self : nil, #: Board?
           recordable: nil,
           delta: diff,
           operation: "reconcile"
@@ -78,10 +87,12 @@ module Storage::Totaled
   end
 
   private
+    #: () -> Storage::Total
     def create_or_find_storage_total
       self.storage_total ||= Storage::Total.create_or_find_by!(owner: self)
     end
 
+    #: () -> Integer
     def calculate_real_storage_bytes
       raise NotImplementedError, "Subclass must implement calculate_real_storage_bytes"
     end

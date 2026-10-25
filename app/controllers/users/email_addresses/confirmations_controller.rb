@@ -26,7 +26,7 @@ class Users::EmailAddresses::ConfirmationsController < ApplicationController
 
   private
     def set_user
-      @user = Current.account.users.active.find(params[:user_id])
+      @user = Current.account!.users.active.find(params[:user_id])
     end
 
     def token

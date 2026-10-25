@@ -7,18 +7,31 @@ class Search::Result < ApplicationRecord
   belongs_to :card, foreign_key: :card_id, optional: true
   belongs_to :comment, foreign_key: :comment_id, optional: true
 
+  #: () -> String?
   def card_title
-    highlight(card.title, show: :full) if card_id
+    if card_id
+      card = self.card #: Card
+      highlight(card.title, show: :full)
+    end
   end
 
+  #: () -> String?
   def card_description
-    highlight(card.description.to_plain_text, show: :snippet) if card_id
+    if card_id
+      card = self.card #: Card
+      highlight(card.description.to_plain_text, show: :snippet)
+    end
   end
 
+  #: () -> String?
   def comment_body
-    highlight(comment.body.to_plain_text, show: :snippet) if comment_id
+    if comment_id
+      comment = self.comment #: Comment
+      highlight(comment.body.to_plain_text, show: :snippet)
+    end
   end
 
+  #: () -> (Card | Comment | nil)
   def source
     comment_id.present? ? comment : card
   end
@@ -28,6 +41,7 @@ class Search::Result < ApplicationRecord
   end
 
   private
+    #: (String?, show: :full | :snippet) -> String?
     def highlight(text, show:)
       if text.present? && attribute?(:query)
         highlighter = Search::Highlighter.new(query)

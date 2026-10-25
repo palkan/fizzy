@@ -1,4 +1,5 @@
 class Column < ApplicationRecord
+  # @rbs skip -- declared in sig/generated/inline.rbs
   include Colored, Positioned
 
   belongs_to :account, default: -> { board.account }

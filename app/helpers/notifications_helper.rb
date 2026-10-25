@@ -1,4 +1,6 @@
 module NotificationsHelper
+  # @type instance: ActionView::Base
+  #: (Event) -> String
   def event_notification_title(event)
     case event_notification_action(event)
     when "comment_created" then "RE: #{card_notification_title(event.eventable.card)}"
@@ -6,6 +8,7 @@ module NotificationsHelper
     end
   end
 
+  #: (Event) -> String
   def event_notification_body(event)
     creator = event.creator.name
 
@@ -26,6 +29,7 @@ module NotificationsHelper
     end
   end
 
+  #: (Notification) ?{ () -> untyped } -> ActiveSupport::SafeBuffer
   def notification_tag(notification, &)
     tag.div id: dom_id(notification), class: "tray__item tray__item--notification", data: {
       navigable_list_target: "item",
@@ -39,6 +43,7 @@ module NotificationsHelper
     end
   end
 
+  #: (Notification, url: String) -> ActiveSupport::SafeBuffer
   def notification_toggle_read_button(notification, url:)
     if notification.read?
       button_to url,
@@ -61,12 +66,14 @@ module NotificationsHelper
     end
   end
 
+  #: (GearedPagination::Page) -> ActiveSupport::SafeBuffer?
   def notifications_next_page_link(page)
     unless @page.last?
       tag.div id: "next_page", data: { controller: "fetch-on-visible", fetch_on_visible_url_value: notifications_path(page: @page.next_param) }
     end
   end
 
+  #: (User::Settings) -> ActiveSupport::SafeBuffer
   def bundle_email_frequency_options_for(settings)
     options_for_select([
       [ "Never", "never" ],
@@ -77,6 +84,7 @@ module NotificationsHelper
   end
 
   private
+    #: (Event) -> String
     def event_notification_action(event)
       if event.action.card_published? && event.eventable.assigned_to?(event.creator)
         "card_assigned"
@@ -85,11 +93,13 @@ module NotificationsHelper
       end
     end
 
+    #: (Event) -> String
     def comment_notification_body(event)
       comment = event.eventable
       comment.body.to_plain_text.truncate(200)
     end
 
+    #: (Card) -> String
     def card_notification_title(card)
       card.title.presence || "Card #{card.number}"
     end

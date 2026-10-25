@@ -3,6 +3,7 @@ class Notification::Bundle::DeliverAllJob < ApplicationJob
 
   discard_on ActiveJob::DeserializationError
 
+  #: () -> void
   def perform
     Notification::Bundle.deliver_all
   end

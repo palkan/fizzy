@@ -1,11 +1,17 @@
 module Search::Record::SQLite
+  # @type instance: Search::Record
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Search::Record)
     attribute :result_title, :string
     attribute :result_content, :string
 
-    has_one :search_records_fts, -> { with_rowid },
+    has_one :search_records_fts, -> {
+      # Association scopes run on the target's relation
+      # @type self: Search::Record::SQLite::Fts::ActiveRecord_Relation
+      with_rowid
+    },
       class_name: "Search::Record::SQLite::Fts", foreign_key: :rowid, primary_key: :id, dependent: :destroy
 
     after_save :upsert_to_fts5_table
@@ -16,7 +22,9 @@ module Search::Record::SQLite
     }
   end
 
-  class_methods do
+  module ClassMethods
+    # @type instance: singleton(Search::Record)
+    #: (Search::Query) -> Array[String]
     def search_fields(query)
       opening_mark = connection.quote(Search::Highlighter::OPENING_MARK)
       closing_mark = connection.quote(Search::Highlighter::CLOSING_MARK)
@@ -27,24 +35,29 @@ module Search::Record::SQLite
         "#{connection.quote(query.terms)} AS query" ]
     end
 
+    #: (String) -> singleton(Search::Record)
     def for(account_id)
       self
     end
   end
 
+  #: () -> ActiveSupport::SafeBuffer?
   def card_title
     escape_fts_highlight(result_title || card.title)
   end
 
+  #: () -> ActiveSupport::SafeBuffer?
   def card_description
     escape_fts_highlight(result_content) unless comment
   end
 
+  #: () -> ActiveSupport::SafeBuffer?
   def comment_body
     escape_fts_highlight(result_content) if comment
   end
 
   private
+    #: (String?) -> ActiveSupport::SafeBuffer?
     def escape_fts_highlight(html)
       return nil unless html.present?
 

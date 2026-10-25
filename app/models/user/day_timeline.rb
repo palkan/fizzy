@@ -1,22 +1,28 @@
 class User::DayTimeline
   include Serializable
 
-  attr_reader :user, :day, :filter
+  attr_reader :user #: User
+  attr_reader :day #: ActiveSupport::TimeWithZone
+  attr_reader :filter #: Filter
 
   delegate :today?, to: :day
 
+  #: (User, ActiveSupport::TimeWithZone, Filter) -> void
   def initialize(user, day, filter)
     @user, @day, @filter = user, day, filter
   end
 
+  #: () -> bool
   def has_activity?
     events.any?
   end
 
+  #: () -> Event::ActiveRecord_Relation
   def events
     filtered_events.where(created_at: window).order(created_at: :desc)
   end
 
+  #: () -> ActiveSupport::TimeWithZone?
   def next_day
     latest_event_before&.created_at
   end
@@ -29,18 +35,22 @@ class User::DayTimeline
     day.yesterday.beginning_of_day
   end
 
+  #: () -> User::DayTimeline::Column
   def added_column
     @added_column ||= build_column(:added, "Added", 1, events.where(action: %w[card_published card_reopened]))
   end
 
+  #: () -> User::DayTimeline::Column
   def updated_column
     @updated_column ||= build_column(:updated, "Updated", 2, events.where.not(action: %w[card_published card_closed card_reopened]))
   end
 
+  #: () -> User::DayTimeline::Column
   def closed_column
     @closed_column ||= build_column(:closed, "Done", 3, events.where(action: "card_closed"))
   end
 
+  #: () -> String
   def cache_key
     ActiveSupport::Cache.expand_cache_key [ user, filter, day.to_date, Time.zone.name, events ], "day-timeline"
   end
@@ -84,6 +94,7 @@ class User::DayTimeline
       filtered_events.where(created_at: ...day.beginning_of_day).chronologically.last
     end
 
+    #: (Symbol, String, Integer, Event::ActiveRecord_Relation) -> User::DayTimeline::Column
     def build_column(id, base_title, index, events)
       Column.new(self, id, base_title, index, events)
     end

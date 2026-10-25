@@ -5,9 +5,12 @@ class Account::DataTransfer::RecordSet
   IMPORT_BATCH_SIZE = 100
   INTERNAL_RECORD_TYPES = %w[Export Account::Import].freeze
 
-  attr_accessor :importable_model_names
-  attr_reader :account, :model, :attributes
+  attr_accessor :importable_model_names #: Array[String]
+  attr_reader :account #: Account
+  attr_reader :model #: Account::DataTransfer::RecordSet::model
+  attr_reader :attributes #: Array[String]
 
+  #: (account: Account, model: Account::DataTransfer::RecordSet::model, ?attributes: Array[String | Symbol]?, ?importable_model_names: Array[String]?) -> void
   def initialize(account:, model:, attributes: nil, importable_model_names: nil)
     @account = account
     @model = model
@@ -15,16 +18,19 @@ class Account::DataTransfer::RecordSet
     @importable_model_names = importable_model_names || [ model.name ]
   end
 
+  #: (to: ZipFile::Writer, ?start: String?) -> void
   def export(to:, start: nil)
     with_zip(to) do
       block = lambda do |record|
         export_record(record)
       end
 
-      records.respond_to?(:find_each) ? records.find_each(&block) : records.each(&block)
+      records = self.records
+      records.is_a?(ActiveRecord::Relation) ? records.find_each(&block) : records.each(&block)
     end
   end
 
+  #: (from: ZipFile::Reader, ?start: String?, ?callback: (^(record_set: Account::DataTransfer::RecordSet, files: Array[String]) -> void)?) -> void
   def import(from:, start: nil, callback: nil)
     with_zip(from) do
       file_list = files
@@ -37,6 +43,7 @@ class Account::DataTransfer::RecordSet
     end
   end
 
+  #: (from: ZipFile::Reader, ?start: String?, ?callback: (^(record_set: Account::DataTransfer::RecordSet, file: String) -> void)?) -> void
   def check(from:, start: nil, callback: nil)
     with_zip(from) do
       file_list = files
@@ -50,8 +57,10 @@ class Account::DataTransfer::RecordSet
   end
 
   private
-    attr_reader :zip
+    # A ZipFile::Writer while exporting, a ZipFile::Reader while importing or checking
+    attr_reader :zip #: untyped
 
+    # @rbs [T] (ZipFile::Reader | ZipFile::Writer) { () -> T } -> T
     def with_zip(zip)
       old_zip = @zip
       @zip = zip
@@ -60,18 +69,22 @@ class Account::DataTransfer::RecordSet
       @zip = old_zip
     end
 
+    #: () -> (ActiveRecord::Relation | Array[ActiveRecord::Base])
     def records
       model.where(account_id: account.id)
     end
 
+    #: (ActiveRecord::Base) -> void
     def export_record(record)
       zip.add_file "data/#{model_dir}/#{record.id}.json", record.attributes.slice(*attributes).to_json
     end
 
+    #: () -> Array[String]
     def files
       zip.glob("data/#{model_dir}/*.json")
     end
 
+    #: (Array[String]) -> void
     def import_batch(files)
       batch_data = files.map do |file|
         data = load(file)
@@ -83,6 +96,7 @@ class Account::DataTransfer::RecordSet
       model.insert_all!(batch_data)
     end
 
+    #: (String) -> void
     def check_record(file_path)
       data = load(file_path)
       expected_id = File.basename(file_path, ".json")
@@ -103,6 +117,7 @@ class Account::DataTransfer::RecordSet
       check_associations_dont_exist(data)
     end
 
+    #: (Hash[String, untyped]) -> void
     def check_associations_dont_exist(data)
       model.reflect_on_all_associations(:belongs_to).each do |association|
         foreign_key = association.foreign_key.to_s
@@ -113,6 +128,7 @@ class Account::DataTransfer::RecordSet
       end
     end
 
+    #: (Hash[String, untyped], untyped, untyped) -> void
     def check_association_doesnt_exist(data, association, associated_id)
       if association.polymorphic?
         type_column = association.foreign_type.to_s
@@ -126,6 +142,7 @@ class Account::DataTransfer::RecordSet
       end
     end
 
+    #: (String) -> Account::DataTransfer::RecordSet::model
     def verify_model_type(type_name)
       if importable_model_names.include?(type_name)
         type_name.constantize
@@ -134,22 +151,25 @@ class Account::DataTransfer::RecordSet
       end
     end
 
+    #: (Array[String], String) -> Array[String]
     def skip_to(file_list, last_id)
       index = file_list.index(last_id)
 
       if index
-        file_list[(index + 1)..]
+        file_list[(index + 1)..] #: Array[String]
       else
         file_list
       end
     end
 
+    #: (String) -> Hash[String, untyped]
     def load(file_path)
       JSON.parse(zip.read(file_path))
     rescue ArgumentError => e
       raise IntegrityError, e.message
     end
 
+    #: () -> String
     def model_dir
       model.table_name
     end

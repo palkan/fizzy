@@ -2,6 +2,8 @@
 #   e.g. when a user uploads a file but deletes it before the analysis runs.
 # Avoids `Aws::S3::Errors::NoSuchKey` when an upload is deleted before AnalyzeJob runs.
 module ActiveStorageAnalyzeJobSkipDetached
+  # @type instance: ActiveStorage::AnalyzeJob
+  #: (ActiveStorage::Blob) -> void
   def perform(blob)
     return unless blob.attachments.exists?
 

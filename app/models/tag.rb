@@ -11,10 +11,13 @@ class Tag < ApplicationRecord
   scope :alphabetically, -> { order("lower(title)") }
   scope :unused, -> { left_outer_joins(:taggings).where(taggings: { id: nil }) }
 
+  #: () -> String
   def hashtag
+    title = self.title #: String
     "#" + title
   end
 
+  #: () -> Integer
   def cards_count
     cards.open.count
   end

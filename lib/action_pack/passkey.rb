@@ -27,55 +27,55 @@
 #
 # Call +has_passkeys+ in your model to set up the association and configure ceremony options
 # per-holder. See ActionPack::Passkey::Holder for details.
+#
+# @rbs skip -- the superclass is configurable, so this is declared in sig/shims/action_pack/passkey.rbs
 class ActionPack::Passkey < Rails.configuration.action_pack.passkey.parent_class_name.constantize
   self.table_name = "action_pack_passkeys"
   belongs_to :holder, polymorphic: true
   serialize :transports, coder: JSON, type: Array, default: []
 
-  class << self
-    # Returns a CreationOptions object for the given +holder+, suitable for passing to the
-    # browser's +navigator.credentials.create()+ call. Merges global defaults from the Rails
-    # configuration, holder-specific options from +holder.passkey_registration_options+, and any
-    # additional +options+ overrides.
-    def registration_options(holder:, **options)
-      ActionPack::WebAuthn::PublicKeyCredential.creation_options(
-        **Rails.configuration.action_pack.web_authn.default_creation_options.to_h,
-        **holder.passkey_registration_options.to_h,
-        **options
-      )
-    end
+  # Returns a CreationOptions object for the given +holder+, suitable for passing to the
+  # browser's +navigator.credentials.create()+ call. Merges global defaults from the Rails
+  # configuration, holder-specific options from +holder.passkey_registration_options+, and any
+  # additional +options+ overrides.
+  def self.registration_options(holder:, **options)
+    ActionPack::WebAuthn::PublicKeyCredential.creation_options(
+      **Rails.configuration.action_pack.web_authn.default_creation_options.to_h,
+      **holder.passkey_registration_options.to_h,
+      **options
+    )
+  end
 
-    # Verifies the attestation response from the browser and persists a new passkey record.
-    # The +passkey+ hash should contain +client_data_json+, +attestation_object+, and +transports+
-    # as submitted by the registration form. The challenge is extracted from the authenticator's
-    # +clientDataJSON+ response and verified server-side. Any additional +attributes+ (e.g. +holder+)
-    # are passed through to +create!+.
-    #
-    # Raises ActionPack::WebAuthn::InvalidResponseError if the attestation is invalid.
-    def register(passkey, **attributes)
-      credential = ActionPack::WebAuthn::PublicKeyCredential.register(passkey)
+  # Verifies the attestation response from the browser and persists a new passkey record.
+  # The +passkey+ hash should contain +client_data_json+, +attestation_object+, and +transports+
+  # as submitted by the registration form. The challenge is extracted from the authenticator's
+  # +clientDataJSON+ response and verified server-side. Any additional +attributes+ (e.g. +holder+)
+  # are passed through to +create!+.
+  #
+  # Raises ActionPack::WebAuthn::InvalidResponseError if the attestation is invalid.
+  def self.register(passkey, **attributes)
+    credential = ActionPack::WebAuthn::PublicKeyCredential.register(passkey)
 
-      create!(**credential.to_h, **attributes)
-    end
+    create!(**credential.to_h, **attributes)
+  end
 
-    # Returns a RequestOptions object suitable for passing to the browser's
-    # +navigator.credentials.get()+ call. When a +holder+ is provided, their existing credentials
-    # are included so the browser can offer them for selection. Merges global defaults, holder
-    # options, and any additional +options+ overrides.
-    def authentication_options(holder: nil, **options)
-      ActionPack::WebAuthn::PublicKeyCredential.request_options(
-        **Rails.configuration.action_pack.web_authn.default_request_options.to_h,
-        **holder&.passkey_authentication_options.to_h,
-        **options
-      )
-    end
+  # Returns a RequestOptions object suitable for passing to the browser's
+  # +navigator.credentials.get()+ call. When a +holder+ is provided, their existing credentials
+  # are included so the browser can offer them for selection. Merges global defaults, holder
+  # options, and any additional +options+ overrides.
+  def self.authentication_options(holder: nil, **options)
+    ActionPack::WebAuthn::PublicKeyCredential.request_options(
+      **Rails.configuration.action_pack.web_authn.default_request_options.to_h,
+      **holder&.passkey_authentication_options.to_h,
+      **options
+    )
+  end
 
-    # Looks up a passkey by credential ID and verifies the assertion response from the browser.
-    # Returns the authenticated Passkey record, or +nil+ if the credential is not found or
-    # verification fails.
-    def authenticate(passkey)
-      find_by(credential_id: passkey[:id])&.authenticate(passkey)
-    end
+  # Looks up a passkey by credential ID and verifies the assertion response from the browser.
+  # Returns the authenticated Passkey record, or +nil+ if the credential is not found or
+  # verification fails.
+  def self.authenticate(passkey)
+    find_by(credential_id: passkey[:id])&.authenticate(passkey)
   end
 
   # Verifies the assertion response against this passkey's stored credential and updates the
@@ -97,7 +97,7 @@ class ActionPack::Passkey < Rails.configuration.action_pack.passkey.parent_class
       id: credential_id,
       public_key: public_key,
       sign_count: sign_count,
-      transports: transports
+      transports: transports #: Array[String]
     )
   end
 end

@@ -1,4 +1,8 @@
 class ZipFile::Reader
+  # @rbs @io: ZipFile::Reader::_IO
+  # @rbs @reader: Array[ZipKit::FileReader::ZipEntry]
+
+  #: (ZipFile::Reader::_IO) -> void
   def initialize(io)
     @io = io
     @reader = ZipKit::FileReader.read_zip_structure(io: io)
@@ -6,6 +10,8 @@ class ZipFile::Reader
     raise ZipFile::InvalidFileError, e.message
   end
 
+  # @rbs (String) -> String
+  #    | [T] (String) { (ZipFile::Reader::IO) -> T } -> T
   def read(file_path)
     entry = @reader.find { |e| e.filename == file_path }
     raise ArgumentError, "File not found in zip: #{file_path}" unless entry
@@ -14,14 +20,16 @@ class ZipFile::Reader
     if block_given?
       yield ZipFile::Reader::IO.new(entry, @io)
     else
-      entry.extractor_from(@io).extract
+      entry.extractor_from(@io).extract #: String
     end
   end
 
+  #: (String) -> Array[String]
   def glob(pattern)
     @reader.map(&:filename).select { |name| File.fnmatch(pattern, name) }.sort
   end
 
+  #: (String) -> bool
   def exists?(file_path)
     @reader.any? { |e| e.filename == file_path }
   end

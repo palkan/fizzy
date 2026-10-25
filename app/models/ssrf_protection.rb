@@ -1,4 +1,5 @@
 module SsrfProtection
+  # @rbs skip -- declared in sig/generated/inline.rbs
   extend self
 
   DNS_RESOLUTION_TIMEOUT = 2
@@ -53,12 +54,14 @@ module SsrfProtection
     IPAddr.new("64:ff9b:1::/48")
   ].freeze
 
+  #: (String hostname) -> String?
   def resolve_public_ip(hostname)
     ip_addresses = resolve_dns(hostname)
     public_ips = ip_addresses.reject { |ip| blocked_address?(ip) }
     public_ips.sort_by { |ipaddr| ipaddr.ipv4? ? 0 : 1 }.first&.to_s
   end
 
+  #: (IPAddr | String ip) -> bool
   def blocked_address?(ip)
     ipaddr = ip.is_a?(IPAddr) ? ip : IPAddr.new(ip.to_s)
 
@@ -78,8 +81,9 @@ module SsrfProtection
   end
 
   private
+    #: (String hostname) -> Array[IPAddr]
     def resolve_dns(hostname)
-      ip_addresses = []
+      ip_addresses = [] #: Array[IPAddr]
 
       Resolv::DNS.open(nameserver: DNS_NAMESERVERS, timeouts: DNS_RESOLUTION_TIMEOUT) do |dns|
         dns.each_address(hostname) do |ip_address|
@@ -90,16 +94,19 @@ module SsrfProtection
       ip_addresses
     end
 
+    #: (IPAddr) -> bool
     def disallowed_ipv4?(ipaddr)
       ipaddr.private? || ipaddr.loopback? || ipaddr.link_local? ||
         DISALLOWED_IP_RANGES.any? { |range| range.include?(ipaddr) }
     end
 
+    #: (IPAddr) -> bool
     def disallowed_ipv6?(ipaddr)
       ipaddr.private? || ipaddr.loopback? || ipaddr.link_local? ||
         DISALLOWED_IPV6_RANGES.any? { |range| range.include?(ipaddr) }
     end
 
+    #: (IPAddr) -> IPAddr
     def embedded_ipv4(ipaddr)
       IPAddr.new([ ipaddr.to_i & 0xffffffff ].pack("N").unpack("C4").join("."))
     end

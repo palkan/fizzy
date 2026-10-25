@@ -1,7 +1,9 @@
 module Comment::Searchable
+  # @type instance: Comment
   extend ActiveSupport::Concern
 
   included do
+    # @type self: singleton(Comment)
     include ::Searchable
   end
 

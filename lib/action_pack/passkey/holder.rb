@@ -35,9 +35,11 @@
 #     config.authentication_options { { user_verification: "required" } }
 #   end
 module ActionPack::Passkey::Holder
+  # @type instance: ActiveRecord::Base
   extend ActiveSupport::Concern
 
-  class_methods do
+  module ClassMethods
+    # @type instance: singleton(ActiveRecord::Base)
     # Declares that this model can hold passkeys. Sets up a polymorphic +has_many+ association
     # and defines +passkey_registration_options+ and +passkey_authentication_options+ instance methods used
     # by ActionPack::Passkey to build ceremony options.
@@ -45,6 +47,7 @@ module ActionPack::Passkey::Holder
     # Keyword arguments matching CreationOptions or RequestOptions fields are extracted and
     # turned into holder-scoped option procs automatically. An optional block yields a Config
     # for more complex setup.
+    #: (**untyped) ?{ (ActionPack::Passkey::Holder::Config) -> void } -> void
     def has_passkeys(**options, &block)
       config = Config.new(**options)
       block&.call(config)
@@ -55,6 +58,7 @@ module ActionPack::Passkey::Holder
         class_name: "ActionPack::Passkey"
 
       define_method(:passkey_registration_options) do
+        # @type self: ActiveRecord::Base
         {
           id: id,
           exclude_credentials: public_send(config.association_name)
@@ -62,6 +66,7 @@ module ActionPack::Passkey::Holder
       end
 
       define_method(:passkey_authentication_options) do
+        # @type self: ActiveRecord::Base
         { credentials: public_send(config.association_name) }.merge(config.evaluate_authentication_options(self))
       end
     end
@@ -70,8 +75,13 @@ module ActionPack::Passkey::Holder
   # Configuration object yielded by +has_passkeys+ when a block is given. Allows setting
   # custom association options and ceremony option blocks.
   class Config
-    attr_accessor :association_name, :dependent
+    # @rbs @registration_options: (^() [self: ActiveRecord::Base] -> Hash[Symbol, untyped])?
+    # @rbs @authentication_options: (^() [self: ActiveRecord::Base] -> Hash[Symbol, untyped])?
 
+    attr_accessor :association_name #: Symbol
+    attr_accessor :dependent #: Symbol
+
+    #: (**untyped) -> void
     def initialize(**options)
       @association_name = options.delete(:association_name) || :passkeys
       @dependent = options.delete(:dependent) || :destroy
@@ -88,6 +98,7 @@ module ActionPack::Passkey::Holder
     # Sets a block to evaluate in the holder's context to produce additional authentication options.
     #
     #   config.authentication_options { { user_verification: "required" } }
+    #: () { () [self: ActiveRecord::Base] -> Hash[Symbol, untyped] } -> void
     def authentication_options(&block)
       @authentication_options = block
     end
@@ -95,15 +106,17 @@ module ActionPack::Passkey::Holder
     # Sets a block to evaluate in the holder's context to produce additional creation options.
     #
     #   config.registration_options { { name: email, display_name: name } }
+    #: () { () [self: ActiveRecord::Base] -> Hash[Symbol, untyped] } -> void
     def registration_options(&block)
       @registration_options = block
     end
 
     # Evaluates the request options block (if any) in the context of the given +record+. Called
     # internally by the +passkey_authentication_options+ method defined on the holder.
+    #: (ActiveRecord::Base) -> Hash[Symbol, untyped]
     def evaluate_authentication_options(record)
-      if @authentication_options
-        record.instance_exec(&@authentication_options)
+      if options = @authentication_options
+        record.instance_exec(&options)
       else
         {}
       end
@@ -111,15 +124,17 @@ module ActionPack::Passkey::Holder
 
     # Evaluates the creation options block (if any) in the context of the given +record+. Called
     # internally by the +passkey_registration_options+ method defined on the holder.
+    #: (ActiveRecord::Base) -> Hash[Symbol, untyped]
     def evaluate_registration_options(record)
-      if @registration_options
-        record.instance_exec(&@registration_options)
+      if options = @registration_options
+        record.instance_exec(&options)
       else
         {}
       end
     end
 
     private
+      #: (singleton(ActionPack::WebAuthn::PublicKeyCredential::Options), Hash[Symbol, untyped]) -> Hash[Symbol, untyped]?
       def extract_options_for(klass, options)
         keys = klass.attribute_names.map(&:to_sym)
 
@@ -128,16 +143,21 @@ module ActionPack::Passkey::Holder
         extracted if extracted.any?
       end
 
+      #: (Hash[Symbol, untyped]) -> ^() [self: ActiveRecord::Base] -> Hash[Symbol, untyped]
       def options_to_proc(options)
         proc do
+          # @type self: ActiveRecord::Base
           options.transform_values do |value|
             case value
             when Symbol then send(value)
-            when Proc then instance_exec(&value)
+            when Proc
+              # Procs among the options are written to run in the record's context
+              value_proc = value #: ^() [self: ActiveRecord::Base] -> untyped
+              instance_exec(&value_proc)
             else value
             end
           end
-        end
+        end #: ^() [self: ActiveRecord::Base] -> Hash[Symbol, untyped]
       end
   end
 end
