@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn Attestation Response
 #
 # Handles the authenticator response from a WebAuthn registration ceremony.
@@ -27,16 +29,15 @@
 # * The attestation statement passes format-specific verification
 #
 class ActionPack::WebAuthn::Authenticator::AttestationResponse < ActionPack::WebAuthn::Authenticator::Response
-  # @rbs @attestation: ActionPack::WebAuthn::Authenticator::Attestation
-
-  attr_reader :attestation_object #: ActionPack::WebAuthn::Authenticator::Attestation | String
+  #: ActionPack::WebAuthn::Authenticator::Attestation | String
+  attr_reader :attestation_object
 
   validate :client_data_type_must_be_create
   validate :attestation_must_be_valid
 
-  #: (attestation_object: ActionPack::WebAuthn::Authenticator::Attestation | String, client_data_json: String, **untyped) -> void
-  def initialize(attestation_object:, client_data_json:, **attributes)
-    super(client_data_json:, **attributes)
+  #: (attestation_object: ActionPack::WebAuthn::Authenticator::Attestation | String, client_data_json: String, ?origin: String?, ?user_verification: Symbol | String) -> void
+  def initialize(attestation_object:, client_data_json:, origin: nil, user_verification: :preferred)
+    super(client_data_json:, origin:, user_verification:)
     @attestation_object = attestation_object
   end
 
@@ -44,7 +45,7 @@ class ActionPack::WebAuthn::Authenticator::AttestationResponse < ActionPack::Web
   # attestation object bytes.
   #: () -> ActionPack::WebAuthn::Authenticator::Attestation
   def attestation
-    @attestation ||= ActionPack::WebAuthn::Authenticator::Attestation.wrap(attestation_object)
+    @attestation ||= ActionPack::WebAuthn::Authenticator::Attestation.wrap(attestation_object) #: ActionPack::WebAuthn::Authenticator::Attestation?
   end
 
   # Returns the authenticator data extracted from the attestation object.

@@ -1,5 +1,6 @@
+# typed: true
+
 module Search::Stemmer
-  # @rbs skip -- declared in sig/generated/inline.rbs
   extend self
 
   STEMMER = Mittens::Stemmer.new

@@ -1,3 +1,5 @@
+# typed: true
+
 class Prompts::Boards::UsersController < ApplicationController
   include BoardScoped
 

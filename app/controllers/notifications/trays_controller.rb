@@ -1,3 +1,5 @@
+# typed: true
+
 class Notifications::TraysController < ApplicationController
   MAX_ENTRIES_LIMIT = 100
 

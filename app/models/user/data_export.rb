@@ -1,3 +1,5 @@
+# typed: true
+
 class User::DataExport < Export
   private
     def filename

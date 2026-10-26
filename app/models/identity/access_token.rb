@@ -1,3 +1,5 @@
+# typed: true
+
 class Identity::AccessToken < ApplicationRecord
   belongs_to :identity
 

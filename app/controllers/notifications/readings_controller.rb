@@ -1,3 +1,5 @@
+# typed: true
+
 class Notifications::ReadingsController < ApplicationController
   def create
     @notification = Current.user!.notifications.find(params[:notification_id])

@@ -1,3 +1,5 @@
+# typed: true
+
 class Users::EventsController < ApplicationController
   include FilterScoped
 

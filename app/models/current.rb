@@ -1,3 +1,5 @@
+# typed: true
+
 class Current < ActiveSupport::CurrentAttributes
   attribute :session #: Session?
   attribute :user #: User?
@@ -46,12 +48,12 @@ class Current < ActiveSupport::CurrentAttributes
     account or raise_unset(:account)
   end
 
-  # @rbs [T] (Account? value) { (?) -> T } -> T
+  #: [T] (Account? value) { () -> T } -> T
   def with_account(value, &)
     with(account: value, &)
   end
 
-  # @rbs [T] () { (?) -> T } -> T
+  #: [T] () { () -> T } -> T
   def without_account(&)
     with(account: nil, &)
   end

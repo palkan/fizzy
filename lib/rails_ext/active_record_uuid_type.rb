@@ -1,3 +1,5 @@
+# typed: true
+
 # Custom UUID attribute type for MySQL binary storage with base36 string representation
 module ActiveRecord
   module Type
@@ -16,7 +18,7 @@ module ActiveRecord
         hex.to_i(16).to_s(36).rjust(BASE36_LENGTH, "0")
       end
 
-      #: (_ToS) -> ::String
+      #: (Object) -> ::String
       def self.base36_to_hex(base36)
         base36.to_s.to_i(36).to_s(16).rjust(32, "0")
       end
@@ -25,7 +27,7 @@ module ActiveRecord
         return unless value
 
         # Without capture groups, scan returns the matched strings
-        hex_pairs = Uuid.base36_to_hex(value).scan(/../) #: Array[::String]
+        hex_pairs = Uuid.base36_to_hex(value).scan(/../) #: as Array[::String]
         binary = hex_pairs.map(&:hex).pack("C*")
         super(binary)
       end

@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Commentable
-  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Card)
+    #: self as singleton(Card)
     has_many :comments, dependent: :destroy
   end
 
@@ -48,15 +50,14 @@ module Card::Commentable
           .each { |rt_id, comment_id| rich_text_map[rt_id] = comment_id }
       end
 
-      embed_comment_ids = if rich_text_map.any?
-        rich_text_map.keys.each_slice(STORAGE_BATCH_SIZE).flat_map do |batch_ids|
+      embed_comment_ids = [] #: Array[String]
+      if rich_text_map.any?
+        embed_comment_ids = rich_text_map.keys.each_slice(STORAGE_BATCH_SIZE).flat_map do |batch_ids|
           ActiveStorage::Attachment
             .where(record_type: "ActionText::RichText", record_id: batch_ids)
             .distinct
             .pluck(:record_id)
         end.filter_map { |rt_id| rich_text_map[rt_id] }
-      else
-        [] #: Array[String]
       end
 
       (direct + embed_comment_ids).uniq

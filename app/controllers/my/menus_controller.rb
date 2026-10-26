@@ -1,3 +1,5 @@
+# typed: true
+
 class My::MenusController < ApplicationController
   def show
     @filters = Current.user!.filters.all

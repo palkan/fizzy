@@ -1,3 +1,5 @@
+# typed: true
+
 class DataExportJob < ApplicationJob
   queue_as :backend
 

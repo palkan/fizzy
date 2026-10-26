@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::DataTransfer::ActiveStorage::BlobRecordSet < Account::DataTransfer::RecordSet
   #: (Account) -> void
   def initialize(account)
@@ -22,7 +24,7 @@ class Account::DataTransfer::ActiveStorage::BlobRecordSet < Account::DataTransfe
     def import_batch(files)
       batch_data = files.map do |file|
         data = load(file)
-        data.slice(*attributes).merge(
+        data.select { |key, _| attributes.include?(key) }.merge(
           "account_id" => account.id,
           "key" => ::ActiveStorage::Blob.generate_unique_secure_token(length: ::ActiveStorage::Blob::MINIMUM_TOKEN_LENGTH),
           "service_name" => ::ActiveStorage::Blob.service.name

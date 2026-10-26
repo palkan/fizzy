@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Column
 module Column::Positioned
-  # @type instance: Column
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Column)
+    #: self as singleton(Column)
     scope :sorted, -> { order(position: :asc) }
 
     before_create :set_position

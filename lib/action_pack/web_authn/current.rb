@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn Current Attributes
 #
 # Thread-isolated request-scoped attributes for WebAuthn ceremonies. These are

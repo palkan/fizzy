@@ -1,5 +1,6 @@
+# typed: true
+
 class User < ApplicationRecord
-  # @rbs skip -- declared in sig/generated/inline.rbs
   include Accessor, Assignee, Attachable, Avatar, Configurable, EmailAddressChangeable,
     Mentionable, Named, Notifiable, Role, Searcher, Watcher
   include Timelined # Depends on Accessor
@@ -28,7 +29,8 @@ class User < ApplicationRecord
 
   #: () -> bool
   def setup?
-    identity = self.identity #: Identity
+    # Only active users, who keep their identity, are asked whether they're set up.
+    identity = self.identity #: as !nil
     name != identity.email_address
   end
 

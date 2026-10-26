@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: User
 module User::Mentionable
-  # @type instance: User
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(User)
+    #: self as singleton(User)
     has_many :mentions, dependent: :destroy, inverse_of: :mentionee
 
     # Need to set in the included block so that it overrides Action Text's

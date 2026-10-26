@@ -1,23 +1,24 @@
+# typed: true
+
 class Account::DataTransfer::Manifest
-  attr_reader :account #: Account
+  #: Account
+  attr_reader :account
 
   #: (Account) -> void
   def initialize(account)
     @account = account
   end
 
-  # @rbs start: [String, String]? -- the model name and the last file processed of the record set to resume from
-  # @rbs &: (Account::DataTransfer::RecordSet, ?String?) -> void
-  # @rbs return: void
-  def each_record_set(start: nil)
+  #: (?start: [ String, String ]?) ?{ (Account::DataTransfer::RecordSet, String?) -> void } -> void
+  def each_record_set(start: nil, &block)
     raise ArgumentError, "No block given" unless block_given?
 
-    started = start.nil?
+    started = start.nil? #: bool
     record_class, last_id = start if start
 
     record_sets.each do |record_set|
       if started
-        yield record_set
+        yield record_set, nil
       elsif record_set.model.name == record_class
         started = true
         yield record_set, last_id
@@ -70,21 +71,21 @@ class Account::DataTransfer::Manifest
       ].then { set_importable_model_names(it) }
     end
 
-    #: (*Account::DataTransfer::RecordSet::model) -> Array[Account::DataTransfer::RecordSet]
+    #: (*singleton(ActiveRecord::Base)) -> Array[Account::DataTransfer::RecordSet]
     def record_sets_for(*models)
       models.map do |model|
         record_set_for(model)
       end
     end
 
-    #: (Account::DataTransfer::RecordSet::model) -> Account::DataTransfer::RecordSet
+    #: (singleton(ActiveRecord::Base)) -> Account::DataTransfer::RecordSet
     def record_set_for(model)
       Account::DataTransfer::RecordSet.new(account: account, model: model)
     end
 
     #: (Array[Account::DataTransfer::RecordSet]) -> Array[Account::DataTransfer::RecordSet]
     def set_importable_model_names(record_sets)
-      model_names = record_sets.filter_map { |record_set| record_set.model&.name }
+      model_names = record_sets.filter_map { |record_set| record_set.model.name }
       record_sets.each { |record_set| record_set.importable_model_names = model_names }
       record_sets
     end

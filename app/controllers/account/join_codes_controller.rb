@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::JoinCodesController < ApplicationController
   wrap_parameters :account_join_code, include: %i[ usage_limit ]
 

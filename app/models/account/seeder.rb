@@ -1,6 +1,10 @@
+# typed: true
+
 class Account::Seeder
-  attr_reader :account #: Account
-  attr_reader :creator #: User?
+  #: Account
+  attr_reader :account
+  #: User?
+  attr_reader :creator
 
   #: (Account, User?) -> void
   def initialize(account, creator)

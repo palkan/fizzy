@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Filter
 module Filter::Resources
-  # @type instance: Filter
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Filter)
+    #: self as singleton(Filter)
     has_and_belongs_to_many :tags
     has_and_belongs_to_many :boards
     has_and_belongs_to_many :assignees, class_name: "User", join_table: "assignees_filters", association_foreign_key: "assignee_id"
@@ -20,7 +22,7 @@ module Filter::Resources
     destroy!
   end
 
-  #: () -> Board::ActiveRecord_Associations_CollectionProxy
+  #: () -> Board::PrivateCollectionProxy
   def boards
     @boards ||= creator.boards.where id: super.ids
   end

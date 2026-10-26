@@ -1,3 +1,5 @@
+# typed: true
+
 class Users::EmailAddressesController < ApplicationController
   before_action :set_user
   before_action :ensure_valid_email_address, only: :create

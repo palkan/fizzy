@@ -1,10 +1,12 @@
+# typed: true
+
+# @requires_ancestor: Account
 module Account::Storage
-  # @type instance: Account
   extend ActiveSupport::Concern
   include ::Storage::Totaled
 
   included do
-    # @type self: singleton(Account)
+    #: self as singleton(Account)
     before_destroy :clear_storage_entries
   end
 

@@ -1,5 +1,8 @@
+# typed: true
+
 class TimeWindowParser
-  attr_reader :now #: ActiveSupport::TimeWithZone
+  #: ActiveSupport::TimeWithZone
+  attr_reader :now
 
   HUMAN_NAMES_BY_VALUE = {
     "today" => "Today",

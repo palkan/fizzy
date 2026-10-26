@@ -1,8 +1,10 @@
+# typed: true
+
 class ZipFile
   class InvalidFileError < StandardError; end
 
-  # @rbs [T] (ActiveStorage::Attached::One, filename: String) { (ZipFile::Writer) -> void } -> void
-  def self.create_for(attachment, filename:)
+  #: (ActiveStorage::Attached::One, filename: String) ?{ (ZipFile::Writer) -> void } -> void
+  def self.create_for(attachment, filename:, &)
     raise ArgumentError, "No block given" unless block_given?
 
     reflection = attachment.record.class.reflect_on_attachment(attachment.name)
@@ -16,8 +18,8 @@ class ZipFile
     end
   end
 
-  # @rbs (ActiveStorage::Blob) { (ZipFile::Reader) -> void } -> void
-  def self.read_from(blob)
+  #: (ActiveStorage::Blob) ?{ (ZipFile::Reader) -> void } -> void
+  def self.read_from(blob, &)
     raise ArgumentError, "No block given" unless block_given?
 
     if s3_service?(blob.service)
@@ -34,7 +36,7 @@ class ZipFile
   end
 
   #: (ActiveStorage::Attached::One, filename: String, service: ActiveStorage::Service::S3Service) { (ZipFile::Writer) -> void } -> void
-  private_class_method def self.create_for_s3(attachment, filename:, service:)
+  private_class_method def self.create_for_s3(attachment, filename:, service:, &)
     blob = ActiveStorage::Blob.create_before_direct_upload!(
       filename: filename,
       content_type: "application/zip",
@@ -70,7 +72,7 @@ class ZipFile
   end
 
   #: (ActiveStorage::Attached::One, filename: String) { (ZipFile::Writer) -> void } -> void
-  private_class_method def self.create_for_disk(attachment, filename:)
+  private_class_method def self.create_for_disk(attachment, filename:, &)
     tempfile = Tempfile.new([ "export", ".zip" ])
     tempfile.binmode
 
@@ -86,7 +88,7 @@ class ZipFile
   end
 
   #: (ActiveStorage::Blob) { (ZipFile::Reader) -> void } -> void
-  private_class_method def self.read_from_s3(blob)
+  private_class_method def self.read_from_s3(blob, &)
     url = blob.url(expires_in: 6.hour)
     ssl_verify_peer = blob.service.client.client.config.ssl_verify_peer
     remote_io = RemoteIO.new(url, ssl_verify_peer: ssl_verify_peer)
@@ -95,7 +97,7 @@ class ZipFile
   end
 
   #: (ActiveStorage::Blob) { (ZipFile::Reader) -> void } -> void
-  private_class_method def self.read_from_disk(blob)
+  private_class_method def self.read_from_disk(blob, &)
     blob.open do |file|
       reader = Reader.new(file)
       yield reader

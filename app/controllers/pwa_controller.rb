@@ -1,3 +1,5 @@
+# typed: true
+
 class PwaController < ApplicationController
   disallow_account_scope
   skip_forgery_protection

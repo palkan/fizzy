@@ -1,10 +1,16 @@
+# typed: true
+
 class Card::Entropy
-  attr_reader :card #: Card
-  attr_reader :auto_clean_period #: Integer
+  #: Card
+  attr_reader :card
+  #: Integer
+  attr_reader :auto_clean_period
 
   #: (Card) -> Card::Entropy?
   def self.for(card)
-    return unless card.last_active_at
+    # Unset until the card is first saved
+    last_active_at = card.last_active_at #: ActiveSupport::TimeWithZone?
+    return unless last_active_at
 
     new(card, card.auto_postpone_period)
   end

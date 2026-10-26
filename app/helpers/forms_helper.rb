@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module FormsHelper
-  # @type instance: ActionView::Base
   #: (**untyped) ?{ (ActionView::Helpers::FormBuilder) -> untyped } -> String
   def auto_submit_form_with(**attributes, &)
     data = attributes.delete(:data) || {}

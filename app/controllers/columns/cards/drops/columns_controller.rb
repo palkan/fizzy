@@ -1,3 +1,5 @@
+# typed: true
+
 class Columns::Cards::Drops::ColumnsController < ApplicationController
   include CardScoped
 

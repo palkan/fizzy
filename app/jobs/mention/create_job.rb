@@ -1,3 +1,5 @@
+# typed: true
+
 class Mention::CreateJob < ApplicationJob
   discard_on ActiveJob::DeserializationError
 

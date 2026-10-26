@@ -1,3 +1,5 @@
+# typed: true
+
 class Users::DataExportsController < ApplicationController
   before_action :set_user
   before_action :ensure_current_user

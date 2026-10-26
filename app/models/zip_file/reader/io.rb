@@ -1,13 +1,11 @@
-class ZipFile::Reader::IO
-  # @rbs @entry: ZipKit::FileReader::ZipEntry
-  # @rbs @io: ZipFile::Reader::_IO
-  # @rbs @extractor: ZipKit::FileReader::_Extractor
+# typed: true
 
-  #: (ZipKit::FileReader::ZipEntry, ZipFile::Reader::_IO) -> void
+class ZipFile::Reader::IO
+  #: (ZipKit::FileReader::ZipEntry, ZipFile::Reader::Source) -> void
   def initialize(entry, io)
-    @entry = entry
-    @io = io
-    @extractor = @entry.extractor_from(@io)
+    @entry = entry #: ZipKit::FileReader::ZipEntry
+    @io = io #: ZipFile::Reader::Source
+    @extractor = @entry.extractor_from(@io) #: ZipKit::FileReader::StoredReader | ZipKit::FileReader::InflatingReader
   end
 
   #: (?Integer?, ?String?) -> String?

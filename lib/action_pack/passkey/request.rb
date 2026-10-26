@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack Passkey Request
 #
 # Controller concern that sets up the WebAuthn request context and provides
@@ -45,13 +47,14 @@
 # Automatically populates +ActionPack::WebAuthn::Current+ with the request
 # host and origin.
 #
+# @requires_ancestor: ActionController::Base
 module ActionPack::Passkey::Request
-  # @type instance: ActionController::Base
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ActionController::Base)
+    #: self as singleton(ActionController::Base)
     before_action do
+      #: self as ActionController::Base
       ActionPack::WebAuthn::Current.host = request.host
       ActionPack::WebAuthn::Current.origin = request.base_url
     end
@@ -78,6 +81,8 @@ module ActionPack::Passkey::Request
   # Returns RegistrationOptions for the registration ceremony.
   #: (holder: untyped, **untyped) -> ActionPack::WebAuthn::PublicKeyCredential::CreationOptions
   def passkey_registration_options(holder:, **options)
-    ActionPack::Passkey.registration_options(holder:, **options)
+    # Sorbet rejects any keyword splat into a method with a required keyword (holder:), and these options are open-ended
+    passkey_class = ActionPack::Passkey #: as untyped
+    passkey_class.registration_options(holder:, **options)
   end
 end

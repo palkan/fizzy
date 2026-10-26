@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Readable
-  # @type instance: Card
   extend ActiveSupport::Concern
 
   def read_by(user)
@@ -19,7 +21,8 @@ module Card::Readable
 
   private
     def remove_inaccessible_notifications_later
-      Card::RemoveInaccessibleNotificationsJob.perform_later(self)
+      card = self #: as Card
+      Card::RemoveInaccessibleNotificationsJob.perform_later(card)
     end
 
     def event_notification_sources

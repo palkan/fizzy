@@ -1,3 +1,5 @@
+# typed: true
+
 class Users::EmailAddresses::ConfirmationsController < ApplicationController
   allow_unauthenticated_access
 

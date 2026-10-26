@@ -1,3 +1,5 @@
+# typed: true
+
 class Cards::WatchesController < ApplicationController
   include CardScoped
 

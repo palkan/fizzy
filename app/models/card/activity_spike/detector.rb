@@ -1,5 +1,8 @@
+# typed: true
+
 class Card::ActivitySpike::Detector
-  attr_reader :card #: Card
+  #: Card
+  attr_reader :card
 
   #: (Card) -> void
   def initialize(card)

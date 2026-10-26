@@ -1,3 +1,5 @@
+# typed: true
+
 class Push::Subscription < ApplicationRecord
   PERMITTED_ENDPOINT_HOSTS = %w[
     jmt17.google.com
@@ -7,7 +9,10 @@ class Push::Subscription < ApplicationRecord
     notify.windows.com
   ].freeze
 
-  belongs_to :account, default: -> { user.account }
+  belongs_to :account, default: -> {
+    #: self as Push::Subscription
+    user.account
+  }
   belongs_to :user
 
   validates :endpoint, presence: true
@@ -20,10 +25,10 @@ class Push::Subscription < ApplicationRecord
       body: body,
       url: url,
       badge: user.notifications.unread.count,
-      endpoint: endpoint, #: String
+      endpoint: endpoint, #: as !nil
       endpoint_ip: resolved_endpoint_ip,
-      p256dh_key: p256dh_key, #: String
-      auth_key: auth_key #: String
+      p256dh_key: p256dh_key, #: as !nil
+      auth_key: auth_key #: as !nil
     )
   end
 
@@ -31,7 +36,7 @@ class Push::Subscription < ApplicationRecord
   def resolved_endpoint_ip
     return @resolved_endpoint_ip if defined?(@resolved_endpoint_ip)
     # Only resolved for endpoints with a permitted host (see #validate_endpoint_url)
-    host = endpoint_uri&.host #: String
+    host = endpoint_uri&.host #: as !nil
     @resolved_endpoint_ip = SsrfProtection.resolve_public_ip(host)
   end
 

@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::DataImportJob < ApplicationJob
   include ActiveJob::Continuable
 

@@ -1,23 +1,26 @@
-class Signup
-  # @rbs @tenant: Integer?
+# typed: true
 
+class Signup
   include ActiveModel::Model
   include ActiveModel::Attributes
   include ActiveModel::Validations
 
-  attr_accessor :full_name, :email_address #: String?
-  attr_accessor :identity #: Identity?
-  attr_accessor :skip_account_seeding #: boolish
-  attr_reader :account #: Account?
-  attr_reader :user #: User?
+  #: String?
+  attr_accessor :full_name, :email_address
+  #: Identity?
+  attr_accessor :identity
+  #: BasicObject
+  attr_accessor :skip_account_seeding
+  #: Account?
+  attr_reader :account
+  #: User?
+  attr_reader :user
 
   validates :email_address, format: { with: URI::MailTo::EMAIL_REGEXP }, on: :identity_creation
   validates :full_name, :identity, presence: true, on: :completion
   validates :full_name, length: { maximum: 240 }
 
-  #: (?Hash[Symbol, untyped] attributes) -> void
   def initialize(...)
-    # @type ivar @identity: Identity
     super
 
     @email_address = @identity.email_address if @identity
@@ -25,7 +28,6 @@ class Signup
 
   #: () -> MagicLink
   def create_identity
-    # @type ivar @identity: Identity
     @identity = Identity.find_or_create_by!(email_address: email_address)
     @identity.send_magic_link for: :sign_up
   end
@@ -34,7 +36,7 @@ class Signup
   def complete
     if valid?(:completion)
       begin
-        @tenant = create_tenant
+        @tenant = create_tenant #: Integer?
         create_account
         true
       rescue => error
@@ -44,7 +46,9 @@ class Signup
         errors.add(:base, "Something went wrong, and we couldn't create your account. Please give it another try.")
         Rails.error.report(error, severity: :error)
         Rails.logger.error error
-        Rails.logger.error error.backtrace.join("\n")
+        # A rescued error was raised, so it has a backtrace.
+        backtrace = error.backtrace #: as !nil
+        Rails.logger.error backtrace.join("\n")
 
         false
       end
@@ -67,7 +71,6 @@ class Signup
 
     #: () -> void
     def create_account
-      # @type ivar @account: Account
       @account = Account.create_with_owner(
         account: {
           external_account_id: @tenant,
@@ -84,8 +87,9 @@ class Signup
 
     #: () -> String
     def generate_account_name
-      identity = self.identity #: Identity
-      full_name = self.full_name #: String
+      # Both are validated present on completion.
+      identity = self.identity #: as !nil
+      full_name = self.full_name #: as !nil
       AccountNameGenerator.new(identity: identity, name: full_name).generate
     end
 
@@ -102,7 +106,7 @@ class Signup
     #: () -> Hash[Symbol, untyped]
     def subscription_attributes
       # FreeV1Subscription is defined by the SaaS engine
-      subscription = FreeV1Subscription # steep:ignore UnknownConstant
+      subscription = FreeV1Subscription
 
       { name: subscription.to_param, price: subscription.price }
     end

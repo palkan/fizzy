@@ -1,3 +1,5 @@
+# typed: true
+
 class Columns::RightPositionsController < ApplicationController
   include ColumnScoped
 

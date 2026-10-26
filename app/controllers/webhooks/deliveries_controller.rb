@@ -1,3 +1,5 @@
+# typed: true
+
 class Webhooks::DeliveriesController < ApplicationController
   include BoardScoped
 

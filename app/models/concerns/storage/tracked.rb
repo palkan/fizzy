@@ -1,12 +1,14 @@
+# typed: true
+
 # Storage tracking is a business abstraction - we count what users upload.
 # Original upload bytes only; variants/previews/derivatives excluded.
 # Physical storage optimizations (deduplication, compression) don't affect quotas.
+# @requires_ancestor: ApplicationRecord
 module Storage::Tracked
-  # @type instance: Storage::Tracked & Storage::Tracked::_Includer & ApplicationRecord
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationRecord)
+    #: self as singleton(ApplicationRecord)
     before_update :track_board_transfer, if: :board_transfer?
   end
 
@@ -68,13 +70,14 @@ module Storage::Tracked
 
     #: () -> Array[ApplicationRecord?]
     def storage_transfer_records
-      [ self ]
+      [ self ] #: as Array[ApplicationRecord?]
     end
 
     # Override if needed. Default = all direct attachments
-    #: (?ApplicationRecord recordable) -> Array[ActiveStorage::Attachment]
+    #: (?ApplicationRecord | Storage::Tracked recordable) -> Array[ActiveStorage::Attachment]
     def attachments_for_storage(recordable = self)
-      storage_attachments_for_records([ recordable ]).fetch(recordable, [])
+      record = recordable #: as ApplicationRecord
+      storage_attachments_for_records([ record ]).fetch(record, [])
     end
 
     #: (ApplicationRecord? | Array[ApplicationRecord?] recordables) -> Hash[ApplicationRecord, Array[ActiveStorage::Attachment]]

@@ -1,5 +1,8 @@
+# typed: true
+
 class Notification::DefaultPayload
-  attr_reader :notification #: Notification
+  #: Notification
+  attr_reader :notification
 
   delegate :card, to: :notification
 

@@ -1,11 +1,13 @@
+# typed: true
+
 # Tell crawlers like Googlebot to drop pages entirely from search results, even
 # if other sites link to it
+# @requires_ancestor: ApplicationController
 module BlockSearchEngineIndexing
-  # @type instance: ApplicationController
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationController)
+    #: self as singleton(ApplicationController)
     after_action :block_search_engine_indexing
   end
 

@@ -1,3 +1,5 @@
+# typed: true
+
 class Notification::BundleMailer < ApplicationMailer
   include Mailers::Unsubscribable
 
@@ -14,7 +16,7 @@ class Notification::BundleMailer < ApplicationMailer
 
     if @notifications.any?
       # Bundles only go to active users, who always have an identity
-      identity = bundle.user.identity #: Identity
+      identity = bundle.user.identity #: as !nil
 
       mail \
         to: identity.email_address,

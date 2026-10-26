@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn Public Key Credential Request Options
 #
 # Generates options for the WebAuthn authentication ceremony (using an existing

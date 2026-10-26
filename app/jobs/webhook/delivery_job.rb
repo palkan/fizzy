@@ -1,3 +1,5 @@
+# typed: true
+
 class Webhook::DeliveryJob < ApplicationJob
   queue_as :webhooks
 

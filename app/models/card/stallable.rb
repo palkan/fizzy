@@ -1,11 +1,13 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Stallable
-  # @type instance: Card
   extend ActiveSupport::Concern
 
   STALLED_AFTER_LAST_SPIKE_PERIOD = 14.days
 
   included do
-    # @type self: singleton(Card)
+    #: self as singleton(Card)
     has_one :activity_spike, class_name: "Card::ActivitySpike", dependent: :destroy
 
     scope :with_activity_spikes, -> { joins(:activity_spike) }
@@ -30,7 +32,8 @@ module Card::Stallable
 
   #: () -> bool
   def detect_activity_spikes
-    Card::ActivitySpike::Detector.new(self).detect
+    card = self #: as Card
+    Card::ActivitySpike::Detector.new(card).detect
   end
 
   private
@@ -43,6 +46,7 @@ module Card::Stallable
     end
 
     def detect_activity_spikes_later
-      Card::ActivitySpike::DetectionJob.perform_later(self)
+      card = self #: as Card
+      Card::ActivitySpike::DetectionJob.perform_later(card)
     end
 end

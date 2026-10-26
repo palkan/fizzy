@@ -1,10 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Comment
 module Comment::Promptable
-  # @type instance: Comment
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Comment)
-    # @rbs skip -- declared in sig/generated/inline.rbs
+    #: self as singleton(Comment)
     include Rails.application.routes.url_helpers
   end
 

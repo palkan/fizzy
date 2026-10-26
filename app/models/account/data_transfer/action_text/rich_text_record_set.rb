@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::DataTransfer::ActionText::RichTextRecordSet < Account::DataTransfer::RecordSet
   ATTRIBUTES = %w[
     account_id
@@ -99,7 +101,7 @@ class Account::DataTransfer::ActionText::RichTextRecordSet < Account::DataTransf
 
         if uri && uri.host == host
           # URIs with a host have a path
-          path = uri.path #: String
+          path = uri.path #: as !nil
           path += "?#{uri.query}" if uri.query
           path += "##{uri.fragment}" if uri.fragment
           link["href"] = path

@@ -1,3 +1,5 @@
+# typed: true
+
 class Sessions::MenusController < ApplicationController
   disallow_account_scope
 
@@ -7,7 +9,8 @@ class Sessions::MenusController < ApplicationController
     @accounts = Current.identity!.accounts.active
 
     if @accounts.one?
-      redirect_to root_url(script_name: @accounts.first.slug)
+      account = @accounts.first #: as !nil
+      redirect_to root_url(script_name: account.slug)
     end
   end
 end

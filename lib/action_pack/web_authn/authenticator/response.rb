@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn Authenticator Response
 #
 # Abstract base class for WebAuthn authenticator responses. Provides common
@@ -30,13 +32,14 @@
 #   response.validate!
 #
 class ActionPack::WebAuthn::Authenticator::Response
-  # @rbs @client_data: Hash[String, untyped]
-
   include ActiveModel::Validations
 
-  attr_reader :client_data_json #: String
-  attr_accessor :origin #: String?
-  attr_accessor :user_verification #: Symbol
+  #: String
+  attr_reader :client_data_json
+  #: String?
+  attr_accessor :origin
+  #: Symbol
+  attr_accessor :user_verification
 
   validate :challenge_must_be_present
   validate :challenge_must_not_be_expired
@@ -71,7 +74,7 @@ class ActionPack::WebAuthn::Authenticator::Response
   # +InvalidResponseError+ if the JSON is malformed.
   #: () -> Hash[String, untyped]
   def client_data
-    @client_data ||= JSON.parse(client_data_json)
+    @client_data ||= JSON.parse(client_data_json) #: Hash[String, untyped]?
   rescue JSON::ParserError
     raise ActionPack::WebAuthn::InvalidResponseError, "Client data is not valid JSON"
   end

@@ -1,23 +1,24 @@
+# typed: true
+
 # Serializes the current account into job data so that jobs run
 # within the correct account context via Current.with_account.
 #
 # Account resolution is deferred to an around_perform callback so
 # that missing accounts raise DeserializationError inside the
 # execution path where discard_on can handle it.
+# @requires_ancestor: ApplicationJob
 module AccountTenanted
-  # @type instance: ApplicationJob
   extend ActiveSupport::Concern
 
   prepended do
-    # @type self: singleton(ApplicationJob)
+    #: self as singleton(ApplicationJob)
     attr_reader :account
     around_perform :with_account_context
   end
 
-  #: (*untyped) -> void
   def initialize(...)
     super
-    @account = Current.account
+    @account = Current.account #: Account?
   end
 
   #: () -> Hash[String, untyped]
@@ -36,7 +37,7 @@ module AccountTenanted
     def with_account_context(&block)
       resolve_account!
 
-      if account.present?
+      if account = @account
         Current.with_account(account, &block)
       else
         yield

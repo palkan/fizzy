@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module MessagesHelper
-  # @type instance: ActionView::Base
   #: (Card) ?{ () -> untyped } -> ActiveSupport::SafeBuffer
   def messages_tag(card, &)
     turbo_frame_tag dom_id(card, :messages),

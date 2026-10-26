@@ -1,3 +1,5 @@
+# typed: true
+
 class SessionsController < ApplicationController
   include ActionPack::Passkey::Request
 

@@ -1,3 +1,5 @@
+# typed: true
+
 class Cards::ReadingsController < ApplicationController
   include CardScoped
 

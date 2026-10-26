@@ -1,3 +1,5 @@
+# typed: true
+
 class Public::Boards::ColumnsController < Public::BaseController
   before_action :set_column
 

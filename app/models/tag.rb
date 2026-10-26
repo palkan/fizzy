@@ -1,3 +1,5 @@
+# typed: true
+
 class Tag < ApplicationRecord
   include Filterable
 
@@ -13,7 +15,8 @@ class Tag < ApplicationRecord
 
   #: () -> String
   def hashtag
-    title = self.title #: String
+    # Tags are always created from a title.
+    title = self.title #: as !nil
     "#" + title
   end
 

@@ -1,3 +1,5 @@
+# typed: true
+
 class FiltersController < ApplicationController
   before_action :set_filters
 
@@ -16,6 +18,6 @@ class FiltersController < ApplicationController
     end
 
     def filter_params
-      Filter.normalize_params(params.permit(*Filter::PERMITTED_PARAMS))
+      Filter.normalize_params(params.permit(Filter::Params::PERMITTED_PARAMS))
     end
 end

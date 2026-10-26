@@ -1,10 +1,14 @@
+# typed: true
+
 class Card < ApplicationRecord
-  # @rbs skip -- declared in sig/generated/inline.rbs
   include Accessible, Assignable, Attachments, Broadcastable, Closeable, Colored, Commentable,
     Entropic, Eventable, Exportable, Golden, Mentions, Multistep, Pinnable, Postponable, Promptable,
     Readable, Searchable, Stallable, Statuses, Storage::Tracked, Taggable, Triageable, Watchable
 
-  belongs_to :account, default: -> { board.account }
+  belongs_to :account, default: -> {
+    #: self as Card
+    board.account
+  }
   belongs_to :board
   belongs_to :creator, class_name: "User", default: -> { Current.user }
 
@@ -16,8 +20,14 @@ class Card < ApplicationRecord
   before_save :set_default_title, if: :published?
   before_create :assign_number
 
-  after_save   -> { board.touch }, if: :published?
-  after_touch  -> { board.touch }, if: :published?
+  after_save -> {
+    #: self as Card
+    board.touch
+  }, if: :published?
+  after_touch -> {
+    #: self as Card
+    board.touch
+  }, if: :published?
   after_update :handle_board_change, if: :saved_change_to_board_id?
 
   scope :reverse_chronologically, -> { order created_at:     :desc, id: :desc }
@@ -80,7 +90,8 @@ class Card < ApplicationRecord
 
     #: () -> void
     def handle_board_change
-      old_board = account.boards.find_by(id: board_id_before_last_save) #: Board
+      # The card just moved off this board, which still exists in the account.
+      old_board = account.boards.find_by(id: board_id_before_last_save) #: as !nil
 
       transaction do
         update! column: nil
@@ -99,6 +110,7 @@ class Card < ApplicationRecord
 
     #: () -> void
     def assign_number
-      self.number ||= account.with_lock { account.increment!(:cards_count).cards_count }
+      # Read the raw attribute: the column is NOT NULL, so `number` is typed as present, but it's nil before create.
+      self[:number] ||= account.with_lock { account.increment!(:cards_count).cards_count }
     end
 end

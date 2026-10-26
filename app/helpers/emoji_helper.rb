@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module EmojiHelper
-  # @type instance: ActionView::Base
   REACTIONS = {
     "👏" => "Clapping",
     "👍" => "Thumbs up",

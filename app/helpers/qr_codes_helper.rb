@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module QrCodesHelper
-  # @type instance: ActionView::Base
   #: (String) -> ActiveSupport::SafeBuffer
   def qr_code_image(url)
     qr_code_link = QrCodeLink.new(url)

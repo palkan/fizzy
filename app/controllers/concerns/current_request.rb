@@ -1,10 +1,13 @@
+# typed: true
+
+# @requires_ancestor: ApplicationController
 module CurrentRequest
-  # @type instance: ApplicationController
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationController)
+    #: self as singleton(ApplicationController)
     before_action do
+      #: self as ApplicationController
       Current.http_method = request.method
       Current.request_id  = request.uuid
       Current.user_agent  = request.user_agent

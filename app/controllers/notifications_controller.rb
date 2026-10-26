@@ -1,3 +1,5 @@
+# typed: true
+
 class NotificationsController < ApplicationController
   MAX_UNREAD_NOTIFICATIONS = 500
   MAX_UNREAD_NOTIFICATIONS_VIA_API = 100

@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn Relying Party
 #
 # Represents the relying party (your application) in WebAuthn ceremonies. The
@@ -27,8 +29,10 @@
 #   A human-readable name for your application, displayed by authenticators
 #   during ceremonies. Defaults to +Rails.application.name+.
 class ActionPack::WebAuthn::RelyingParty
-  attr_reader :id #: String
-  attr_reader :name #: String
+  #: String
+  attr_reader :id
+  #: String
+  attr_reader :name
 
   # Creates a new relying party configuration.
   #
@@ -39,9 +43,10 @@ class ActionPack::WebAuthn::RelyingParty
   #
   # [+:name+]
   #   Optional. The application display name.
-  #: (?id: String, ?name: String) -> void
+  #: (?id: String?, ?name: String) -> void
   def initialize(id: ActionPack::WebAuthn::Current.host, name: Rails.application.name)
-    @id = id
+    # The host is set for every passkey request by ActionPack::Passkey::Request
+    @id = id #: as !nil
     @name = name
   end
 

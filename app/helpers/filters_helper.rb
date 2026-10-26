@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module FiltersHelper
-  # @type instance: ActionView::Base
   #: (String, untyped params) -> ActiveSupport::SafeBuffer
   def filter_chip_tag(text, params)
     link_to cards_path(params), class: "btn txt-x-small btn--remove fill-selected flex-inline" do

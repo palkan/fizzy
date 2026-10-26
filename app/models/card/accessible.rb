@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Accessible
-  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Card)
+    #: self as singleton(Card)
     delegate :accessible_to?, to: :board
   end
 
@@ -25,6 +27,7 @@ module Card::Accessible
     end
 
     def clean_inaccessible_data_later
-      Card::CleanInaccessibleDataJob.perform_later(self)
+      card = self #: as Card
+      Card::CleanInaccessibleDataJob.perform_later(card)
     end
 end

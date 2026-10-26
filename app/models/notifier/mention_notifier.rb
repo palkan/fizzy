@@ -1,5 +1,11 @@
+# typed: true
+
 class Notifier::MentionNotifier < Notifier
-  # @type instance: Notifier::MentionNotifier & Notifier::_MentionSource
+  # Notifier.for builds mention notifiers for mentions only
+  #: () -> Mention
+  def source
+    super #: as Mention
+  end
 
   alias mention source
 

@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn COSE Key
 #
 # Parses COSE (CBOR Object Signing and Encryption) public keys as specified in
@@ -69,9 +71,12 @@ class ActionPack::WebAuthn::CoseKey
   # OpenSSL types
   UNCOMPRESSED_POINT_MARKER = 0x04
 
-  attr_reader :key_type #: Integer?
-  attr_reader :algorithm #: Integer?
-  attr_reader :parameters #: Hash[Integer, untyped]
+  #: Integer?
+  attr_reader :key_type
+  #: Integer?
+  attr_reader :algorithm
+  #: Hash[Integer, untyped]
+  attr_reader :parameters
 
   # Decodes a COSE key from CBOR-encoded bytes.
   #

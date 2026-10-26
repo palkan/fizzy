@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # Adds database-agnostic date arithmetic methods to ActiveRecord adapters.
@@ -9,8 +10,8 @@
 #   # SQLite: "datetime(created_at, '-' || (3600) || ' seconds')"
 
 # Module for MySQL-based adapters (Trilogy, Mysql2, etc.)
+# @requires_ancestor: ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
 module MysqlDateArithmetic
-  # @type instance: ActiveRecord::ConnectionAdapters::AbstractMysqlAdapter
   # Generates SQL for subtracting seconds from a date/time column in MySQL.
   #
   # @param date_column [String] The date/time column or expression
@@ -27,8 +28,8 @@ module MysqlDateArithmetic
 end
 
 # Module for SQLite adapter
+# @requires_ancestor: ActiveRecord::ConnectionAdapters::SQLite3Adapter
 module SqliteDateArithmetic
-  # @type instance: ActiveRecord::ConnectionAdapters::SQLite3Adapter
   # Generates SQL for subtracting seconds from a date/time column in SQLite.
   #
   # @param date_column [String] The date/time column or expression

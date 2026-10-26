@@ -1,22 +1,26 @@
-# The methods are declared in sig/shims/rails_ext.rbs.
+# typed: true
+
+# The methods are declared in sorbet/rbi/shims/rails_ext.rbi.
 ActiveSupport.on_load :active_storage_blob do
-  # @implements ActiveStorage::Blob
   def accessible_to?(user)
+    #: self as ActiveStorage::Blob
     attachments.includes(:record).any? { |attachment| attachment.accessible_to?(user) } || attachments.none?
   end
 
   def publicly_accessible?
+    #: self as ActiveStorage::Blob
     attachments.includes(:record).any? { |attachment| attachment.publicly_accessible? }
   end
 end
 
 ActiveSupport.on_load :active_storage_attachment do
-  # @implements ActiveStorage::Attachment
   def accessible_to?(user)
+    #: self as ActiveStorage::Attachment
     record.try(:accessible_to?, user)
   end
 
   def publicly_accessible?
+    #: self as ActiveStorage::Attachment
     record.try(:publicly_accessible?)
   end
 end
@@ -28,7 +32,7 @@ Rails.application.config.to_prepare do
     include Authentication
 
     included do
-      # @type self: singleton(ActionController::Base)
+      #: self as singleton(ActionController::Base)
 
       # Ensure require_authentication runs after set_blob.
       skip_before_action :require_authentication

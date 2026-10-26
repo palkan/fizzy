@@ -1,3 +1,7 @@
+# typed: ignore
+
+# Sorbet rejects the configurable superclass below in any typed file, so the class is declared in
+# sorbet/rbi/shims/action_pack/passkey.rbi instead.
 # ActionPack::Passkey provides WebAuthn passkey registration and authentication backed by Active Record.
 #
 # Passkeys are scoped to a polymorphic +holder+ (typically a User or Identity) and store the
@@ -28,7 +32,6 @@
 # Call +has_passkeys+ in your model to set up the association and configure ceremony options
 # per-holder. See ActionPack::Passkey::Holder for details.
 #
-# @rbs skip -- the superclass is configurable, so this is declared in sig/shims/action_pack/passkey.rbs
 class ActionPack::Passkey < Rails.configuration.action_pack.passkey.parent_class_name.constantize
   self.table_name = "action_pack_passkeys"
   belongs_to :holder, polymorphic: true

@@ -1,9 +1,15 @@
+# typed: true
+
 # This is in lib so we can use it in a thread pool without the Rails executor
 class WebPush::Pool
-  attr_reader :delivery_pool #: Concurrent::ThreadPoolExecutor
-  attr_reader :invalidation_pool #: Concurrent::FixedThreadPool
-  attr_reader :connection #: Net::HTTP::Persistent
-  attr_reader :invalid_subscription_handler #: ^(String) -> void
+  #: Concurrent::ThreadPoolExecutor
+  attr_reader :delivery_pool
+  #: Concurrent::FixedThreadPool
+  attr_reader :invalidation_pool
+  #: Net::HTTP::Persistent
+  attr_reader :connection
+  #: ^(String) -> void
+  attr_reader :invalid_subscription_handler
 
   #: (invalid_subscription_handler: ^(String) -> void) -> void
   def initialize(invalid_subscription_handler:)
@@ -13,7 +19,7 @@ class WebPush::Pool
     @invalid_subscription_handler = invalid_subscription_handler
   end
 
-  #: (Hash[Symbol, untyped], Push::Subscription::ActiveRecord_Relation | Push::Subscription::ActiveRecord_Associations_CollectionProxy) -> void
+  #: (Hash[Symbol, untyped], Push::Subscription::PrivateRelation | Push::Subscription::PrivateCollectionProxy) -> void
   def queue(payload, subscriptions)
     subscriptions.find_each do |subscription|
       deliver_later(payload, subscription)
@@ -31,8 +37,7 @@ class WebPush::Pool
     #: (Hash[Symbol, untyped], Push::Subscription) -> void
     def deliver_later(payload, subscription)
       # Ensure any AR operations happen before we post to the thread pool
-      # The payload hash carries the notification's required keywords, which Steep can't see through **
-      notification = subscription.notification(**payload) # steep:ignore InsufficientKeywordArguments
+      notification = subscription.notification(title: payload[:title], body: payload[:body], url: payload[:url])
       subscription_id = subscription.id
 
       delivery_pool.post do

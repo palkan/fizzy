@@ -1,3 +1,5 @@
+# typed: true
+
 class Storage::Total < ApplicationRecord
   belongs_to :owner, polymorphic: true
 

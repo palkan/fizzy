@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module ApplicationHelper
-  # @type instance: ActionView::Base
   #: () -> ActiveSupport::SafeBuffer
   def page_title_tag
     account_name = if Current.account && Current.session&.identity&.users&.many?

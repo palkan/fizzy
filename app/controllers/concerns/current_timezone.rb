@@ -1,15 +1,20 @@
+# typed: true
+
 # FIXME: This should move upstream to Rails. It's a good pattern.
+# @requires_ancestor: ApplicationController
 module CurrentTimezone
-  # @type instance: ApplicationController
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationController)
+    #: self as singleton(ApplicationController)
     around_action :set_current_timezone
 
     helper_method :timezone_from_cookie
 
-    etag { timezone_from_cookie }
+    etag do
+      #: self as ApplicationController
+      timezone_from_cookie
+    end
   end
 
   private

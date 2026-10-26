@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::DataTransfer::ActiveStorage::AttachmentRecordSet < Account::DataTransfer::RecordSet
   #: (Account) -> void
   def initialize(account)

@@ -1,3 +1,5 @@
+# typed: true
+
 class Public::BaseController < ApplicationController
   allow_unauthenticated_access
 

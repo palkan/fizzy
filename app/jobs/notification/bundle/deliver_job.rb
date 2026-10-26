@@ -1,3 +1,5 @@
+# typed: true
+
 class Notification::Bundle::DeliverJob < ApplicationJob
   include SmtpDeliveryErrorHandling
 

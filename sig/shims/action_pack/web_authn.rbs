@@ -1,9 +1,0 @@
-# Parts of lib/action_pack/web_authn that inline RBS can't declare
-
-# lib/action_pack/web_authn.rb
-module ActionPack::WebAuthn
-  # Verifiers registered with ActionPack::WebAuthn.register_attestation_verifier
-  interface _AttestationVerifier
-    def verify!: (ActionPack::WebAuthn::Authenticator::Attestation attestation, client_data_json: String) -> void
-  end
-end

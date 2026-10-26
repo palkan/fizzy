@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Helpers::TagHelper
 module TimeHelper
-  # @type instance: ActionView::Base
   #: ((ActiveSupport::TimeWithZone | Time)?, ?style: Symbol, **untyped) -> ActiveSupport::SafeBuffer
   def local_datetime_tag(datetime, style: :time, **attributes)
     # Render empty space to ensure it takes height until the local time is loaded via JS

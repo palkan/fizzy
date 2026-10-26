@@ -1,3 +1,5 @@
+# typed: true
+
 class Prompts::CardsController < ApplicationController
   MAX_RESULTS = 10
 

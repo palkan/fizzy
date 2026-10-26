@@ -1,3 +1,5 @@
+# typed: true
+
 class Boards::Columns::NotNowsController < ApplicationController
   include BoardScoped
 

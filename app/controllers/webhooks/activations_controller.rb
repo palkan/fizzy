@@ -1,3 +1,5 @@
+# typed: true
+
 class Webhooks::ActivationsController < ApplicationController
   include BoardScoped
 

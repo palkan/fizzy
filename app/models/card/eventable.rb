@@ -1,12 +1,19 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Eventable
-  # @type instance: Card
   extend ActiveSupport::Concern
 
   include ::Eventable
 
   included do
-    # @type self: singleton(Card)
-    before_create { self.last_active_at ||= created_at || Time.current }
+    #: self as singleton(Card)
+    before_create do
+      # Unset until the card is first saved
+      last_active_at = self.last_active_at #: ActiveSupport::TimeWithZone?
+      created_at = self.created_at #: ActiveSupport::TimeWithZone?
+      self.last_active_at = created_at || Time.current unless last_active_at
+    end
 
     after_save :track_title_change, if: :saved_change_to_title?
   end
@@ -37,6 +44,7 @@ module Card::Eventable
     end
 
     def create_system_comment_for(event)
-      SystemCommenter.new(self, event).comment
+      card = self #: as Card
+      SystemCommenter.new(card, event).comment
     end
 end

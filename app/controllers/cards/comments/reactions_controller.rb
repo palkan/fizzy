@@ -1,3 +1,5 @@
+# typed: true
+
 class Cards::Comments::ReactionsController < ApplicationController
   wrap_parameters :reaction, include: %i[ content ]
 

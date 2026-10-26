@@ -1,11 +1,13 @@
+# typed: true
+
+# @requires_ancestor: Comment
 module Comment::Eventable
-  # @type instance: Comment
   extend ActiveSupport::Concern
 
   include ::Eventable
 
   included do
-    # @type self: singleton(Comment)
+    #: self as singleton(Comment)
     after_create_commit :track_creation
   end
 

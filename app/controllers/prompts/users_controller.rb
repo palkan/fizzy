@@ -1,3 +1,5 @@
+# typed: true
+
 class Prompts::UsersController < ApplicationController
   def index
     @users = Current.account!.users.active.alphabetically

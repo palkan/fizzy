@@ -1,3 +1,5 @@
+# typed: true
+
 class Events::DayTimeline::ColumnsController < ApplicationController
   include DayTimelinesScoped
 

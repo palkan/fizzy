@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: Filter
 module Filter::Params
-  # @type instance: Filter
   extend ActiveSupport::Concern
 
   PERMITTED_PARAMS = [
@@ -18,8 +20,8 @@ module Filter::Params
     terms: []
   ] #: Array[Symbol | Hash[Symbol, Array[untyped]]]
 
+  # @requires_ancestor: singleton(Filter)
   module ClassMethods
-    # @type instance: singleton(Filter)
     #: (untyped) -> Filter?
     def find_by_params(params)
       find_by params_digest: digest_params(params)
@@ -43,7 +45,7 @@ module Filter::Params
   end
 
   included do
-    # @type self: singleton(Filter)
+    #: self as singleton(Filter)
     before_save { self.params_digest = self.class.digest_params(as_params) }
   end
 
@@ -88,6 +90,7 @@ module Filter::Params
 
   #: () -> String
   def params_digest
-    super.presence || self.class.digest_params(as_params)
+    filter_class = self.class #: as singleton(Filter)
+    super.presence || filter_class.digest_params(as_params)
   end
 end

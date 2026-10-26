@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module PaginationHelper
-  # @type instance: ActionView::Base
   #: (String | Symbol, GearedPagination::Page, ?data: Hash[Symbol, untyped], **untyped) ?{ () -> untyped } -> ActiveSupport::SafeBuffer
   def pagination_frame_tag(namespace, page, data: {}, **attributes, &)
     turbo_frame_tag pagination_frame_id_for(namespace, page.number), data: { timeline_target: "frame", **data }, role: "presentation", **attributes, &
@@ -34,7 +36,7 @@ module PaginationHelper
   end
 
   #: (String | Symbol, GearedPagination::Page, **untyped) { () -> untyped } -> ActiveSupport::SafeBuffer
-  def with_manual_pagination(name, page, **properties)
+  def with_manual_pagination(name, page, **properties, &)
     pagination_list name, **properties do
       concat(pagination_frame_tag(name, page) do
         yield
@@ -44,7 +46,7 @@ module PaginationHelper
   end
 
   #: (String | Symbol, GearedPagination::Page, **untyped) { () -> untyped } -> ActiveSupport::SafeBuffer
-  def with_automatic_pagination(name, page, **properties)
+  def with_automatic_pagination(name, page, **properties, &)
     pagination_list name, paginate_on_scroll: true, **properties do
       concat(pagination_frame_tag(name, page) do
         yield

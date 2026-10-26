@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: ActionController::Base
 module Authentication::ViaMagicLink
-  # @type instance: ActionController::Base & Authentication::ViaMagicLink
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ActionController::Base)
+    #: self as singleton(ActionController::Base)
     after_action :ensure_development_magic_link_not_leaked
   end
 

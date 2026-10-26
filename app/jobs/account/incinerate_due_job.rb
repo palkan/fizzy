@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::IncinerateDueJob < ApplicationJob
   include ActiveJob::Continuable
 

@@ -1,8 +1,12 @@
+# typed: true
+
 class Signup::AccountNameGenerator
   SUFFIX = "Fizzy".freeze
 
-  attr_reader :identity #: Identity
-  attr_reader :name #: String
+  #: Identity
+  attr_reader :identity
+  #: String
+  attr_reader :name
 
   #: (identity: Identity, name: String) -> void
   def initialize(identity:, name:)

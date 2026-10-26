@@ -1,3 +1,5 @@
+# typed: true
+
 class WebhooksController < ApplicationController
   wrap_parameters :webhook, include: %i[ name url subscribed_actions ]
 

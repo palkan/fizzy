@@ -1,13 +1,15 @@
+# typed: true
+
+# @requires_ancestor: Event
 module Event::Particulars
-  # @type instance: Event
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Event)
+    #: self as singleton(Event)
     store_accessor :particulars, :assignee_ids #: Array[String]?
   end
 
-  #: () -> User::ActiveRecord_Relation
+  #: () -> User::PrivateRelation
   def assignees
     @assignees ||= User.where id: assignee_ids
   end

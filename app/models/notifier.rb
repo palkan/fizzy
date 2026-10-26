@@ -1,5 +1,8 @@
+# typed: true
+
 class Notifier
-  attr_reader :source #: Event | Mention
+  #: Event | Mention
+  attr_reader :source
 
   #: (ApplicationRecord source) -> Notifier?
   def self.for(source)

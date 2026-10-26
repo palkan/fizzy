@@ -1,3 +1,5 @@
+# typed: true
+
 class Notification::PushJob < ApplicationJob
   #: (Notification) -> void
   def perform(notification)

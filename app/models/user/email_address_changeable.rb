@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: User
 module User::EmailAddressChangeable
-  # @type instance: User
   EMAIL_CHANGE_TOKEN_PURPOSE = "change_email_address"
   EMAIL_CHANGE_TOKEN_EXPIRATION = 30.minutes
 
@@ -29,7 +31,7 @@ module User::EmailAddressChangeable
     UserMailer.email_change_confirmation(
       email_address: new_email_address,
       token: token,
-      user: self
+      user: self #: as User
     ).deliver_later
   end
 
@@ -42,8 +44,8 @@ module User::EmailAddressChangeable
   end
 
   private
-    #: (?from: String, to: String, **untyped) -> String
-    def generate_email_address_change_token(from: current_email_address, to:, **options)
+    #: (to: String, ?from: String, **untyped) -> String
+    def generate_email_address_change_token(to:, from: current_email_address, **options)
       options = options.with_defaults(
         for: EMAIL_CHANGE_TOKEN_PURPOSE,
         old_email_address: from,
@@ -56,7 +58,7 @@ module User::EmailAddressChangeable
     #: () -> String
     def current_email_address
       # Deactivated users lose their identity, but they can't change their email address
-      identity = self.identity #: Identity
+      identity = self.identity #: as !nil
       identity.email_address
     end
 end

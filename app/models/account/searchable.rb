@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Account
 module Account::Searchable
-  # @type instance: Account
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Account)
+    #: self as singleton(Account)
     has_many :search_queries, class_name: "Search::Query", dependent: :delete_all
 
     before_destroy :clear_search_records

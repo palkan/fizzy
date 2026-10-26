@@ -1,15 +1,17 @@
+# typed: true
+
+# @requires_ancestor: Board
 module Board::Publishable
-  # @type instance: Board
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Board)
+    #: self as singleton(Board)
     has_one :publication, class_name: "Board::Publication", dependent: :destroy
     scope :published, -> { joins(:publication) }
   end
 
+  # @requires_ancestor: singleton(Board)
   module ClassMethods
-    # @type instance: singleton(Board)
     def find_by_published_key(key)
       Board::Publication.find_by!(key: key).board
     end

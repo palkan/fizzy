@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: Filter
 module Filter::Fields
-  # @type instance: Filter
   extend ActiveSupport::Concern
 
   INDEXES = %w[ all closed not_now stalled postponing_soon golden ]
@@ -7,8 +9,8 @@ module Filter::Fields
 
   delegate :default_value?, to: :class
 
+  # @requires_ancestor: singleton(Filter)
   module ClassMethods
-    # @type instance: singleton(Filter)
     #: () -> { indexed_by: String, sorted_by: String }
     def default_values
       { indexed_by: "all", sorted_by: "latest" }
@@ -35,23 +37,23 @@ module Filter::Fields
   end
 
   included do
-    # @type self: singleton(Filter)
+    #: self as singleton(Filter)
     store_accessor :fields, :assignment_status, :indexed_by, :sorted_by, :terms, :creation, :closure #: String?
     store_accessor :fields, :card_ids, :column_ids #: Array[String]?
 
-    #: () -> (ActiveSupport::StringInquirer & Filter::_AssignmentStatus)
+    #: () -> (ActiveSupport::StringInquirer & Filter::AssignmentStatus)
     def assignment_status
-      super.to_s.inquiry #: ActiveSupport::StringInquirer & Filter::_AssignmentStatus
+      super.to_s.inquiry #: ActiveSupport::StringInquirer & Filter::AssignmentStatus
     end
 
-    #: () -> (ActiveSupport::StringInquirer & Filter::_IndexedBy)
+    #: () -> (ActiveSupport::StringInquirer & Filter::IndexedBy)
     def indexed_by
-      (super || default_indexed_by).inquiry #: ActiveSupport::StringInquirer & Filter::_IndexedBy
+      (super || default_indexed_by).inquiry #: ActiveSupport::StringInquirer & Filter::IndexedBy
     end
 
-    #: () -> (ActiveSupport::StringInquirer & Filter::_SortedBy)
+    #: () -> (ActiveSupport::StringInquirer & Filter::SortedBy)
     def sorted_by
-      (super || default_sorted_by).inquiry #: ActiveSupport::StringInquirer & Filter::_SortedBy
+      (super || default_sorted_by).inquiry #: ActiveSupport::StringInquirer & Filter::SortedBy
     end
 
     def creation_window
@@ -95,7 +97,8 @@ module Filter::Fields
 
   #: () -> String
   def default_indexed_by
-    self.class.default_values[:indexed_by]
+    filter_class = self.class #: as singleton(Filter)
+    filter_class.default_values[:indexed_by]
   end
 
   #: () -> bool
@@ -105,7 +108,8 @@ module Filter::Fields
 
   #: () -> String
   def default_sorted_by
-    self.class.default_values[:sorted_by]
+    filter_class = self.class #: as singleton(Filter)
+    filter_class.default_values[:sorted_by]
   end
 
   #: () -> bool

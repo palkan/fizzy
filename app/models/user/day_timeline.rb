@@ -1,9 +1,14 @@
+# typed: true
+
 class User::DayTimeline
   include Serializable
 
-  attr_reader :user #: User
-  attr_reader :day #: ActiveSupport::TimeWithZone
-  attr_reader :filter #: Filter
+  #: User
+  attr_reader :user
+  #: ActiveSupport::TimeWithZone
+  attr_reader :day
+  #: Filter
+  attr_reader :filter
 
   delegate :today?, to: :day
 
@@ -17,7 +22,7 @@ class User::DayTimeline
     events.any?
   end
 
-  #: () -> Event::ActiveRecord_Relation
+  #: () -> Event::PrivateRelation
   def events
     filtered_events.where(created_at: window).order(created_at: :desc)
   end
@@ -94,7 +99,7 @@ class User::DayTimeline
       filtered_events.where(created_at: ...day.beginning_of_day).chronologically.last
     end
 
-    #: (Symbol, String, Integer, Event::ActiveRecord_Relation) -> User::DayTimeline::Column
+    #: (Symbol, String, Integer, Event::PrivateRelation) -> User::DayTimeline::Column
     def build_column(id, base_title, index, events)
       Column.new(self, id, base_title, index, events)
     end

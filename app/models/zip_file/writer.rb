@@ -1,21 +1,19 @@
+# typed: true
+
 class ZipFile::Writer
-  # @rbs @entries: Array[String]
-  # @rbs @output_io: ZipFile::Writer::_Output?
-  # @rbs @streamer: ZipKit::Streamer?
-  # @rbs @digest: Digest::MD5
+  #: Integer
+  attr_reader :byte_size
 
-  attr_reader :byte_size #: Integer
-
-  #: (?ZipFile::Writer::_Output?) -> void
+  #: (?ZipFile::Writer::Output?) -> void
   def initialize(io = nil)
     @entries = [] #: Array[String]
     @byte_size = 0
-    @output_io = io
-    @streamer = nil
-    @digest = Digest::MD5.new
+    @output_io = io #: ZipFile::Writer::Output?
+    @streamer = nil #: ZipKit::Streamer?
+    @digest = Digest::MD5.new #: Digest::MD5
   end
 
-  #: (ZipFile::Writer::_Output) -> void
+  #: (ZipFile::Writer::Output) -> void
   def stream_to(io)
     @output_io = io
   end
@@ -23,16 +21,16 @@ class ZipFile::Writer
   #: (String) -> Integer
   def write(data)
     # Set by initialize or stream_to before writing
-    output_io = @output_io #: ZipFile::Writer::_Output
+    output_io = @output_io #: as !nil
     output_io.write(data)
     @byte_size += data.bytesize
     @digest.update(data)
     data.bytesize
   end
 
-  # @rbs (String, String, ?compress: bool) -> void
-  #    | (String, ?nil, ?compress: bool) { (ZipKit::Streamer::Writable) -> void } -> void
-  def add_file(path, content = nil, compress: true)
+  # Writes the content, or streams it from the block when given one
+  #: (String, ?String?, ?compress: bool) ?{ (ZipKit::Streamer::Writable) -> void } -> void
+  def add_file(path, content = nil, compress: true, &block)
     @entries << path
     write_method = compress ? :write_deflated_file : :write_stored_file
 

@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module BridgeHelper
-  # @type instance: ActionView::Base
   #: (String) -> String
   def bridge_icon(name)
     asset_url("#{name}.svg")

@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module AccessesHelper
-  # @type instance: ActionView::Base
   #: (Board, **untyped) ?{ (?) -> untyped } -> ActiveSupport::SafeBuffer
   def access_menu_tag(board, **options, &)
     tag.menu class: [ options[:class], { "toggler--toggled": board.all_access? } ], data: {
@@ -65,7 +67,8 @@ module AccessesHelper
     #: (String | Symbol) -> String?
     def next_involvement(involvement)
       order = %w[ watching access_only ]
-      index = order.index(involvement.to_s) #: Integer
+      # Involvements are always one of the ordered values
+      index = order.index(involvement.to_s) #: as !nil
       order[(index + 1) % order.size]
     end
 end

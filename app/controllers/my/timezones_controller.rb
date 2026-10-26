@@ -1,7 +1,9 @@
+# typed: true
+
 class My::TimezonesController < ApplicationController
   def update
     # Only system users lack settings, and they never make requests
-    settings = Current.user!.settings #: User::Settings
+    settings = Current.user!.settings #: as !nil
     settings.update!(timezone_name: timezone_param)
     head :no_content
   end

@@ -1,6 +1,8 @@
+# typed: true
+
 class Search::Record < ApplicationRecord
-  # @rbs skip -- adapter-specific methods are declared in sig/shims/search.rbs
-  include const_get(connection.adapter_name)
+  # Sorbet rejects non-constant mixins; the adapter modules are declared in sorbet/rbi/shims/search.rbi
+  send :include, const_get(connection.adapter_name)
 
   belongs_to :searchable, polymorphic: true
   belongs_to :card
@@ -39,7 +41,7 @@ class Search::Record < ApplicationRecord
     for_query(query, user: user)
       .includes(:searchable, card: [ :board, :creator ])
       .order(created_at: :desc)
-      .select(:id, :account_id, :searchable_type, :searchable_id, :card_id, :board_id, :title, :content, :created_at, *search_fields(query))
+      .select([ :id, :account_id, :searchable_type, :searchable_id, :card_id, :board_id, :title, :content, :created_at, *search_fields(query) ])
   end
 
   #: () -> (Card | Comment)

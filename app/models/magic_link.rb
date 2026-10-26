@@ -1,3 +1,5 @@
+# typed: true
+
 class MagicLink < ApplicationRecord
   CODE_LENGTH = 6
   EXPIRATION_TIME = 15.minutes
@@ -33,7 +35,8 @@ class MagicLink < ApplicationRecord
   private
     #: () -> void
     def generate_code
-      self.code ||= loop do
+      # Raw attribute reads: the NOT NULL columns are typed as present, but they're nil before create.
+      self[:code] ||= loop do
         candidate = Code.generate(CODE_LENGTH)
         break candidate unless self.class.exists?(code: candidate)
       end
@@ -41,6 +44,6 @@ class MagicLink < ApplicationRecord
 
     #: () -> void
     def set_expiration
-      self.expires_at ||= EXPIRATION_TIME.from_now
+      self[:expires_at] ||= EXPIRATION_TIME.from_now
     end
 end

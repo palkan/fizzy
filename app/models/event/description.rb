@@ -1,9 +1,13 @@
+# typed: true
+
 class Event::Description
   include ActionView::Helpers::TagHelper
   include ERB::Util
 
-  attr_reader :event #: Event
-  attr_reader :user #: User?
+  #: Event
+  attr_reader :event
+  #: User?
+  attr_reader :user
 
   #: (Event, User?) -> void
   def initialize(event, user)

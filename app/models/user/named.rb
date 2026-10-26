@@ -1,20 +1,23 @@
+# typed: true
+
+# @requires_ancestor: User
 module User::Named
-  # @type instance: User
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(User)
+    #: self as singleton(User)
     scope :alphabetically, -> { order("lower(name)") }
   end
 
   #: () -> String
   def first_name
-    name.split(/\s/).first #: String
+    # Names are validated to be present
+    name.split(/\s/).first #: as !nil
   end
 
-  #: () -> String
+  #: () -> String?
   def last_name
-    name.split(/\s/, 2).last #: String
+    name.split(/\s/, 2).last
   end
 
   #: () -> String

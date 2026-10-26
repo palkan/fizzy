@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module BoardsHelper
-  # @type instance: ActionView::Base
   #: (Board, ?prefer_referrer: Array[String]) -> ActiveSupport::SafeBuffer
   def link_back_to_board(board, prefer_referrer: [])
     back_link_to board.name, board, "keydown.left@document->hotkey#click keydown.esc@document->hotkey#click click->turbo-navigation#backIfSamePath", prefer_referrer:

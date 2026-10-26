@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module AvatarsHelper
-  # @type instance: ActionView::Base
   #: (User) -> String
   def avatar_background_color(user)
     user.avatar_background_color

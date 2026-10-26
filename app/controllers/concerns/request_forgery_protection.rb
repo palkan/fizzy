@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: ApplicationController
 module RequestForgeryProtection
-  # @type instance: ApplicationController
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationController)
+    #: self as singleton(ApplicationController)
     protect_from_forgery using: :header_only, with: :exception
   end
 

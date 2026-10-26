@@ -1,3 +1,5 @@
+# typed: true
+
 class Cards::ClosuresController < ApplicationController
   include CardScoped
 

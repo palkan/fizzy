@@ -1,3 +1,5 @@
+# typed: true
+
 class Cards::TaggingsController < ApplicationController
   include CardScoped
 

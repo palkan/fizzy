@@ -1,8 +1,12 @@
+# typed: true
+
 class Card::Eventable::SystemCommenter
   include ERB::Util
 
-  attr_reader :card #: Card
-  attr_reader :event #: Event
+  #: Card
+  attr_reader :card
+  #: Event
+  attr_reader :event
 
   #: (Card, Event) -> void
   def initialize(card, event)

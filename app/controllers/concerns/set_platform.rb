@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: ApplicationController
 module SetPlatform
-  # @type instance: ApplicationController
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationController)
+    #: self as singleton(ApplicationController)
     helper_method :platform
   end
 

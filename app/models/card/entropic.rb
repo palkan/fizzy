@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Entropic
-  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Card)
+    #: self as singleton(Card)
     scope :postponing_soon, -> do
       now = Time.now
       active
@@ -13,12 +15,12 @@ module Card::Entropic
         .where("last_active_at > #{connection.date_subtract('?', 'COALESCE(entropies.auto_postpone_period, account_entropies.auto_postpone_period)')}", now)
         .where("last_active_at <= #{connection.date_subtract('?', 'COALESCE(entropies.auto_postpone_period, account_entropies.auto_postpone_period) * 0.75')}", now)
     end
-
-    delegate :auto_postpone_period, to: :board
   end
 
+  delegate :auto_postpone_period, to: :board
+
+  # @requires_ancestor: singleton(Card)
   module ClassMethods
-    # @type instance: singleton(Card)
     # Iterates per account, grouping the account's boards by their effective
     # auto-postpone period (board override, else account default). Each group
     # queries with a single constant cutoff, so `account_id = ? AND
@@ -39,7 +41,8 @@ module Card::Entropic
   end
 
   def entropy
-    Card::Entropy.for(self)
+    card = self #: as Card
+    Card::Entropy.for(card)
   end
 
   def entropic?

@@ -1,3 +1,5 @@
+# typed: true
+
 class My::PinsController < ApplicationController
   def index
     @pins = user_pins

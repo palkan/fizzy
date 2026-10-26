@@ -1,3 +1,5 @@
+# typed: true
+
 class PushNotificationJob < ApplicationJob
   discard_on ActiveJob::DeserializationError
 

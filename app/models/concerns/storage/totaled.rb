@@ -1,17 +1,20 @@
+# typed: true
+
+# @requires_ancestor: ApplicationRecord
 module Storage::Totaled
-  # @type instance: Storage::Totaled & Storage::Totaled::_Includer & ApplicationRecord
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationRecord) & Storage::Totaled::ClassMethods
+    #: self as singleton(ApplicationRecord) & Storage::Totaled::ClassMethods
     has_one :storage_total, as: :owner, class_name: "Storage::Total", dependent: :destroy
     has_many :storage_entries, class_name: "Storage::Entry", foreign_key: foreign_key_for_storage
   end
 
+  # Not `requires_ancestor`: Account::Storage and Board::Storage are concerns that include this one
   module ClassMethods
-    # @type instance: singleton(ApplicationRecord)
     #: () -> String
     def foreign_key_for_storage
+      #: self as singleton(ApplicationRecord)
       "#{model_name.singular}_id"
     end
   end
@@ -30,7 +33,8 @@ module Storage::Totaled
 
   #: () -> void
   def materialize_storage_later
-    Storage::MaterializeJob.perform_later(self)
+    owner = self #: as Account | Board
+    Storage::MaterializeJob.perform_later(owner)
   end
 
   # Materialize all pending entries into snapshot
@@ -69,7 +73,7 @@ module Storage::Totaled
       Rails.logger.warn "[Storage] Reconcile aborted for #{self.class}##{id}: cursor moved during scan"
       false
     else
-      ledger_bytes = cursor_after ? storage_entries.where(id: ..cursor_after).sum(:delta) : 0
+      ledger_bytes = cursor_after ? storage_entries.where(id: ..cursor_after).sum(:delta) : 0 #: as Integer
       diff = real_bytes - ledger_bytes
 
       if diff.nonzero?

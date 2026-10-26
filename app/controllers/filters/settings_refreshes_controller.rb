@@ -1,3 +1,5 @@
+# typed: true
+
 class Filters::SettingsRefreshesController < ApplicationController
   include FilterScoped
 

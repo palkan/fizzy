@@ -1,6 +1,6 @@
-class Account::DataTransfer::ActiveStorage::FileRecordSet < Account::DataTransfer::RecordSet
-  # @rbs @old_key_to_blob_id: Hash[String, String]?
+# typed: true
 
+class Account::DataTransfer::ActiveStorage::FileRecordSet < Account::DataTransfer::RecordSet
   #: (Account) -> void
   def initialize(account)
     super(account: account, model: ::ActiveStorage::Blob)
@@ -47,7 +47,7 @@ class Account::DataTransfer::ActiveStorage::FileRecordSet < Account::DataTransfe
 
     #: () -> Hash[String, String]
     def old_key_to_blob_id
-      @old_key_to_blob_id ||= build_old_key_to_blob_id
+      @old_key_to_blob_id ||= build_old_key_to_blob_id #: Hash[String, String]?
     end
 
     #: () -> Hash[String, String]

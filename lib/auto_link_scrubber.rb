@@ -1,3 +1,5 @@
+# typed: true
+
 # Loofah scrubber to auto-link URLs and email addresses in HTML text nodes.
 #
 # This scrubber does not perform HTML sanitization; it's assumed that the input is already sanitized
@@ -46,7 +48,7 @@ class AutoLinkScrubber < Loofah::Scrubber
 
       doc = node.document
       nodes = Nokogiri::XML::NodeSet.new(doc)
-      pos = 0
+      pos = 0 #: Integer
 
       links.each do |link|
         nodes << doc.create_text_node(text[pos...link[:start]]) if link[:start] > pos
@@ -65,14 +67,16 @@ class AutoLinkScrubber < Loofah::Scrubber
       links = [] #: Array[{ start: Integer, length: Integer, text: String, href: String }]
 
       text.scan(AUTOLINK_REGEXP) do
-        match_data = Regexp.last_match #: MatchData
+        # Set by scan for each match
+        match_data = Regexp.last_match #: as !nil
         start_pos = match_data.begin(0) #: Integer
 
-        if match_data[:url]
-          url = clean_url(match_data[:url])
+        if matched_url = match_data[:url]
+          url = clean_url(matched_url)
           links << { start: start_pos, length: url.length, text: url, href: url }
         else
-          email = match_data[:email]
+          # AUTOLINK_REGEXP matches either a URL or an email address
+          email = match_data[:email] #: as !nil
           links << { start: start_pos, length: email.length, text: email, href: "mailto:#{email}" }
         end
       end

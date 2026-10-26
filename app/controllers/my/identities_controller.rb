@@ -1,3 +1,5 @@
+# typed: true
+
 class My::IdentitiesController < ApplicationController
   disallow_account_scope
 

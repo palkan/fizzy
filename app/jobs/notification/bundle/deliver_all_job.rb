@@ -1,3 +1,5 @@
+# typed: true
+
 class Notification::Bundle::DeliverAllJob < ApplicationJob
   queue_as :backend
 

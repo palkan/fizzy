@@ -1,3 +1,5 @@
+# typed: true
+
 module Storage
   #: () -> String
   def self.table_name_prefix

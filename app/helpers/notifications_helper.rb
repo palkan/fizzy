@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module NotificationsHelper
-  # @type instance: ActionView::Base
   #: (Event) -> String
   def event_notification_title(event)
     case event_notification_action(event)

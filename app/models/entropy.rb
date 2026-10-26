@@ -1,14 +1,22 @@
+# typed: true
+
 class Entropy < ApplicationRecord
   DEFAULT_AUTO_POSTPONE_PERIOD_IN_DAYS = 30
   AUTO_POSTPONE_PERIODS_IN_DAYS = [ 3, 7, 30, 90, 365, 11 ].freeze
   AUTO_POSTPONE_PERIODS_IN_SECONDS = AUTO_POSTPONE_PERIODS_IN_DAYS.map { |n| n.day.in_seconds }.freeze
 
-  belongs_to :account, default: -> { container.account }
+  belongs_to :account, default: -> {
+    #: self as Entropy
+    container.account
+  }
   belongs_to :container, polymorphic: true
 
   validates :auto_postpone_period, inclusion: { in: AUTO_POSTPONE_PERIODS_IN_SECONDS }
 
-  after_commit -> { container.cards.touch_all if container }
+  after_commit -> {
+    #: self as Entropy
+    container.cards.touch_all if container
+  }
 
   #: () -> Integer
   def auto_postpone_period_in_days

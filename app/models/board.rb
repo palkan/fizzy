@@ -1,9 +1,13 @@
+# typed: true
+
 class Board < ApplicationRecord
-  # @rbs skip -- declared in sig/generated/inline.rbs
   include Accessible, AutoPostponing, Board::Storage, Broadcastable, Cards, Entropic, Filterable, Publishable, ::Storage::Tracked, Triageable
 
   belongs_to :creator, class_name: "User", default: -> { Current.user }
-  belongs_to :account, default: -> { creator.account }
+  belongs_to :account, default: -> {
+    #: self as Board
+    creator.account
+  }
 
   has_rich_text :public_description
 

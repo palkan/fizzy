@@ -1,8 +1,13 @@
+# typed: true
+
 class Webhook::DelinquencyTracker < ApplicationRecord
   DELINQUENCY_THRESHOLD = 10
   DELINQUENCY_DURATION = 1.hour
 
-  belongs_to :account, default: -> { webhook.account }
+  belongs_to :account, default: -> {
+    #: self as Webhook::DelinquencyTracker
+    webhook.account
+  }
   belongs_to :webhook
 
   #: (Webhook::Delivery) -> void

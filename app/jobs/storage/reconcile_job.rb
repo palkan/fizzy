@@ -1,3 +1,5 @@
+# typed: true
+
 class Storage::ReconcileJob < ApplicationJob
   class ReconcileAborted < StandardError; end
 

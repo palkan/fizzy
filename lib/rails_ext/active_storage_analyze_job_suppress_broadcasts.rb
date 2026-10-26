@@ -1,9 +1,11 @@
+# typed: true
+
 # Avoid page refreshes from Active Storage analyzing blobs when these are attached.
 #
 # A better option would be to disable touching with +touch_attachment_records+ but
 # there is currently a bug https://github.com/rails/rails/issues/55144
+# @requires_ancestor: ActiveStorage::AnalyzeJob
 module ActiveStorageAnalyzeJobSuppressBroadcasts
-  # @type instance: ActiveStorage::AnalyzeJob
   #: (ActiveStorage::Blob) -> void
   def perform(blob)
     Board.suppressing_turbo_broadcasts do

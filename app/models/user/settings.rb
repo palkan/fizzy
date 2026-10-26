@@ -1,5 +1,10 @@
+# typed: true
+
 class User::Settings < ApplicationRecord
-  belongs_to :account, default: -> { user.account }
+  belongs_to :account, default: -> {
+    #: self as User::Settings
+    user.account
+  }
   belongs_to :user
 
   enum :bundle_email_frequency, %i[ never every_few_hours daily weekly ],

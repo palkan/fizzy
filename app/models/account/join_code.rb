@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::JoinCode < ApplicationRecord
   CODE_LENGTH = 12
   USAGE_LIMIT_MAX = 10_000_000_000
@@ -8,7 +10,10 @@ class Account::JoinCode < ApplicationRecord
 
   scope :active, -> { where("usage_count < usage_limit") }
 
-  before_create :generate_code, if: -> { code.blank? }
+  before_create :generate_code, if: -> {
+    #: self as Account::JoinCode
+    code.blank?
+  }
 
   def redeem_if(&block)
     with_lock do

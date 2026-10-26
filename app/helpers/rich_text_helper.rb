@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module RichTextHelper
-  # @type instance: ActionView::Base
   #: (Board) -> ActiveSupport::SafeBuffer
   def mentions_prompt(board)
     content_tag "lexxy-prompt", "", trigger: "@", src: prompts_board_users_path(board), name: "mention"

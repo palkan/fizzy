@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Golden
-  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Card)
+    #: self as singleton(Card)
     has_one :goldness, dependent: :destroy, class_name: "Card::Goldness"
 
     scope :golden, -> { joins(:goldness) }

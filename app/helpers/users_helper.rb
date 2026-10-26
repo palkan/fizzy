@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module UsersHelper
-  # @type instance: ActionView::Base
   #: (User) -> String
   def role_display_name(user)
     case user.role

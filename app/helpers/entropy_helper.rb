@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module EntropyHelper
-  # @type instance: ActionView::Base
   #: (Card) -> Hash[Symbol, untyped]
   def entropy_bubble_options_for(card)
     {

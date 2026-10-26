@@ -1,3 +1,5 @@
+# typed: true
+
 class BoardsController < ApplicationController
   wrap_parameters :board, include: %i[ name all_access auto_postpone_period_in_days public_description ]
 

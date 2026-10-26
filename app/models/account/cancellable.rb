@@ -1,16 +1,18 @@
+# typed: true
+
+# @requires_ancestor: Account
 module Account::Cancellable
-  # @type instance: Account
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Account)
+    #: self as singleton(Account)
     has_one :cancellation, dependent: :destroy
 
     define_callbacks :cancel
     define_callbacks :reactivate
   end
 
-  #: (?initiated_by: User) -> void
+  #: (?initiated_by: User?) -> void
   def cancel(initiated_by: Current.user)
     with_lock do
       if cancellable? && active?
@@ -18,7 +20,7 @@ module Account::Cancellable
           create_cancellation!(initiated_by: initiated_by)
         end
 
-        cancellation = self.cancellation #: Account::Cancellation
+        cancellation = self.cancellation #: as !nil
         AccountMailer.cancellation(cancellation).deliver_later
       end
     end
@@ -29,7 +31,7 @@ module Account::Cancellable
     with_lock do
       if cancelled?
         run_callbacks :reactivate do
-          cancellation = self.cancellation #: Account::Cancellation
+          cancellation = self.cancellation #: as !nil
           cancellation.destroy
         end
       end

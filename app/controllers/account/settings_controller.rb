@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::SettingsController < ApplicationController
   wrap_parameters :account, include: %i[ name ]
 

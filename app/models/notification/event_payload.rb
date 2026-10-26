@@ -1,3 +1,5 @@
+# typed: true
+
 class Notification::EventPayload < Notification::DefaultPayload
   include ExcerptHelper
 

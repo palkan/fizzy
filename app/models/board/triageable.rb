@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Board
 module Board::Triageable
-  # @type instance: Board
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Board)
+    #: self as singleton(Board)
     has_many :columns, dependent: :destroy
   end
 end

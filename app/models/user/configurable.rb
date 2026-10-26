@@ -1,16 +1,18 @@
+# typed: true
+
+# @requires_ancestor: User
 module User::Configurable
-  # @type instance: User
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(User)
+    #: self as singleton(User)
     has_one :settings, class_name: "User::Settings", dependent: :destroy
     has_many :push_subscriptions, class_name: "Push::Subscription", dependent: :delete_all
 
     after_create :create_settings, unless: :system?
-
-    delegate :timezone, to: :settings, allow_nil: true
   end
+
+  delegate :timezone, to: :settings, allow_nil: true
 
   def in_time_zone(&block)
     Time.use_zone(timezone, &block)

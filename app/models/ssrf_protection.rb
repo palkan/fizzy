@@ -1,5 +1,6 @@
+# typed: true
+
 module SsrfProtection
-  # @rbs skip -- declared in sig/generated/inline.rbs
   extend self
 
   DNS_RESOLUTION_TIMEOUT = 2

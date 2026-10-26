@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn Public Key Credential
 #
 # Represents a WebAuthn public key credential and orchestrates the registration
@@ -54,12 +56,18 @@
 #   Transport hints (e.g., "internal", "usb", "ble", "nfc").
 #
 class ActionPack::WebAuthn::PublicKeyCredential
-  attr_reader :id #: String
-  attr_reader :public_key #: OpenSSL::PKey::PKey
-  attr_reader :sign_count #: Integer
-  attr_reader :aaguid #: String?
-  attr_reader :backed_up #: bool?
-  attr_reader :transports #: Array[String]
+  #: String
+  attr_reader :id
+  #: OpenSSL::PKey::PKey
+  attr_reader :public_key
+  #: Integer
+  attr_reader :sign_count
+  #: String?
+  attr_reader :aaguid
+  #: bool?
+  attr_reader :backed_up
+  #: Array[String]
+  attr_reader :transports
 
   # Returns a RequestOptions object for the authentication ceremony.
   # Credentials responding to +to_public_key_credential+ are automatically
@@ -119,8 +127,7 @@ class ActionPack::WebAuthn::PublicKeyCredential
   #: (id: String, public_key: OpenSSL::PKey::PKey | String, sign_count: Integer, ?aaguid: String?, ?backed_up: bool?, ?transports: Array[String]) -> void
   def initialize(id:, public_key:, sign_count:, aaguid: nil, backed_up: nil, transports: [])
     @id = id
-    @public_key = public_key
-    @public_key = OpenSSL::PKey.read(public_key) unless public_key.is_a?(OpenSSL::PKey::PKey)
+    @public_key = public_key.is_a?(OpenSSL::PKey::PKey) ? public_key : OpenSSL::PKey.read(public_key)
     @sign_count = sign_count
     @aaguid = aaguid
     @backed_up = backed_up

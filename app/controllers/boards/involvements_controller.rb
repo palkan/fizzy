@@ -1,3 +1,5 @@
+# typed: true
+
 class Boards::InvolvementsController < ApplicationController
   include BoardScoped
 

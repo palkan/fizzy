@@ -1,10 +1,12 @@
+# typed: true
+
 class SearchesController < ApplicationController
   include Turbo::DriveHelper
 
   def show
     @query = params[:q].blank? ? nil : params[:q]
 
-    if card = Current.user!.accessible_cards.find_by_id(@query)
+    if card = Current.user!.accessible_cards.find_by(id: @query)
       respond_to do |format|
         format.html { @card = card }
         format.json { set_page_and_extract_portion_from Current.user!.accessible_cards.where(id: card.id) }

@@ -1,11 +1,13 @@
+# typed: true
+
+# @requires_ancestor: Identity
 module Identity::Transferable
-  # @type instance: Identity
   extend ActiveSupport::Concern
 
   TRANSFER_LINK_EXPIRY_DURATION = 4.hours
 
+  # @requires_ancestor: singleton(Identity)
   module ClassMethods
-    # @type instance: singleton(Identity)
     def find_by_transfer_id(id)
       find_signed(id, purpose: :transfer)
     end

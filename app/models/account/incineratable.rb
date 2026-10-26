@@ -1,11 +1,13 @@
+# typed: true
+
+# @requires_ancestor: Account
 module Account::Incineratable
-  # @type instance: Account
   extend ActiveSupport::Concern
 
   INCINERATION_GRACE_PERIOD = 30.days
 
   included do
-    # @type self: singleton(Account)
+    #: self as singleton(Account)
     scope :due_for_incineration, -> { joins(:cancellation).where(account_cancellations: { created_at: ...INCINERATION_GRACE_PERIOD.ago }) }
 
     define_callbacks :incinerate

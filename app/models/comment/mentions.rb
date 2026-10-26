@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Comment
 module Comment::Mentions
-  # @type instance: Comment
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Comment)
+    #: self as singleton(Comment)
     include ::Mentions
 
     def mentionable?

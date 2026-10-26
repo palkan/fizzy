@@ -1,3 +1,5 @@
+# typed: true
+
 # Provides sequential IDs for +external_account_id+ when creating accounts without one.
 class Account::ExternalIdSequence < ApplicationRecord
   #: () -> Integer
@@ -12,8 +14,8 @@ class Account::ExternalIdSequence < ApplicationRecord
     first&.value || self.next
   end
 
-  # @rbs [T] () { (Account::ExternalIdSequence) -> T } -> T
-  private_class_method def self.with_lock
+  #: [T] () { (Account::ExternalIdSequence) -> T } -> T
+  private_class_method def self.with_lock(&block)
     transaction do
       sequence = lock.first_or_create!(value: initial_value)
       yield sequence

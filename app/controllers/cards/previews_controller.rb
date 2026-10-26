@@ -1,3 +1,5 @@
+# typed: true
+
 class Cards::PreviewsController < ApplicationController
   include FilterScoped
 

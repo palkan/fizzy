@@ -1,3 +1,5 @@
+# typed: true
+
 class Sessions::MagicLinksController < ApplicationController
   disallow_account_scope
   require_unauthenticated_access

@@ -1,8 +1,12 @@
+# typed: true
+
 class Event < ApplicationRecord
-  # @rbs skip -- declared in sig/generated/inline.rbs
   include Notifiable, Particulars, Promptable
 
-  belongs_to :account, default: -> { board.account }
+  belongs_to :account, default: -> {
+    #: self as Event
+    board.account
+  }
   belongs_to :board
   belongs_to :creator, class_name: "User"
   belongs_to :eventable, polymorphic: true
@@ -24,14 +28,17 @@ class Event < ApplicationRecord
     })
   }
 
-  after_create -> { eventable.event_was_created(self) }
+  after_create -> {
+    #: self as Event
+    eventable.event_was_created(self)
+  }
   after_create_commit :dispatch_webhooks
 
   delegate :card, to: :eventable
 
-  #: () -> (ActiveSupport::StringInquirer & Event::_Action)
+  #: () -> (ActiveSupport::StringInquirer & Event::Action)
   def action
-    super.inquiry #: ActiveSupport::StringInquirer & Event::_Action
+    super.inquiry #: as ActiveSupport::StringInquirer & Event::Action
   end
 
   #: () -> ApplicationRecord

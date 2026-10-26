@@ -1,3 +1,5 @@
+# typed: true
+
 # Repair task — reindexes every searchable Card and Comment in the database.
 # Intended to be invoked manually after a search-index loss event. Not a recurring job.
 #

@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Pinnable
-  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Card)
+    #: self as singleton(Card)
     has_many :pins, dependent: :destroy
 
     after_update_commit :broadcast_pin_updates, if: :preview_changed?

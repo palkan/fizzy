@@ -1,5 +1,6 @@
+# typed: true
+
 class Account < ApplicationRecord
-  # @rbs skip -- declared in sig/generated/inline.rbs
   include Account::Storage, Cancellable, Entropic, Incineratable, MultiTenantable, Searchable, Seedeable
 
   has_one :join_code, dependent: :destroy
@@ -31,7 +32,8 @@ class Account < ApplicationRecord
 
   #: () -> String
   def slug
-    external_account_id = self.external_account_id #: Integer
+    # Assigned before create; a slug is only built for persisted accounts.
+    external_account_id = self.external_account_id #: as !nil
     "/#{AccountSlug.encode(external_account_id)}"
   end
 

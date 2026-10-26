@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::Import < ApplicationRecord
   broadcasts_refreshes
 
@@ -21,11 +23,14 @@ class Account::Import < ApplicationRecord
     Account::DataImportJob.perform_later(self)
   end
 
-  #: (?start: [String, String]?, ?callback: (^(record_set: Account::DataTransfer::RecordSet, file: String) -> void)?) -> void
+  # The callback takes record_set: and file: keywords, which Sorbet's proc types can't express
+  #: (?start: [String, String]?, ?callback: Proc?) -> void
   def check(start: nil, callback: nil)
     processing!
 
-    ZipFile.read_from(file.blob) do |zip|
+    # Imports are created with their file attached
+    blob = file.blob #: as !nil
+    ZipFile.read_from(blob) do |zip|
       Account::DataTransfer::Manifest.new(account).each_record_set(start: start) do |record_set, last_id|
         record_set.check(from: zip, start: last_id, callback: callback)
       end
@@ -41,11 +46,14 @@ class Account::Import < ApplicationRecord
     raise e
   end
 
-  #: (?start: [String, String]?, ?callback: (^(record_set: Account::DataTransfer::RecordSet, files: Array[String]) -> void)?) -> void
+  # The callback takes record_set: and files: keywords, which Sorbet's proc types can't express
+  #: (?start: [String, String]?, ?callback: Proc?) -> void
   def process(start: nil, callback: nil)
     processing!
 
-    ZipFile.read_from(file.blob) do |zip|
+    # Imports are created with their file attached
+    blob = file.blob #: as !nil
+    ZipFile.read_from(blob) do |zip|
       Account::DataTransfer::Manifest.new(account).each_record_set(start: start) do |record_set, last_id|
         record_set.import(from: zip, start: last_id, callback: callback)
       end
@@ -79,7 +87,7 @@ class Account::Import < ApplicationRecord
       ImportMailer.completed(identity, account).deliver_later
     end
 
-    #: (?(:conflict | :invalid_export)?) -> void
+    #: (?Symbol?) -> void
     def mark_as_failed(failure_reason = nil)
       update!(status: :failed, failure_reason: failure_reason)
       ImportMailer.failed(self).deliver_later

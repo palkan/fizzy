@@ -1,7 +1,13 @@
-class Notifier::CommentEventNotifier < Notifier
-  # @type instance: Notifier::CommentEventNotifier & Notifier::_EventSource
+# typed: true
 
+class Notifier::CommentEventNotifier < Notifier
   delegate :creator, to: :source
+
+  # Notifier.for builds event notifiers for events only
+  #: () -> Event
+  def source
+    super #: as Event
+  end
 
   private
     def recipients

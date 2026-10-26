@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn
 #
 # Provides a pure-Ruby implementation of the WebAuthn (Web Authentication)
@@ -50,7 +52,7 @@ module ActionPack::WebAuthn
 
   # Returns the registry of attestation format verifiers, keyed by format
   # string (e.g., "none", "packed"). Only "none" is registered by default.
-  #: () -> Hash[String, ActionPack::WebAuthn::_AttestationVerifier]
+  #: () -> Hash[String, ActionPack::WebAuthn::AttestationVerifier]
   def self.attestation_verifiers
     @attestation_verifiers ||= {
       "none" => Authenticator::AttestationVerifiers::None.new
@@ -59,7 +61,7 @@ module ActionPack::WebAuthn
 
   # Registers a custom attestation verifier for the given +format+.
   # The +verifier+ must respond to +verify!(attestation, client_data_json:)+.
-  #: (String | Symbol, ActionPack::WebAuthn::_AttestationVerifier) -> ActionPack::WebAuthn::_AttestationVerifier
+  #: (String | Symbol, ActionPack::WebAuthn::AttestationVerifier) -> ActionPack::WebAuthn::AttestationVerifier
   def self.register_attestation_verifier(format, verifier)
     attestation_verifiers[format.to_s] = verifier
   end

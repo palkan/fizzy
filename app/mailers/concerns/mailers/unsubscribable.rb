@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Notification::BundleMailer
 module Mailers::Unsubscribable
-  # @type instance: Notification::BundleMailer
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Notification::BundleMailer)
+    #: self as singleton(Notification::BundleMailer)
     after_action :set_unsubscribe_headers
   end
 

@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn Attestation
 #
 # Decodes and represents the attestation object returned by an authenticator
@@ -36,9 +38,12 @@
 # * +sign_count+ - Signature counter for replay detection
 #
 class ActionPack::WebAuthn::Authenticator::Attestation
-  attr_reader :authenticator_data #: ActionPack::WebAuthn::Authenticator::Data
-  attr_reader :format #: String
-  attr_reader :attestation_statement #: Hash[String, untyped]
+  #: ActionPack::WebAuthn::Authenticator::Data
+  attr_reader :authenticator_data
+  #: String
+  attr_reader :format
+  #: Hash[String, untyped]
+  attr_reader :attestation_statement
 
   delegate :credential_id, :public_key, :public_key_bytes, :sign_count, :aaguid, :backed_up?, to: :authenticator_data
 

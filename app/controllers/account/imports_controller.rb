@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::ImportsController < ApplicationController
   layout "public"
 

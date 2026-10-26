@@ -1,16 +1,18 @@
+# typed: true
+
+# @requires_ancestor: Notification
 module Notification::Pushable
-  # @type instance: Notification
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Notification)
+    #: self as singleton(Notification)
     class_attribute :push_targets, default: [] #: Array[singleton(Notification::PushTarget)]
 
     after_save_commit :push_later, if: :source_id_previously_changed?
   end
 
+  # @requires_ancestor: singleton(Notification)
   module ClassMethods
-    # @type instance: singleton(Notification)
     #: (Symbol | singleton(Notification::PushTarget)) -> void
     def register_push_target(target)
       target = resolve_push_target(target)
@@ -29,14 +31,16 @@ module Notification::Pushable
 
   #: () -> void
   def push_later
-    Notification::PushJob.perform_later(self)
+    notification = self #: as Notification
+    Notification::PushJob.perform_later(notification)
   end
 
   #: () -> void
   def push
     return unless pushable?
 
-    self.class.push_targets.each { |target| push_to(target) }
+    notification = self #: as Notification
+    notification.class.push_targets.each { |target| push_to(target) }
   end
 
   #: () -> Notification::DefaultPayload

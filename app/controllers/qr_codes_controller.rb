@@ -1,3 +1,5 @@
+# typed: true
+
 class QrCodesController < ApplicationController
   allow_unauthenticated_access
 

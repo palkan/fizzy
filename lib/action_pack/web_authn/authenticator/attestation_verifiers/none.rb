@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn None Attestation Verifier
 #
 # Verifies attestation responses with the "none" format, which indicates the

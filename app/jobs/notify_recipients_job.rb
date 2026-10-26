@@ -1,3 +1,5 @@
+# typed: true
+
 class NotifyRecipientsJob < ApplicationJob
   discard_on ActiveJob::DeserializationError
 

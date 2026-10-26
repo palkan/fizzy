@@ -1,3 +1,5 @@
+# typed: true
+
 class Notifications::UnsubscribesController < ApplicationController
   allow_unauthenticated_access
   skip_forgery_protection

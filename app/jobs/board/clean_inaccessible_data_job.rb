@@ -1,3 +1,5 @@
+# typed: true
+
 class Board::CleanInaccessibleDataJob < ApplicationJob
   discard_on ActiveJob::DeserializationError
 

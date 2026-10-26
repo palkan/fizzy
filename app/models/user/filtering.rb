@@ -1,7 +1,12 @@
+# typed: true
+
 class User::Filtering
-  attr_reader :user #: User
-  attr_reader :filter #: Filter
-  attr_reader :expanded #: bool?
+  #: User
+  attr_reader :user
+  #: Filter
+  attr_reader :filter
+  #: bool?
+  attr_reader :expanded
 
   delegate :as_params, :single_board, to: :filter
   delegate :only_closed?, to: :filter

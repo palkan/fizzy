@@ -1,5 +1,6 @@
+# typed: true
+
 module ExcerptHelper
-  # @type instance: ActionView::Base
   #: (untyped content, ?length: Integer) -> String
   def format_excerpt(content, length: 200)
     return "" if content.blank?

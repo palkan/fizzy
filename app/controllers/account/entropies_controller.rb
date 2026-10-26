@@ -1,11 +1,15 @@
+# typed: true
+
 class Account::EntropiesController < ApplicationController
   wrap_parameters :entropy, include: [ :auto_postpone_period_in_days ]
 
   before_action :ensure_admin
 
   def update
-    @account = Current.account
-    @account.entropy.update!(entropy_params)
+    @account = Current.account!
+    # Accounts create their entropy on creation
+    entropy = @account.entropy #: as !nil
+    entropy.update!(entropy_params)
 
     respond_to do |format|
       format.html { redirect_to account_settings_path, notice: "Account updated" }

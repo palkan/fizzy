@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: Board
 module Board::Storage
-  # @type instance: Board
   extend ActiveSupport::Concern
   include ::Storage::Totaled
 

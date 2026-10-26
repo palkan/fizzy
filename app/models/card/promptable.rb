@@ -1,10 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Promptable
-  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Card)
-    # @rbs skip -- declared in sig/generated/inline.rbs
+    #: self as singleton(Card)
     include Rails.application.routes.url_helpers
   end
 

@@ -1,3 +1,5 @@
+# typed: true
+
 class Users::RolesController < ApplicationController
   wrap_parameters :user, include: %i[ role ]
 

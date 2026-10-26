@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::DataTransfer::RecordSet
   class IntegrityError < StandardError; end
   class ConflictError < IntegrityError; end
@@ -5,12 +7,16 @@ class Account::DataTransfer::RecordSet
   IMPORT_BATCH_SIZE = 100
   INTERNAL_RECORD_TYPES = %w[Export Account::Import].freeze
 
-  attr_accessor :importable_model_names #: Array[String]
-  attr_reader :account #: Account
-  attr_reader :model #: Account::DataTransfer::RecordSet::model
-  attr_reader :attributes #: Array[String]
+  #: Array[String]
+  attr_accessor :importable_model_names
+  #: Account
+  attr_reader :account
+  #: singleton(ActiveRecord::Base)
+  attr_reader :model
+  #: Array[String]
+  attr_reader :attributes
 
-  #: (account: Account, model: Account::DataTransfer::RecordSet::model, ?attributes: Array[String | Symbol]?, ?importable_model_names: Array[String]?) -> void
+  #: (account: Account, model: singleton(ActiveRecord::Base), ?attributes: Array[String | Symbol]?, ?importable_model_names: Array[String]?) -> void
   def initialize(account:, model:, attributes: nil, importable_model_names: nil)
     @account = account
     @model = model
@@ -30,7 +36,8 @@ class Account::DataTransfer::RecordSet
     end
   end
 
-  #: (from: ZipFile::Reader, ?start: String?, ?callback: (^(record_set: Account::DataTransfer::RecordSet, files: Array[String]) -> void)?) -> void
+  # The callback takes record_set: and files: keywords, which Sorbet's proc types can't express
+  #: (from: ZipFile::Reader, ?start: String?, ?callback: Proc?) -> void
   def import(from:, start: nil, callback: nil)
     with_zip(from) do
       file_list = files
@@ -43,7 +50,8 @@ class Account::DataTransfer::RecordSet
     end
   end
 
-  #: (from: ZipFile::Reader, ?start: String?, ?callback: (^(record_set: Account::DataTransfer::RecordSet, file: String) -> void)?) -> void
+  # The callback takes record_set: and file: keywords, which Sorbet's proc types can't express
+  #: (from: ZipFile::Reader, ?start: String?, ?callback: Proc?) -> void
   def check(from:, start: nil, callback: nil)
     with_zip(from) do
       file_list = files
@@ -58,10 +66,11 @@ class Account::DataTransfer::RecordSet
 
   private
     # A ZipFile::Writer while exporting, a ZipFile::Reader while importing or checking
-    attr_reader :zip #: untyped
+    #: untyped
+    attr_reader :zip
 
-    # @rbs [T] (ZipFile::Reader | ZipFile::Writer) { () -> T } -> T
-    def with_zip(zip)
+    #: [T] (ZipFile::Reader | ZipFile::Writer) { () -> T } -> T
+    def with_zip(zip, &block)
       old_zip = @zip
       @zip = zip
       yield
@@ -88,7 +97,7 @@ class Account::DataTransfer::RecordSet
     def import_batch(files)
       batch_data = files.map do |file|
         data = load(file)
-        data.slice(*attributes).merge("account_id" => account.id).tap do |record_data|
+        data.select { |key, _| attributes.include?(key) }.merge("account_id" => account.id).tap do |record_data|
           record_data["updated_at"] = Time.current if record_data.key?("updated_at")
         end
       end
@@ -142,7 +151,7 @@ class Account::DataTransfer::RecordSet
       end
     end
 
-    #: (String) -> Account::DataTransfer::RecordSet::model
+    #: (String) -> singleton(ActiveRecord::Base)
     def verify_model_type(type_name)
       if importable_model_names.include?(type_name)
         type_name.constantize
@@ -156,7 +165,7 @@ class Account::DataTransfer::RecordSet
       index = file_list.index(last_id)
 
       if index
-        file_list[(index + 1)..] #: Array[String]
+        file_list[(index + 1)..] #: as !nil
       else
         file_list
       end

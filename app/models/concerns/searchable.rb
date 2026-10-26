@@ -1,11 +1,13 @@
+# typed: true
+
+# @requires_ancestor: ApplicationRecord
 module Searchable
-  # @type instance: Searchable & Searchable::_Includer & ApplicationRecord
   extend ActiveSupport::Concern
 
   SEARCH_CONTENT_LIMIT = 32.kilobytes
 
   included do
-    # @type self: singleton(ApplicationRecord)
+    #: self as singleton(ApplicationRecord)
     after_create_commit :create_in_search_index
     after_update_commit :update_in_search_index
     after_destroy_commit :remove_from_search_index
@@ -62,7 +64,7 @@ module Searchable
       Search::Record.for(account_id)
     end
 
-  # Models must implement these methods (see Searchable::_Includer in sig/shims/models_core.rbs):
+  # Models must implement these methods (declared on Searchable in sorbet/rbi/shims/models.rbi):
   # - account_id: returns the account id
   # - search_title: returns title string or nil
   # - search_content: returns content string

@@ -1,3 +1,5 @@
+# typed: true
+
 class Notifications::SettingsController < ApplicationController
   wrap_parameters :user_settings, include: %i[ bundle_email_frequency ]
 

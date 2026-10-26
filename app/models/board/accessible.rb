@@ -1,34 +1,32 @@
+# typed: true
+
+# @requires_ancestor: Board
 module Board::Accessible
-  # @type instance: Board
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Board)
+    #: self as singleton(Board)
     has_many :accesses, dependent: :delete_all do
-      # Declared as Board::_AccessesExtension in sig/shims/models_domain.rbs
-      # @type method revise: (?granted: Enumerable[User], ?revoked: Enumerable[User]) -> void
-      # @type method grant_to: (User | Enumerable[User]) -> void
-      # @type method revoke_from: (User | Enumerable[User]) -> void
-
-      # @rbs skip
+      # Association extension, declared as Board::AccessesExtension in sorbet/rbi/shims/models.rbi
+      #: (?granted: Enumerable[User], ?revoked: Enumerable[User]) -> void
       def revise(granted: [], revoked: [])
-        # @type self: Access::ActiveRecord_Associations_CollectionProxy & Board::_AccessesExtension
+        #: self as Access::PrivateCollectionProxy & Board::AccessesExtension
         transaction do
           grant_to granted
           revoke_from revoked
         end
       end
 
-      # @rbs skip
+      #: (User | Enumerable[User]) -> void
       def grant_to(users)
-        # @type self: Access::ActiveRecord_Associations_CollectionProxy & Board::_AccessesExtension
+        #: self as Access::PrivateCollectionProxy & Board::AccessesExtension
         users = Array(users) #: Array[User]
         Access.insert_all users.collect { |user| { id: ActiveRecord::Type::Uuid.generate, board_id: proxy_association.owner.id, user_id: user.id, account_id: proxy_association.owner.account.id } }
       end
 
-      # @rbs skip
+      #: (User | Enumerable[User]) -> void
       def revoke_from(users)
-        # @type self: Access::ActiveRecord_Associations_CollectionProxy & Board::_AccessesExtension
+        #: self as Access::PrivateCollectionProxy & Board::AccessesExtension
         destroy_by user: users unless proxy_association.owner.all_access?
       end
     end

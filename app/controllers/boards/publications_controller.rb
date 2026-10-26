@@ -1,3 +1,5 @@
+# typed: true
+
 class Boards::PublicationsController < ApplicationController
   include BoardScoped
 

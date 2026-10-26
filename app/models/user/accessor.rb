@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: User
 module User::Accessor
-  # @type instance: User
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(User)
+    #: self as singleton(User)
     has_many :accesses, dependent: :destroy
     has_many :boards, through: :accesses
     has_many :accessible_columns, through: :boards, source: :columns

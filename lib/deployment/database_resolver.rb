@@ -1,3 +1,5 @@
+# typed: true
+
 module Deployment
   class DatabaseResolver < ActiveRecord::Middleware::DatabaseSelector::Resolver
     #: () -> bool
@@ -12,7 +14,7 @@ module Deployment
     end
 
     private
-      #: () -> bool
+      #: () -> bool?
       def read_from_primary?
         # Only the primary datacenter can read from the primary database, non-primary DCs have local DB replicas
         super && DatabaseResolver.in_primary_datacenter?

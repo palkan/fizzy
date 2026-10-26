@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Postponable
-  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Card)
+    #: self as singleton(Card)
     has_one :not_now, dependent: :destroy, class_name: "Card::NotNow"
 
     scope :postponed, -> { open.published.joins(:not_now) }
@@ -26,7 +28,7 @@ module Card::Postponable
     open? && published? && !postponed?
   end
 
-  #: (?user: User) -> void
+  #: (**User) -> void
   def auto_postpone(**args)
     postpone(**args, event_name: :auto_postponed)
   end

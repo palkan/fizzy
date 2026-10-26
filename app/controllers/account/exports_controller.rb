@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::ExportsController < ApplicationController
   before_action :ensure_admin_or_owner
   before_action :ensure_export_limit_not_exceeded, only: :create

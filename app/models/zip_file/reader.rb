@@ -1,18 +1,17 @@
-class ZipFile::Reader
-  # @rbs @io: ZipFile::Reader::_IO
-  # @rbs @reader: Array[ZipKit::FileReader::ZipEntry]
+# typed: true
 
-  #: (ZipFile::Reader::_IO) -> void
+class ZipFile::Reader
+  #: (ZipFile::Reader::Source) -> void
   def initialize(io)
-    @io = io
-    @reader = ZipKit::FileReader.read_zip_structure(io: io)
+    @io = io #: ZipFile::Reader::Source
+    @reader = ZipKit::FileReader.new.read_zip_structure(io: io) #: Array[ZipKit::FileReader::ZipEntry]
   rescue ZipKit::FileReader::ReadError, ZipKit::FileReader::MissingEOCD, ZipKit::FileReader::UnsupportedFeature => e
     raise ZipFile::InvalidFileError, e.message
   end
 
-  # @rbs (String) -> String
-  #    | [T] (String) { (ZipFile::Reader::IO) -> T } -> T
-  def read(file_path)
+  # Returns the file's content, or the block's result when given a block
+  #: [T] (String) ?{ (ZipFile::Reader::IO) -> T } -> (String | T)
+  def read(file_path, &block)
     entry = @reader.find { |e| e.filename == file_path }
     raise ArgumentError, "File not found in zip: #{file_path}" unless entry
     raise ArgumentError, "Cannot read directory entry: #{file_path}" if entry.filename.end_with?("/")
@@ -20,7 +19,7 @@ class ZipFile::Reader
     if block_given?
       yield ZipFile::Reader::IO.new(entry, @io)
     else
-      entry.extractor_from(@io).extract #: String
+      entry.extractor_from(@io).extract #: as String
     end
   end
 

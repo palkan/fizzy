@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: ActionPack::Passkey
 module ActionPackPasskeyInferNameFromAaguid
-  # @type instance: ActionPack::Passkey
   extend ActiveSupport::Concern
 
+  # @requires_ancestor: singleton(ActionPack::Passkey)
   module ClassMethods
-    # @type instance: singleton(ActionPack::Passkey)
     def register(...)
       super(...).tap do |credential|
         credential.update!(name: credential.authenticator.name) if credential.authenticator && credential.name.blank?

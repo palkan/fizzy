@@ -1,34 +1,37 @@
+# typed: true
+
+# @requires_ancestor: ActionController::Base
+# @requires_ancestor: GeneratedUrlHelpersModule
 module Authentication
-  # @type instance: ActionController::Base & Authentication & LoginHelper
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ActionController::Base)
+    #: self as singleton(ActionController::Base)
     before_action :require_account # Checking and setting account must happen first
     before_action :require_authentication
     helper_method :authenticated?
     helper_method :email_address_pending_authentication
 
     etag do
-      # @type self: ActionController::Base & Authentication
+      #: self as ActionController::Base & Authentication
       Current.identity!.id if authenticated?
     end
 
-    # @rbs skip -- declared in sig/generated/inline.rbs
     include Authentication::ViaMagicLink, LoginHelper
   end
 
+  # Not `@requires_ancestor: singleton(ActionController::Base)`: ActiveStorage::Authorize, a module, includes this concern
   module ClassMethods
-    # @type instance: singleton(ActionController::Base) & Authentication::ClassMethods & Authorization::ClassMethods
-
     #: (**untyped) -> void
     def require_unauthenticated_access(**options)
+      #: self as singleton(ActionController::Base) & Authentication::ClassMethods
       allow_unauthenticated_access **options
       before_action :redirect_authenticated_user, **options
     end
 
     #: (**untyped) -> void
     def allow_unauthenticated_access(**options)
+      #: self as singleton(ActionController::Base) & Authorization::ClassMethods
       skip_before_action :require_authentication, **options
       before_action :resume_session, **options
       allow_unauthorized_access **options
@@ -36,6 +39,7 @@ module Authentication
 
     #: (**untyped) -> void
     def disallow_account_scope(**options)
+      #: self as singleton(ActionController::Base)
       skip_before_action :require_account, **options
       before_action :redirect_tenanted_request, **options
     end
@@ -115,7 +119,7 @@ module Authentication
       end
     end
 
-    # @rbs session: Session
+    #: (Session session) -> untyped
     def set_current_session(session)
       Current.session = session
       cookies.signed.permanent[:session_token] = { value: session.signed_id, httponly: true, same_site: :lax }

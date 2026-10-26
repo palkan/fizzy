@@ -1,3 +1,5 @@
+# typed: true
+
 class Export < ApplicationRecord
   belongs_to :account
   belongs_to :user
@@ -52,7 +54,7 @@ class Export < ApplicationRecord
     end
 
     #: () { () -> void } -> void
-    def with_context
+    def with_context(&)
       Current.set(account: account) do
         old_url_options = ActiveStorage::Current.url_options
         ActiveStorage::Current.url_options = Rails.application.routes.default_url_options

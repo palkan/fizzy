@@ -1,7 +1,12 @@
+# typed: true
+
 class Assignment < ApplicationRecord
   LIMIT = 100
 
-  belongs_to :account, default: -> { card.account }
+  belongs_to :account, default: -> {
+    #: self as Assignment
+    card.account
+  }
   belongs_to :card, touch: true
 
   belongs_to :assignee, class_name: "User"

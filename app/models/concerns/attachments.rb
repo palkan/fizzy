@@ -1,9 +1,7 @@
-module Attachments
-  # @rbs @remote_images: Array[ActionText::Attachables::RemoteImage]?
-  # @rbs @remote_videos: Array[ActionText::Attachables::RemoteVideo]?
-  # @rbs @rich_text_record: ActionText::RichText?
+# typed: true
 
-  # @type instance: Attachments & ApplicationRecord
+# @requires_ancestor: ApplicationRecord
+module Attachments
   extend ActiveSupport::Concern
 
   # Variants used by ActionText embeds. Processed immediately on attachment to avoid
@@ -34,7 +32,7 @@ module Attachments
 
   #: () -> Array[ActionText::Attachables::RemoteImage]
   def remote_images
-    @remote_images ||= rich_text_record&.body&.attachables&.grep(ActionText::Attachables::RemoteImage) || []
+    @remote_images ||= rich_text_record&.body&.attachables&.grep(ActionText::Attachables::RemoteImage) || [] #: Array[ActionText::Attachables::RemoteImage]?
   end
 
   #: () -> bool
@@ -44,7 +42,7 @@ module Attachments
 
   #: () -> Array[ActionText::Attachables::RemoteVideo]
   def remote_videos
-    @remote_videos ||= rich_text_record&.body&.attachables&.grep(ActionText::Attachables::RemoteVideo) || []
+    @remote_videos ||= rich_text_record&.body&.attachables&.grep(ActionText::Attachables::RemoteVideo) || [] #: Array[ActionText::Attachables::RemoteVideo]?
   end
 
   #: () -> bool
@@ -56,7 +54,8 @@ module Attachments
     #: () -> ActionText::RichText?
     def rich_text_record
       @rich_text_record ||= begin
-        association = self.class.reflect_on_all_associations(:has_one).find { it.klass == ActionText::RichText }
+        model = self.class #: as singleton(ApplicationRecord)
+        association = model.reflect_on_all_associations(:has_one).find { it.klass == ActionText::RichText }
         public_send(association.name)
       end
     end

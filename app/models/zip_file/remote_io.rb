@@ -1,10 +1,10 @@
-class ZipFile::RemoteIO < ZipKit::RemoteIO
-  # @rbs @ssl_verify_peer: bool
+# typed: true
 
+class ZipFile::RemoteIO < ZipKit::RemoteIO
   #: (String | URI::Generic, ?ssl_verify_peer: bool) -> void
   def initialize(url, ssl_verify_peer: true)
     super(url)
-    @ssl_verify_peer = ssl_verify_peer
+    @ssl_verify_peer = ssl_verify_peer #: bool
   end
 
   protected
@@ -43,8 +43,8 @@ class ZipFile::RemoteIO < ZipKit::RemoteIO
     end
 
   private
-    # @rbs [T] () { (Net::HTTP) -> T } -> T
-    def with_http
+    #: [T] () { (Net::HTTP) -> T } -> T
+    def with_http(&block)
       # Remote zips are read from http(s) URLs
       hostname = @uri.hostname #: String
       http = Net::HTTP.new(hostname, @uri.port)

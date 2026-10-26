@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module CommentsHelper
-  # @type instance: ActionView::Base
   #: (Card) -> String
   def new_comment_placeholder(card)
     if card.creator == Current.user && card.comments.empty?

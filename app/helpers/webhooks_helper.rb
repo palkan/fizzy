@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module WebhooksHelper
-  # @type instance: ActionView::Base
   ACTION_LABELS = {
     card_published: "Card added",
     card_title_changed: "Card title changed",
@@ -15,7 +17,7 @@ module WebhooksHelper
     card_sent_back_to_triage: "Card moved back to “Maybe?”"
   }.with_indifferent_access.freeze
 
-  #: (?Array[String]) -> ActiveSupport::HashWithIndifferentAccess[String, String]
+  #: (?Array[String]) -> ActiveSupport::HashWithIndifferentAccess
   def webhook_action_options(actions = Webhook::PERMITTED_ACTIONS)
     ACTION_LABELS.select { |key, _| actions.include?(key.to_s) }
   end
@@ -25,7 +27,7 @@ module WebhooksHelper
     ACTION_LABELS[action] || action.to_s.humanize
   end
 
-  #: (Board) -> ActiveSupport::SafeBuffer
+  #: (Board) ?{ () -> untyped } -> ActiveSupport::SafeBuffer
   def link_to_webhooks(board, &)
     link_to board_webhooks_path(board_id: board),
         class: [ "btn btn--circle-mobile", { "btn--reversed": board.webhooks.any? } ],

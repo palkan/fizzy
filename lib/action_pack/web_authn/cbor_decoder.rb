@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn CBOR Decoder
 #
 # Decodes Concise Binary Object Representation (CBOR) data as specified in
@@ -51,11 +53,6 @@
 #
 # Raises +InvalidCborError+ when encountering malformed or unsupported CBOR data.
 class ActionPack::WebAuthn::CborDecoder
-  # @rbs @bytes: Array[Integer]
-  # @rbs @max_depth: Integer
-  # @rbs @position: Integer
-  # @rbs @depth: Integer
-
   # Major types
   UNSIGNED_INTEGER_TYPE = 0
   NEGATIVE_INTEGER_TYPE = 1
@@ -96,7 +93,7 @@ class ActionPack::WebAuthn::CborDecoder
   #
   #   ActionPack::WebAuthn::CborDecoder.decode("\xa2\x61a\x01\x61b\x02")
   #   # => {"a" => 1, "b" => 2}
-  #: (String | Array[Integer], ?max_depth: Integer, ?max_size: Integer) -> untyped
+  #: (String | Array[Integer], **Integer) -> untyped
   def self.decode(bytes, **args)
     bytes = bytes.bytes if bytes.is_a?(String)
     new(bytes, **args).decode
@@ -106,10 +103,10 @@ class ActionPack::WebAuthn::CborDecoder
   def initialize(bytes, max_depth: MAX_DEPTH, max_size: MAX_SIZE) # :nodoc:
     raise ActionPack::WebAuthn::InvalidCborError, "Input exceeds maximum size" if bytes.length > max_size
 
-    @bytes = bytes
-    @max_depth = max_depth
-    @position = 0
-    @depth = 0
+    @bytes = bytes #: Array[Integer]
+    @max_depth = max_depth #: Integer
+    @position = 0 #: Integer
+    @depth = 0 #: Integer
   end
 
   # Decodes the next CBOR data item from the byte sequence.

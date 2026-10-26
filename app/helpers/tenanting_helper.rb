@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module TenantingHelper
-  # @type instance: ActionView::Base
   #: () -> ActiveSupport::SafeBuffer
   def tenanted_action_cable_meta_tag
     tag "meta",

@@ -1,7 +1,12 @@
+# typed: true
+
 class Notification < ApplicationRecord
   include Notification::Pushable
 
-  belongs_to :account, default: -> { user.account }
+  belongs_to :account, default: -> {
+    #: self as Notification
+    user.account
+  }
   belongs_to :user
   belongs_to :creator, class_name: "User"
   belongs_to :source, polymorphic: true
@@ -22,9 +27,18 @@ class Notification < ApplicationRecord
   after_create :bundle
   after_update :bundle, if: :source_id_previously_changed?
 
-  after_create_commit  -> { broadcast_prepend_later_to user, :notifications, target: "notifications" }
-  after_update_commit  -> { broadcast_update }
-  after_destroy_commit -> { broadcast_remove_to user, :notifications }
+  after_create_commit -> {
+    #: self as Notification
+    broadcast_prepend_later_to user, :notifications, target: "notifications"
+  }
+  after_update_commit -> {
+    #: self as Notification
+    broadcast_update
+  }
+  after_destroy_commit -> {
+    #: self as Notification
+    broadcast_remove_to user, :notifications
+  }
 
   delegate :notifiable_target, to: :source
   delegate :identity, to: :user
@@ -62,7 +76,8 @@ class Notification < ApplicationRecord
 
     #: () -> void
     def bundle
-      settings = user.settings #: User::Settings
+      # Settings are created with every non-system user, and system users get no notifications.
+      settings = user.settings #: as !nil
       user.bundle(self) if settings.bundling_emails?
     end
 

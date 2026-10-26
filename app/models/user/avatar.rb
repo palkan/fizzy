@@ -1,7 +1,9 @@
+# typed: true
+
 require "zlib"
 
+# @requires_ancestor: User
 module User::Avatar
-  # @type instance: User
   extend ActiveSupport::Concern
 
   ALLOWED_AVATAR_CONTENT_TYPES = %w[ image/jpeg image/png image/gif image/webp ].freeze
@@ -12,7 +14,7 @@ module User::Avatar
   ].freeze
 
   included do
-    # @type self: singleton(User)
+    #: self as singleton(User)
     has_one_attached :avatar, dependent: :purge_later do |attachable|
       attachable.variant :thumb, resize_to_fill: [ 256, 256 ], process: :immediately
     end
@@ -33,7 +35,7 @@ module User::Avatar
 
   #: () -> String
   def avatar_background_color
-    AVATAR_COLORS[Zlib.crc32(to_param.to_s) % AVATAR_COLORS.size]
+    AVATAR_COLORS.fetch(Zlib.crc32(to_param.to_s) % AVATAR_COLORS.size)
   end
 
   # Avatars are always publicly accessible
@@ -50,10 +52,12 @@ module User::Avatar
     end
 
     def avatar_dimensions_allowed
-      return unless avatar.blob.analyzed? || avatar.blob.analyze
+      # Only validated when an avatar is attached
+      blob = avatar.blob #: as !nil
+      return unless blob.analyzed? || blob.analyze
 
-      width = avatar.blob.metadata[:width]
-      height = avatar.blob.metadata[:height]
+      width = blob.metadata[:width]
+      height = blob.metadata[:height]
 
       if width && width > MAX_AVATAR_DIMENSIONS[:width]
         errors.add(:avatar, "width must be less than #{MAX_AVATAR_DIMENSIONS[:width]}px")

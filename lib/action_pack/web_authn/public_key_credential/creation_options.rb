@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn Public Key Credential Creation Options
 #
 # Generates options for the WebAuthn registration ceremony (creating a new
@@ -46,7 +48,7 @@ class ActionPack::WebAuthn::PublicKeyCredential::CreationOptions < ActionPack::W
   RESIDENT_KEY_OPTIONS = %i[ preferred required discouraged ].freeze
   ATTESTATION_PREFERENCES = %i[ none indirect direct enterprise ].freeze
 
-  attribute :id #: _ToS?
+  attribute :id #: Object?
   attribute :name #: String?
   attribute :display_name #: String?
   attribute :resident_key, default: :required #: Symbol

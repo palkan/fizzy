@@ -1,7 +1,13 @@
-class Notifier::CardEventNotifier < Notifier
-  # @type instance: Notifier::CardEventNotifier & Notifier::_EventSource
+# typed: true
 
+class Notifier::CardEventNotifier < Notifier
   delegate :creator, to: :source
+
+  # Notifier.for builds event notifiers for events only
+  #: () -> Event
+  def source
+    super #: as Event
+  end
   delegate :board, to: :card
 
   private

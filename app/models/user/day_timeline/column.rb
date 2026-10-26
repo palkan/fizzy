@@ -1,14 +1,20 @@
+# typed: true
+
 class User::DayTimeline::Column
-  # @rbs skip -- declared in sig/generated/inline.rbs
   include ActionView::Helpers::TagHelper, ActionView::Helpers::OutputSafetyHelper, TimeHelper
 
-  attr_reader :index #: Integer
-  attr_reader :id #: Symbol
-  attr_reader :base_title #: String
-  attr_reader :day_timeline #: User::DayTimeline
-  attr_reader :events #: Event::ActiveRecord_Relation
+  #: Integer
+  attr_reader :index
+  #: Symbol
+  attr_reader :id
+  #: String
+  attr_reader :base_title
+  #: User::DayTimeline
+  attr_reader :day_timeline
+  #: Event::PrivateRelation
+  attr_reader :events
 
-  #: (User::DayTimeline, Symbol, String, Integer, Event::ActiveRecord_Relation) -> void
+  #: (User::DayTimeline, Symbol, String, Integer, Event::PrivateRelation) -> void
   def initialize(day_timeline, id, base_title, index, events)
     @id = id
     @day_timeline = day_timeline

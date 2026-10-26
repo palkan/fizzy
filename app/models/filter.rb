@@ -1,26 +1,29 @@
-class Filter < ApplicationRecord
-  # @rbs @cards: Card::ActiveRecord_Relation?
+# typed: true
 
-  # @rbs skip -- declared in sig/generated/inline.rbs
+class Filter < ApplicationRecord
   include Fields, Params, Resources, Summarized
 
   belongs_to :creator, class_name: "User", default: -> { Current.user }
-  belongs_to :account, default: -> { creator.account }
+  belongs_to :account, default: -> {
+    #: self as Filter
+    creator.account
+  }
 
   #: (untyped params) -> Filter
   def self.from_params(params)
-    find_by_params(params) || build(params)
+    find_by_params(params) || build(params) #: as Filter
   end
 
   #: (ActionController::Parameters | Hash[Symbol, untyped] attrs) -> Filter
   def self.remember(attrs)
     create!(attrs)
   rescue ActiveRecord::RecordNotUnique
-    filter = find_by_params(attrs) #: Filter
+    # The unique index just rejected an identical filter, so it exists.
+    filter = find_by_params(attrs) #: as !nil
     filter.tap(&:touch)
   end
 
-  #: () -> Card::ActiveRecord_Relation
+  #: () -> Card::PrivateAssociationRelation
   def cards
     @cards ||= begin
       result = creator.accessible_cards.preloaded.published
@@ -66,20 +69,20 @@ class Filter < ApplicationRecord
     ActiveSupport::Cache.expand_cache_key params_digest, "filter"
   end
 
-  #: () -> boolish
+  #: () -> BasicObject
   def only_closed?
     indexed_by.closed? || closure_window || closers.present?
   end
 
   private
-    #: (Card::ActiveRecord_Relation) -> Card::ActiveRecord_Relation
+    #: (Card::PrivateAssociationRelation) -> Card::PrivateAssociationRelation
     def filter_boards(relation)
       relation = relation.where(cards: { account_id: creator.account_id }).where(board: boards.ids)
       if joins_has_many?
         relation
       else
         # Pin the (account_id, last_active_at, status) index so the ordered page is served by a reverse scan, not a filesort.
-        relation.use_index(:index_cards_on_account_id_and_last_active_at_and_status) #: Card::ActiveRecord_Relation
+        relation.use_index(:index_cards_on_account_id_and_last_active_at_and_status) #: as Card::PrivateAssociationRelation
       end
     end
 
@@ -91,7 +94,7 @@ class Filter < ApplicationRecord
       assignees.present? || tags.present? || terms.present?
     end
 
-    #: () -> boolish
+    #: () -> BasicObject
     def include_closed_cards?
       only_closed? || card_ids.present?
     end

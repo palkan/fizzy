@@ -1,3 +1,5 @@
+# typed: true
+
 class ExportMailer < ApplicationMailer
   helper_method :export_download_url
 
@@ -5,8 +7,10 @@ class ExportMailer < ApplicationMailer
   def completed(export)
     @export = export
     @user = export.user
+    # Exports are requested by active users, who always have an identity
+    identity = @user.identity #: as !nil
 
-    mail to: @user.identity.email_address, subject: "Your Fizzy data export is ready for download"
+    mail to: identity.email_address, subject: "Your Fizzy data export is ready for download"
   end
 
   private

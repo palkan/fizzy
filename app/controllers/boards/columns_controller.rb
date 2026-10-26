@@ -1,3 +1,5 @@
+# typed: true
+
 class Boards::ColumnsController < ApplicationController
   wrap_parameters :column, include: %i[ name color ]
 

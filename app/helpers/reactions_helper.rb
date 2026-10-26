@@ -1,6 +1,8 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module ReactionsHelper
-  # @type instance: ActionView::Base
-  #: (Card | Comment) -> Array[Card | Comment]
+  #: (ApplicationRecord) -> Array[Card | Comment]
   def reaction_path_prefix_for(reactable)
     case reactable
     when Card then [ reactable ]

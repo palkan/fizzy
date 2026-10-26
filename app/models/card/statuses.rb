@@ -1,16 +1,22 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Statuses
-  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Card)
+    #: self as singleton(Card)
     enum :status, %w[ drafted published ].index_by(&:itself)
 
     before_save :mark_if_just_published
-    after_create -> { track_event :published }, if: :published?
+    after_create -> {
+      #: self as Card
+      track_event :published
+    }, if: :published?
   end
 
-  attr_accessor :was_just_published #: bool?
+  #: bool?
+  attr_accessor :was_just_published
   alias_method :was_just_published?, :was_just_published
 
   #: () -> void

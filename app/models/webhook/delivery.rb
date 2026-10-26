@@ -1,6 +1,8 @@
+# typed: true
+
 class Webhook::Delivery < ApplicationRecord
-  # @rbs skip -- declared in sig/generated/inline.rbs
-  include Rails.application.routes.url_helpers
+  # Sorbet rejects non-constant mixins; the URL helpers are declared by the Tapioca UrlHelpers compiler
+  send :include, Rails.application.routes.url_helpers
 
   class ResponseTooLarge < StandardError; end
 
@@ -9,7 +11,10 @@ class Webhook::Delivery < ApplicationRecord
   ENDPOINT_TIMEOUT = 7.seconds
   MAX_RESPONSE_SIZE = 100.kilobytes
 
-  belongs_to :account, default: -> { webhook.account }
+  belongs_to :account, default: -> {
+    #: self as Webhook::Delivery
+    webhook.account
+  }
   belongs_to :webhook
   belongs_to :event
 
@@ -123,7 +128,7 @@ class Webhook::Delivery < ApplicationRecord
     #: () -> Net::HTTP
     def http
       # Only called once resolved_ip has resolved the host, so it's present
-      host = uri.host #: String
+      host = uri.host #: as !nil
       Net::HTTP.new(host, uri.port).tap do |http|
         http.ipaddr = resolved_ip
         http.use_ssl = (uri.scheme == "https")

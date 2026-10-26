@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: User
 module User::Notifiable
-  # @type instance: User
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(User)
+    #: self as singleton(User)
     has_many :notifications, dependent: :destroy
     has_many :notification_bundles, class_name: "Notification::Bundle", dependent: :destroy
 

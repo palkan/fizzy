@@ -1,5 +1,10 @@
+# typed: true
+
 class Access < ApplicationRecord
-  belongs_to :account, default: -> { user.account }
+  belongs_to :account, default: -> {
+    #: self as Access
+    user.account
+  }
   belongs_to :board, touch: true
   belongs_to :user, touch: true
 

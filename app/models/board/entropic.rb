@@ -1,12 +1,15 @@
+# typed: true
+
+# @requires_ancestor: Board
 module Board::Entropic
-  # @type instance: Board
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Board)
-    delegate :auto_postpone_period, :auto_postpone_period_in_days, to: :entropy
+    #: self as singleton(Board)
     has_one :entropy, as: :container, dependent: :destroy
   end
+
+  delegate :auto_postpone_period, :auto_postpone_period_in_days, to: :entropy
 
   def entropy
     super || account.entropy

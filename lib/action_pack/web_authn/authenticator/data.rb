@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn Authenticator Data
 #
 # Decodes and represents the authenticator data structure from WebAuthn
@@ -43,8 +45,6 @@
 #   multiple devices.
 #
 class ActionPack::WebAuthn::Authenticator::Data
-  # @rbs @public_key: OpenSSL::PKey::PKey?
-
   # Segment lengths
   RELYING_PARTY_ID_HASH_LENGTH = 32
   FLAGS_LENGTH = 1
@@ -59,13 +59,20 @@ class ActionPack::WebAuthn::Authenticator::Data
   BACKUP_STATE_FLAG = 0x10
   ATTESTED_CREDENTIAL_DATA_FLAG = 0x40
 
-  attr_reader :bytes #: Array[Integer]
-  attr_reader :relying_party_id_hash #: String
-  attr_reader :flags #: Integer
-  attr_reader :sign_count #: Integer
-  attr_reader :aaguid #: String?
-  attr_reader :credential_id #: String?
-  attr_reader :public_key_bytes #: String?
+  #: Array[Integer]
+  attr_reader :bytes
+  #: String
+  attr_reader :relying_party_id_hash
+  #: Integer
+  attr_reader :flags
+  #: Integer
+  attr_reader :sign_count
+  #: String?
+  attr_reader :aaguid
+  #: String?
+  attr_reader :credential_id
+  #: String?
+  attr_reader :public_key_bytes
 
   # Wraps raw authenticator data into a Data instance. Accepts an existing
   # Data object (returned as-is), a Base64URL-encoded string, or raw binary.
@@ -144,12 +151,12 @@ class ActionPack::WebAuthn::Authenticator::Data
   # the data is long enough first, so the slice is never out of range.
   #: (Array[Integer], Integer, Integer) -> String
   private_class_method def self.pack_bytes(bytes, position, length)
-    slice = bytes[position, length] #: Array[Integer]
+    slice = bytes[position, length] #: as !nil
     slice.pack("C*")
   end
 
-  #: (bytes: Array[Integer], relying_party_id_hash: String, flags: Integer, sign_count: Integer, ?aaguid: String?, credential_id: String?, public_key_bytes: String?) -> void
-  def initialize(bytes:, relying_party_id_hash:, flags:, sign_count:, aaguid: nil, credential_id:, public_key_bytes:)
+  #: (bytes: Array[Integer], relying_party_id_hash: String, flags: Integer, sign_count: Integer, credential_id: String?, public_key_bytes: String?, ?aaguid: String?) -> void
+  def initialize(bytes:, relying_party_id_hash:, flags:, sign_count:, credential_id:, public_key_bytes:, aaguid: nil)
     @bytes = bytes
     @relying_party_id_hash = relying_party_id_hash
     @flags = flags
@@ -192,7 +199,7 @@ class ActionPack::WebAuthn::Authenticator::Data
   #: () -> OpenSSL::PKey::PKey?
   def public_key
     if key_bytes = public_key_bytes
-      @public_key ||= ActionPack::WebAuthn::CoseKey.decode(key_bytes).to_openssl_key
+      @public_key ||= ActionPack::WebAuthn::CoseKey.decode(key_bytes).to_openssl_key #: OpenSSL::PKey::PKey?
     end
   end
 end

@@ -1,8 +1,10 @@
+# typed: true
+
+# @requires_ancestor: User
 module User::Watcher
-  # @type instance: User
   extend ActiveSupport::Concern
   included do
-    # @type self: singleton(User)
+    #: self as singleton(User)
     has_many :watches, dependent: :destroy
   end
 end

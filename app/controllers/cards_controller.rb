@@ -1,3 +1,5 @@
+# typed: true
+
 class CardsController < ApplicationController
   wrap_parameters :card, include: %i[ title description image created_at last_active_at ]
 

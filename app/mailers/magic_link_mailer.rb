@@ -1,3 +1,5 @@
+# typed: true
+
 class MagicLinkMailer < ApplicationMailer
   #: (MagicLink) -> void
   def sign_in_instructions(magic_link)

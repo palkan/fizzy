@@ -1,3 +1,5 @@
+# typed: true
+
 class Card::CleanInaccessibleDataJob < ApplicationJob
   discard_on ActiveJob::DeserializationError
 

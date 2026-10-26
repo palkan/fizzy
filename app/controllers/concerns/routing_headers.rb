@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: ApplicationController
 module RoutingHeaders
-  # @type instance: ApplicationController
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationController)
+    #: self as singleton(ApplicationController)
     before_action :set_target_header
   end
 

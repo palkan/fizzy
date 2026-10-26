@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::Export < Export
   private
     #: () -> String

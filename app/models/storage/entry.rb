@@ -1,3 +1,5 @@
+# typed: true
+
 class Storage::Entry < ApplicationRecord
   belongs_to :account
   belongs_to :board, optional: true
@@ -7,12 +9,16 @@ class Storage::Entry < ApplicationRecord
 
   thread_mattr_accessor :recording, default: true #: bool
 
-  # @rbs [T] () { () -> T } -> T
+  #: [T] () { () -> T } -> T
   def self.suppressing_recording(&block)
-    original, self.recording = self.recording, false
-    yield
-  ensure
-    self.recording = original
+    original = recording
+
+    begin
+      self.recording = false
+      yield
+    ensure
+      self.recording = original
+    end
   end
 
   # Records may be destroyed (during cascading deletes) but .id still works.

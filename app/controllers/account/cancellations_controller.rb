@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::CancellationsController < ApplicationController
   before_action :ensure_owner
 

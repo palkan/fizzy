@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn Assertion Response
 #
 # Handles the authenticator response from a WebAuthn authentication ceremony.
@@ -30,17 +32,20 @@
 # * The signature is valid for the credential's public key
 #
 class ActionPack::WebAuthn::Authenticator::AssertionResponse < ActionPack::WebAuthn::Authenticator::Response
-  attr_reader :credential #: ActionPack::WebAuthn::PublicKeyCredential
-  attr_reader :authenticator_data #: ActionPack::WebAuthn::Authenticator::Data
-  attr_reader :signature #: String
+  #: ActionPack::WebAuthn::PublicKeyCredential
+  attr_reader :credential
+  #: ActionPack::WebAuthn::Authenticator::Data
+  attr_reader :authenticator_data
+  #: String
+  attr_reader :signature
 
   validate :client_data_type_must_be_get
   validate :signature_must_be_valid
   validate :sign_count_must_increase
 
-  #: (credential: ActionPack::WebAuthn::PublicKeyCredential, authenticator_data: ActionPack::WebAuthn::Authenticator::Data | String, signature: String, client_data_json: String, **untyped) -> void
-  def initialize(credential:, authenticator_data:, signature:, client_data_json:, **attributes)
-    super(client_data_json:, **attributes)
+  #: (credential: ActionPack::WebAuthn::PublicKeyCredential, authenticator_data: ActionPack::WebAuthn::Authenticator::Data | String, signature: String, client_data_json: String, ?origin: String?, ?user_verification: Symbol | String) -> void
+  def initialize(credential:, authenticator_data:, signature:, client_data_json:, origin: nil, user_verification: :preferred)
+    super(client_data_json:, origin:, user_verification:)
     @credential = credential
     @signature = signature
     @signature = Base64.urlsafe_decode64(@signature) unless @signature.encoding == Encoding::BINARY

@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Watchable
-  # @type instance: Card
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Card)
+    #: self as singleton(Card)
     has_many :watches, dependent: :destroy
     has_many :watchers, -> { active.merge(Watch.watching) }, through: :watches, source: :user
 

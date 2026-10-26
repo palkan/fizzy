@@ -1,3 +1,5 @@
+# typed: true
+
 # Adds passkey support to an Active Record model (the "holder" of passkeys).
 #
 # == Usage
@@ -34,12 +36,12 @@
 #     config.registration_options { { name: email, display_name: name } }
 #     config.authentication_options { { user_verification: "required" } }
 #   end
+# @requires_ancestor: ActiveRecord::Base
 module ActionPack::Passkey::Holder
-  # @type instance: ActiveRecord::Base
   extend ActiveSupport::Concern
 
+  # @requires_ancestor: singleton(ActiveRecord::Base)
   module ClassMethods
-    # @type instance: singleton(ActiveRecord::Base)
     # Declares that this model can hold passkeys. Sets up a polymorphic +has_many+ association
     # and defines +passkey_registration_options+ and +passkey_authentication_options+ instance methods used
     # by ActionPack::Passkey to build ceremony options.
@@ -58,7 +60,7 @@ module ActionPack::Passkey::Holder
         class_name: "ActionPack::Passkey"
 
       define_method(:passkey_registration_options) do
-        # @type self: ActiveRecord::Base
+        #: self as ActiveRecord::Base
         {
           id: id,
           exclude_credentials: public_send(config.association_name)
@@ -66,7 +68,7 @@ module ActionPack::Passkey::Holder
       end
 
       define_method(:passkey_authentication_options) do
-        # @type self: ActiveRecord::Base
+        #: self as ActiveRecord::Base
         { credentials: public_send(config.association_name) }.merge(config.evaluate_authentication_options(self))
       end
     end
@@ -75,11 +77,10 @@ module ActionPack::Passkey::Holder
   # Configuration object yielded by +has_passkeys+ when a block is given. Allows setting
   # custom association options and ceremony option blocks.
   class Config
-    # @rbs @registration_options: (^() [self: ActiveRecord::Base] -> Hash[Symbol, untyped])?
-    # @rbs @authentication_options: (^() [self: ActiveRecord::Base] -> Hash[Symbol, untyped])?
-
-    attr_accessor :association_name #: Symbol
-    attr_accessor :dependent #: Symbol
+    #: Symbol
+    attr_accessor :association_name
+    #: Symbol
+    attr_accessor :dependent
 
     #: (**untyped) -> void
     def initialize(**options)
@@ -138,26 +139,23 @@ module ActionPack::Passkey::Holder
       def extract_options_for(klass, options)
         keys = klass.attribute_names.map(&:to_sym)
 
-        extracted = options.slice(*keys)
-        options.except!(*keys)
+        extracted = options.select { |key, _| keys.include?(key) }
+        options.reject! { |key, _| keys.include?(key) }
         extracted if extracted.any?
       end
 
-      #: (Hash[Symbol, untyped]) -> ^() [self: ActiveRecord::Base] -> Hash[Symbol, untyped]
+      #: (Hash[Symbol, untyped]) -> ^() -> Hash[Symbol, untyped]
       def options_to_proc(options)
         proc do
-          # @type self: ActiveRecord::Base
+          #: self as ActiveRecord::Base
           options.transform_values do |value|
             case value
             when Symbol then send(value)
-            when Proc
-              # Procs among the options are written to run in the record's context
-              value_proc = value #: ^() [self: ActiveRecord::Base] -> untyped
-              instance_exec(&value_proc)
+            when Proc then instance_exec(&value)
             else value
             end
           end
-        end #: ^() [self: ActiveRecord::Base] -> Hash[Symbol, untyped]
+        end
       end
   end
 end

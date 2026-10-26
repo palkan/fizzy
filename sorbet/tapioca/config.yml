@@ -1,0 +1,11 @@
+gem:
+  # The development environment connects Solid Cache and Solid Cable to databases it doesn't configure
+  environment: test
+dsl:
+  environment: test
+  exclude:
+    # Replaced by subclasses in sorbet/tapioca/compilers
+    - ActiveRecordAssociations
+    - ActiveSupportCurrentAttributes
+    - ActiveRecordStore
+    - ActiveModelAttributes

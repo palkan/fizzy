@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::DataTransfer::EntropyRecordSet < Account::DataTransfer::RecordSet
   #: (Account) -> void
   def initialize(account)
@@ -8,7 +10,7 @@ class Account::DataTransfer::EntropyRecordSet < Account::DataTransfer::RecordSet
     def import_batch(files)
       batch_data = files.map do |file|
         data = load(file)
-        data.slice(*attributes).merge("account_id" => account.id)
+        data.select { |key, _| attributes.include?(key) }.merge("account_id" => account.id)
       end
 
       container_keys = batch_data.map { |d| [ d["container_type"], d["container_id"] ] }
@@ -23,8 +25,9 @@ class Account::DataTransfer::EntropyRecordSet < Account::DataTransfer::RecordSet
       end
 
       to_update.each do |data|
+        # Partitioned into to_update because the entropy exists
         Entropy
-          .find_by(account_id: account.id, container_type: data["container_type"], container_id: data["container_id"]) #: Entropy
+          .find_by(account_id: account.id, container_type: data["container_type"], container_id: data["container_id"]) #: as !nil
           .update!(data.slice("auto_postpone_period"))
       end
 

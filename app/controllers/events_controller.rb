@@ -1,3 +1,5 @@
+# typed: true
+
 class EventsController < ApplicationController
   include DayTimelinesScoped
 

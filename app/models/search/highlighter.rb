@@ -1,11 +1,12 @@
-class Search::Highlighter
-  # @rbs @terms: Array[String]?
+# typed: true
 
+class Search::Highlighter
   OPENING_MARK = "<mark class=\"circled-text\"><span></span>"
   CLOSING_MARK = "</mark>"
   ELIPSIS = "..."
 
-  attr_reader :query #: String
+  #: String
+  attr_reader :query
 
   #: (String) -> void
   def initialize(query)
@@ -37,7 +38,7 @@ class Search::Highlighter
       end_index = [ words.length - 1, start_index + max_words - 1 ].min
 
       # The range is within bounds
-      snippet_words = words[start_index..end_index] #: Array[String]
+      snippet_words = words[start_index..end_index] #: as !nil
       snippet_text = snippet_words.join(" ")
       snippet_text = "...#{snippet_text}" if start_index > 0
       snippet_text = "#{snippet_text}..." if end_index < words.length - 1

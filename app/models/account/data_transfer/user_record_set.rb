@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::DataTransfer::UserRecordSet < Account::DataTransfer::RecordSet
   ATTRIBUTES = %w[
     id
@@ -16,7 +18,7 @@ class Account::DataTransfer::UserRecordSet < Account::DataTransfer::RecordSet
   end
 
   private
-    #: () -> User::ActiveRecord_Relation
+    #: () -> User::PrivateRelation
     def records
       User.where(account: account)
     end
@@ -37,7 +39,7 @@ class Account::DataTransfer::UserRecordSet < Account::DataTransfer::RecordSet
 
         identity = Identity.find_or_create_by!(email_address: email_address) if email_address.present?
 
-        user_data.slice(*ATTRIBUTES).merge(
+        user_data.select { |key, _| ATTRIBUTES.include?(key) }.merge(
           "account_id" => account.id,
           "identity_id" => identity&.id
         )

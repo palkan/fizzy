@@ -1,3 +1,5 @@
+# typed: true
+
 class DeleteUnusedTagsJob < ApplicationJob
   #: () -> void
   def perform

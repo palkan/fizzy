@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack Passkey Challenges Controller
 #
 # Generates fresh WebAuthn challenges for passkey ceremonies. The companion

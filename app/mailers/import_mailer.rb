@@ -1,3 +1,5 @@
+# typed: true
+
 class ImportMailer < ApplicationMailer
   #: (Identity, Account) -> void
   def completed(identity, account)

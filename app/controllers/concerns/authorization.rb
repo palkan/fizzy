@@ -1,15 +1,18 @@
+# typed: true
+
+# @requires_ancestor: ActionController::Base
+# @requires_ancestor: Authentication
+# @requires_ancestor: GeneratedPathHelpersModule
 module Authorization
-  # @type instance: ActionController::Base & Authentication & Authorization
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ActionController::Base)
+    #: self as singleton(ActionController::Base)
     before_action :ensure_can_access_account, if: :authenticated_account_access?
   end
 
+  # @requires_ancestor: singleton(ActionController::Base)
   module ClassMethods
-    # @type instance: singleton(ActionController::Base) & Authorization::ClassMethods
-
     #: (**untyped) -> void
     def allow_unauthorized_access(**options)
       skip_before_action :ensure_can_access_account, **options

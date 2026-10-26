@@ -1,3 +1,5 @@
+# typed: true
+
 class Card::ActivitySpike::DetectionJob < ApplicationJob
   discard_on ActiveJob::DeserializationError
 

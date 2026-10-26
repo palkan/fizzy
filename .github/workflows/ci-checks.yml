@@ -74,11 +74,8 @@ jobs:
           ruby-version: .ruby-version
           bundler-cache: true
 
-      - name: Install gem signatures
-        run: bin/rbs collection install
-
       - name: Type check
-        run: bin/steep check
+        run: bin/srb tc
 
   zizmor:
     name: GitHub Actions audit

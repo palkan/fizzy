@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: ActiveRecord::Relation
 module ActiveRecordRelationPrependOrder
-  # @type instance: ActiveRecord::Relation
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ActiveRecord::Relation)
+    #: self as singleton(ActiveRecord::Relation)
     #: (*untyped) -> ActiveRecord::Relation
     def prepend_order(*args)
       new_orders = args.flatten.map { |arg| arg.is_a?(String) ? arg : arg.to_sql }

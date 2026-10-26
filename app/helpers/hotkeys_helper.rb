@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module HotkeysHelper
-  # @type instance: ActionView::Base
   # Pass in an array of chorded keys, e.g. ["ctrl", "shift", "J"]
   #: (Array[String]) -> String
   def hotkey_label(hotkey)

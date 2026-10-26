@@ -1,3 +1,5 @@
+# typed: true
+
 require "active_job/continuable"
 
 class Event::WebhookDispatchJob < ApplicationJob

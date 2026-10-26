@@ -1,3 +1,5 @@
+# typed: true
+
 class My::AccessTokensController < ApplicationController
   wrap_parameters :access_token, include: %i[ description permission ]
 

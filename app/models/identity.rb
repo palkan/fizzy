@@ -1,8 +1,12 @@
+# typed: true
+
 class Identity < ApplicationRecord
-  # @rbs skip -- declared in sig/generated/inline.rbs
   include Joinable, Transferable
 
-  has_passkeys name: :email_address, display_name: -> { Current.user&.name || email_address }
+  has_passkeys name: :email_address, display_name: -> {
+    #: self as Identity
+    Current.user&.name || email_address
+  }
 
   has_many :access_tokens, dependent: :destroy
   has_many :magic_links, dependent: :destroy
@@ -33,7 +37,7 @@ class Identity < ApplicationRecord
     end
   end
 
-  #: () -> User::ActiveRecord_Associations_CollectionProxy
+  #: () -> User::PrivateAssociationRelation
   def users_with_active_accounts
     users.joins(:account).merge(Account.active).includes(:account)
   end

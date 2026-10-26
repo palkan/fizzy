@@ -1,3 +1,5 @@
+# typed: true
+
 class Users::PushSubscriptionsController < ApplicationController
   wrap_parameters :push_subscription, include: %i[ endpoint p256dh_key auth_key ]
 

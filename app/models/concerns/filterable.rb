@@ -1,13 +1,15 @@
+# typed: true
+
+# @requires_ancestor: ApplicationRecord
 module Filterable
-  # @type instance: Filterable & Filterable::_Includer & ApplicationRecord
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationRecord)
+    #: self as singleton(ApplicationRecord)
     has_and_belongs_to_many :filters
 
     after_update do
-      # @type self: Filterable & Filterable::_Includer & ApplicationRecord
+      #: self as Filterable
       filters.touch_all
     end
     before_destroy :remove_from_filters

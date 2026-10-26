@@ -1,8 +1,10 @@
+# typed: true
+
 # Skip analysis for blobs whose attachments have already been destroyed.
 #   e.g. when a user uploads a file but deletes it before the analysis runs.
 # Avoids `Aws::S3::Errors::NoSuchKey` when an upload is deleted before AnalyzeJob runs.
+# @requires_ancestor: ActiveStorage::AnalyzeJob
 module ActiveStorageAnalyzeJobSkipDetached
-  # @type instance: ActiveStorage::AnalyzeJob
   #: (ActiveStorage::Blob) -> void
   def perform(blob)
     return unless blob.attachments.exists?

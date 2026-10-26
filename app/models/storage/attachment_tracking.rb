@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: ActiveStorage::Attachment
 module Storage::AttachmentTracking
-  # @type instance: ActiveStorage::Attachment
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ActiveStorage::Attachment)
+    #: self as singleton(ActiveStorage::Attachment)
     # Snapshot IDs in before_destroy since parent record may be deleted
     # by the time after_destroy_commit runs
     before_destroy :snapshot_storage_context

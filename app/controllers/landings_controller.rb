@@ -1,3 +1,5 @@
+# typed: true
+
 class LandingsController < ApplicationController
   def show
     flash.keep(:welcome_letter)

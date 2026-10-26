@@ -1,3 +1,5 @@
+# typed: true
+
 module Fizzy
   #: () -> bool
   def self.saas?
@@ -18,11 +20,9 @@ module Fizzy
   end
 
   class DbAdapter
-    # @rbs @name: String
-
-    #: (_ToS) -> void
+    #: (Object) -> void
     def initialize(name)
-      @name = name.to_s
+      @name = name.to_s #: String
     end
 
     #: () -> String

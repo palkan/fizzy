@@ -1,3 +1,5 @@
+# typed: true
+
 class My::PasskeyChallengesController < ActionPack::Passkey::ChallengesController
   include Authentication
   include Authorization

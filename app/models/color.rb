@@ -1,4 +1,5 @@
-# @rbs skip -- declared in sig/shims/color.rbs
+# typed: true
+
 Color = Struct.new(:name, :value)
 
 class Color
@@ -21,7 +22,8 @@ class Color
   rescue JSON::ParserError
   end
 
-  def to_s #: String
+  #: () -> String
+  def to_s
     value
   end
 

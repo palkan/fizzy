@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: ApplicationController
 module DayTimelinesScoped
-  # @type instance: ApplicationController & DayTimelinesScoped & FilterScoped
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationController)
+    #: self as singleton(ApplicationController)
     include FilterScoped
 
     before_action :set_day_timeline

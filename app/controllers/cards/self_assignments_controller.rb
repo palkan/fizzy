@@ -1,3 +1,5 @@
+# typed: true
+
 class Cards::SelfAssignmentsController < ApplicationController
   include CardScoped
 

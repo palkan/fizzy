@@ -1,3 +1,5 @@
+# typed: true
+
 module ApplicationCable
   class Connection < ActionCable::Connection::Base
     identified_by :current_user
@@ -7,7 +9,7 @@ module ApplicationCable
     end
 
     private
-      # @rbs return: User?
+      #: () -> User?
       def set_current_user
         if session = find_session_by_cookie
           account = Account.find_by(external_account_id: request.env["fizzy.external_account_id"])

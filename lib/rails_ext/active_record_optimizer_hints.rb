@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # Query optimizer hints for ActiveRecord
@@ -13,9 +14,8 @@
 #   Card.use_index(:index_cards_on_account_id_and_board_id_and_status).where(...)
 #   Event.joins(:recording).join_prefix(:events)
 
+# @requires_ancestor: singleton(ActiveRecord::Base)
 module ActiveRecordBaseOptimizerHintExtensions
-  # @type instance: singleton(ActiveRecord::Base)
-
   # Pass index hints to the query optimizer
   #
   # @param indexes [Array<Symbol>] Index names to use
@@ -39,9 +39,8 @@ module ActiveRecordBaseOptimizerHintExtensions
   end
 end
 
+# @requires_ancestor: ActiveRecord::Relation
 module ActiveRecordRelationOptimizerHintExtensions
-  # @type instance: ActiveRecord::Relation
-
   # Pass index hints to the query optimizer using SQL comment hints.
   # Uses MySQL 8.4 optimizer hint query comments. Other databases (MariaDB, SQLite, etc.)
   # ignore these comments, making this a safe no-op across all databases.

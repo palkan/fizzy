@@ -1,3 +1,5 @@
+# typed: true
+
 class Cards::NotNowsController < ApplicationController
   include CardScoped
 

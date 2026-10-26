@@ -1,7 +1,8 @@
-# @rbs skip -- declared in sig/shims/passkey.rbs
-class Passkey::Authenticator < Data.define(:aaguids, :name, :icon)
+# typed: true
+
+Passkey::Authenticator = Data.define(:aaguids, :name, :icon) do
   def self.find_by_aaguid(aaguid)
-    registry[aaguid]
+    registry[aaguid] if aaguid
   end
 
   def self.registry

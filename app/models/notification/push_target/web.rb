@@ -1,3 +1,5 @@
+# typed: true
+
 class Notification::PushTarget::Web < Notification::PushTarget
   def process
     if subscriptions.any?

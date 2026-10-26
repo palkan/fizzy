@@ -1,14 +1,16 @@
+# typed: true
+
+# @requires_ancestor: Account
 module Account::MultiTenantable
-  # @type instance: Account
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Account)
+    #: self as singleton(Account)
     cattr_accessor :multi_tenant, default: false #: bool
   end
 
+  # @requires_ancestor: singleton(Account)
   module ClassMethods
-    # @type instance: singleton(Account)
     #: () -> bool
     def accepting_signups?
       multi_tenant || Account.none?

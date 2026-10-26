@@ -1,3 +1,5 @@
+# typed: true
+
 # = Action Pack WebAuthn Public Key Credential Options
 #
 # Abstract base class for WebAuthn ceremony options. Provides shared
@@ -27,8 +29,6 @@
 #   (configured in the Railtie).
 #
 class ActionPack::WebAuthn::PublicKeyCredential::Options
-  # @rbs @challenge: String
-
   include ActiveModel::API
   include ActiveModel::Attributes
 

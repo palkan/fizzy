@@ -1,3 +1,5 @@
+# typed: true
+
 class Cards::CommentsController < ApplicationController
   wrap_parameters :comment, include: %i[ body created_at ]
   include CardScoped

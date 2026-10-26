@@ -1,15 +1,17 @@
+# typed: true
+
+# @requires_ancestor: Search::Record
 module Search::Record::SQLite
-  # @type instance: Search::Record
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(Search::Record)
+    #: self as singleton(Search::Record)
     attribute :result_title, :string
     attribute :result_content, :string
 
     has_one :search_records_fts, -> {
       # Association scopes run on the target's relation
-      # @type self: Search::Record::SQLite::Fts::ActiveRecord_Relation
+      #: self as Search::Record::SQLite::Fts::PrivateRelation
       with_rowid
     },
       class_name: "Search::Record::SQLite::Fts", foreign_key: :rowid, primary_key: :id, dependent: :destroy
@@ -22,8 +24,8 @@ module Search::Record::SQLite
     }
   end
 
+  # @requires_ancestor: singleton(Search::Record)
   module ClassMethods
-    # @type instance: singleton(Search::Record)
     #: (Search::Query) -> Array[String]
     def search_fields(query)
       opening_mark = connection.quote(Search::Highlighter::OPENING_MARK)
@@ -37,7 +39,7 @@ module Search::Record::SQLite
 
     #: (String) -> singleton(Search::Record)
     def for(account_id)
-      self
+      self #: as singleton(Search::Record)
     end
   end
 

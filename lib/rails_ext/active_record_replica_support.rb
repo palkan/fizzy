@@ -1,3 +1,4 @@
+# typed: true
 # frozen_string_literal: true
 
 # Adds a helper method to check if replica database connections are configured
@@ -7,12 +8,12 @@
 #   class ApplicationRecord < ActiveRecord::Base
 #     configure_replica_connections
 #   end
+# @requires_ancestor: ActiveRecord::Base
 module ActiveRecordReplicaSupport
-  # @type instance: ActiveRecord::Base
   extend ActiveSupport::Concern
 
+  # @requires_ancestor: singleton(ActiveRecord::Base)
   module ClassMethods
-    # @type instance: singleton(ActiveRecord::Base)
     # Automatically configures connects_to for read/write splitting if a replica
     # database is configured for the current environment. This is a no-op if no
     # replica configuration exists.
@@ -55,6 +56,6 @@ module ActiveRecordReplicaSupport
 end
 
 ActiveSupport.on_load(:active_record) do
-  # @type self: singleton(ActiveRecord::Base)
+  #: self as singleton(ActiveRecord::Base)
   include ActiveRecordReplicaSupport
 end

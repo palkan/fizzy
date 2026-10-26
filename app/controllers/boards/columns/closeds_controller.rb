@@ -1,3 +1,5 @@
+# typed: true
+
 class Boards::Columns::ClosedsController < ApplicationController
   include BoardScoped
 

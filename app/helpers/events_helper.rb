@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module EventsHelper
-  # @type instance: ActionView::Base
   #: (Event) -> String
   def event_action_icon(event)
     case event.action

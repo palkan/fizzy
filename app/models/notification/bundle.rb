@@ -1,5 +1,10 @@
+# typed: true
+
 class Notification::Bundle < ApplicationRecord
-  belongs_to :account, default: -> { user.account }
+  belongs_to :account, default: -> {
+    #: self as Notification::Bundle
+    user.account
+  }
   belongs_to :user
 
   enum :status, %i[ pending processing delivered ]
@@ -32,7 +37,7 @@ class Notification::Bundle < ApplicationRecord
     DeliverAllJob.perform_later
   end
 
-  #: () -> Notification::ActiveRecord_Relation
+  #: () -> Notification::PrivateAssociationRelation
   def notifications
     user.notifications.where(updated_at: window).unread
   end
@@ -63,9 +68,14 @@ class Notification::Bundle < ApplicationRecord
 
   #: () -> void
   def set_default_window
-    settings = user.settings #: User::Settings
-    self.starts_at ||= Time.current
-    self.ends_at ||= self.starts_at + settings.bundle_aggregation_period
+    # Bundles are only created for users with settings (not system users)
+    settings = user.settings #: as !nil
+    # Unset on new bundles
+    starts_at = self.starts_at #: ActiveSupport::TimeWithZone?
+    ends_at = self.ends_at #: ActiveSupport::TimeWithZone?
+
+    self.starts_at = Time.current unless starts_at
+    self.ends_at = self.starts_at + settings.bundle_aggregation_period unless ends_at
   end
 
   private
@@ -80,7 +90,7 @@ class Notification::Bundle < ApplicationRecord
     end
 
     def deliverable?
-      settings = user.settings #: User::Settings
+      settings = user.settings #: as !nil
       settings.bundling_emails? && notifications.any? && account.active?
     end
 

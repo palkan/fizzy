@@ -1,3 +1,5 @@
+# typed: true
+
 class Signups::CompletionsController < ApplicationController
   wrap_parameters :signup, include: %i[ full_name ]
 

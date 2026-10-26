@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: Card
 module Card::Exportable
-  # @type instance: Card
   extend ActiveSupport::Concern
   include ActionView::Helpers::TagHelper
 

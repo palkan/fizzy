@@ -1,9 +1,11 @@
+# typed: true
+
+# @requires_ancestor: ApplicationController
 module FilterScoped
-  # @type instance: ApplicationController & FilterScoped
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationController)
+    #: self as singleton(ApplicationController)
     before_action :set_filter
     before_action :set_user_filtering
   end
@@ -19,7 +21,7 @@ module FilterScoped
 
     #: () -> ActionController::Parameters
     def filter_params
-      params.with_defaults(**Filter.default_values).permit(*Filter::PERMITTED_PARAMS)
+      params.with_defaults(**Filter.default_values).permit(Filter::Params::PERMITTED_PARAMS)
     end
 
     def set_user_filtering

@@ -1,10 +1,12 @@
+# typed: true
+
 # FIXME: Upstream this fix to turbo-rails
+# @requires_ancestor: ApplicationController
 module ViewTransitions
-  # @type instance: ApplicationController
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationController)
+    #: self as singleton(ApplicationController)
     before_action :disable_view_transitions, if: :page_refresh?
   end
 

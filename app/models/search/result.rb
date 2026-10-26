@@ -1,3 +1,5 @@
+# typed: true
+
 class Search::Result < ApplicationRecord
   attribute :card_id, :uuid
   attribute :comment_id, :uuid
@@ -10,7 +12,7 @@ class Search::Result < ApplicationRecord
   #: () -> String?
   def card_title
     if card_id
-      card = self.card #: Card
+      card = self.card #: as !nil
       highlight(card.title, show: :full)
     end
   end
@@ -18,7 +20,7 @@ class Search::Result < ApplicationRecord
   #: () -> String?
   def card_description
     if card_id
-      card = self.card #: Card
+      card = self.card #: as !nil
       highlight(card.description.to_plain_text, show: :snippet)
     end
   end
@@ -26,7 +28,7 @@ class Search::Result < ApplicationRecord
   #: () -> String?
   def comment_body
     if comment_id
-      comment = self.comment #: Comment
+      comment = self.comment #: as !nil
       highlight(comment.body.to_plain_text, show: :snippet)
     end
   end
@@ -41,7 +43,7 @@ class Search::Result < ApplicationRecord
   end
 
   private
-    #: (String?, show: :full | :snippet) -> String?
+    #: (String?, show: Symbol) -> String?
     def highlight(text, show:)
       if text.present? && attribute?(:query)
         highlighter = Search::Highlighter.new(query)

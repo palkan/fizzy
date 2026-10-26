@@ -1,5 +1,10 @@
+# typed: true
+
 class Reaction < ApplicationRecord
-  belongs_to :account, default: -> { reactable.account }
+  belongs_to :account, default: -> {
+    #: self as Reaction
+    reactable.account
+  }
   belongs_to :reactable, polymorphic: true, touch: true
   belongs_to :reacter, class_name: "User", default: -> { Current.user }
 

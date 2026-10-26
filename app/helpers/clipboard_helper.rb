@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module ClipboardHelper
-  # @type instance: ActionView::Base
   #: (String) ?{ (?) -> untyped } -> ActiveSupport::SafeBuffer
   def button_to_copy_to_clipboard(url, &)
     tag.button class: "btn", data: {

@@ -1,15 +1,17 @@
+# typed: true
+
+# @requires_ancestor: ApplicationRecord
 module Mentions
-  # @type instance: Mentions & Mentions::_Includer & ApplicationRecord
   extend ActiveSupport::Concern
 
   included do
-    # @type self: singleton(ApplicationRecord)
+    #: self as singleton(ApplicationRecord)
     has_many :mentions, as: :source, dependent: :destroy
     has_many :mentionees, through: :mentions
     after_save_commit :create_mentions_later, if: :should_create_mentions?
   end
 
-  #: (?mentioner: User) -> void
+  #: (?mentioner: User?) -> void
   def create_mentions(mentioner: Current.user)
     scan_mentionees.each do |mentionee|
       mentionee.mentioned_by mentioner, at: self
@@ -23,7 +25,7 @@ module Mentions
 
   #: () -> Array[User]
   def scan_mentionees
-    mentionees_from_attachments & mentionable_users
+    mentionees_from_attachments & mentionable_users.to_a
   end
 
   private
@@ -32,14 +34,15 @@ module Mentions
       rich_text_associations.flat_map { send(it.name)&.body&.attachments&.collect { it.attachable } }.compact
     end
 
-    #: () -> User::ActiveRecord_Associations_CollectionProxy
+    #: () -> User::PrivateCollectionProxy
     def mentionable_users
       board.users
     end
 
     #: () -> Array[untyped]
     def rich_text_associations
-      self.class.reflect_on_all_associations(:has_one).filter { it.klass == ActionText::RichText }
+      model = self.class #: as singleton(ApplicationRecord)
+      model.reflect_on_all_associations(:has_one).filter { it.klass == ActionText::RichText }
     end
 
     #: () -> bool
@@ -54,7 +57,10 @@ module Mentions
 
     #: () -> void
     def create_mentions_later
-      Mention::CreateJob.perform_later(self, mentioner: Current.user)
+      record = self #: as Card | Comment
+      # Mentions are created when a signed-in user saves the record.
+      mentioner = Current.user #: as !nil
+      Mention::CreateJob.perform_later(record, mentioner:)
     end
 
     # Template method

@@ -71,19 +71,19 @@ Allow people to move between OSS and SAAS Fizzy instances:
 
 Before editing or reviewing code, read STYLE.md.
 
-## Types (RBS + Steep)
+## Types (RBS + Sorbet)
 
-Ruby code in `app/` and `lib/` is typed with inline RBS annotations and checked with Steep.
+Ruby code in `app/` and `lib/` is typed with RBS comments and checked with Sorbet. Every file starts with `# typed: true`. Don't use Sorbet's Ruby syntax (`sig { }`, `T.let`, …): write types only as RBS comments.
 
-- Run `bin/steep check` (the whole project, no paths) after changing Ruby code. It must pass.
+- Run `bin/srb tc` after changing Ruby code. It takes about half a second and must pass.
 - Annotate the code you write, and use the types to learn what methods take and return.
-- After changing the schema, routes, associations, scopes, macros, or mixins, run `bin/rails rbs:generate`.
+- After changing the schema, associations, scopes, concerns, routes, mailers, or typed macros, run `bin/tapioca dsl`.
 
 Before writing or reviewing code, read TYPES.md. It covers:
 
-- **Commands**: checking, querying types at a position, and regenerating signatures
-- **Where signatures live**: inline annotations, generated files (`sig/rbs_rails/`, `sig/generated/`), hand-written shims (`sig/shims/`), and gem signatures
-- **Writing annotations**: syntax and rules, such as always annotating `initialize` and overrides
-- **Rails patterns**: concerns, class methods, mixins, typed macros, `instance_exec` lambdas, `Current.user!` and friends, narrowing nils
-- **Limitations to know**: inline RBS and Steep pitfalls that silently weaken checking
-- **Ignoring diagnostics**: when `steep:ignore` is acceptable, and when it isn't
+- **Commands**: checking, regenerating RBIs, and the language server
+- **Where types live**: inline RBS comments, generated RBIs (`sorbet/rbi/dsl/`, `sorbet/rbi/gems/`), our Tapioca compilers (`sorbet/tapioca/compilers/`), and hand-written shims (`sorbet/rbi/shims/`)
+- **Writing types**: signatures, attributes, and assertions (`#: as T`, `#: as !nil`, `#: self as T`)
+- **Rails patterns**: concerns with `@requires_ancestor`, class methods, typed macros, `instance_exec` lambdas, relations, `Current.user!` and friends, narrowing nils
+- **Limitations to know**: no structural interfaces, required sigils, and code Sorbet can't read
+- **Silencing errors**: when `#: as untyped` is acceptable, and when it isn't

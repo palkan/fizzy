@@ -1,5 +1,10 @@
+# typed: true
+
 class Search::Query < ApplicationRecord
-  belongs_to :account, default: -> { user&.account || Current.account }
+  belongs_to :account, default: -> {
+    #: self as Search::Query
+    user&.account || Current.account
+  }
   belongs_to :user, optional: true
 
   validates :terms, presence: true
@@ -10,7 +15,7 @@ class Search::Query < ApplicationRecord
   #: (Search::Query | String | nil) -> Search::Query
   def self.wrap(query)
     if query.is_a?(self)
-      query #: Search::Query
+      query #: as Search::Query
     else
       self.new(terms: query)
     end

@@ -1,5 +1,8 @@
+# typed: true
+
 class QrCodeLink
-  attr_reader :url #: String
+  #: String
+  attr_reader :url
 
   #: (String signed) -> QrCodeLink
   def self.from_signed(signed)

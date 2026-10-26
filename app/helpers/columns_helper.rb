@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module ColumnsHelper
-  # @type instance: ActionView::Base
   #: (Card, Column) -> ActiveSupport::SafeBuffer
   def button_to_set_column(card, column)
     button_to \

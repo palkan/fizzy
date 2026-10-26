@@ -1,11 +1,13 @@
+# typed: true
+
+# @requires_ancestor: Search::Record
 module Search::Record::Trilogy
-  # @type instance: Search::Record
   extend ActiveSupport::Concern
 
   SHARD_COUNT = 16
 
   included do
-    # @type self: singleton(Search::Record)
+    #: self as singleton(Search::Record)
     self.abstract_class = true
     before_save :set_account_key, :stem_content
 
@@ -16,7 +18,7 @@ module Search::Record::Trilogy
 
     SHARD_CLASSES = SHARD_COUNT.times.map do |shard_id|
       Class.new(self) do
-        # @type self: singleton(Search::Record)
+        #: self as singleton(Search::Record)
         self.table_name = "search_records_#{shard_id}"
 
         def self.name
@@ -26,8 +28,8 @@ module Search::Record::Trilogy
     end.freeze
   end
 
+  # @requires_ancestor: singleton(Search::Record)
   module ClassMethods
-    # @type instance: singleton(Search::Record)
     #: (String) -> Integer
     def shard_id_for_account(account_id)
       Zlib.crc32(account_id.to_s) % SHARD_COUNT
@@ -71,7 +73,7 @@ module Search::Record::Trilogy
       self.account_key = "account#{account_id}"
     end
 
-    #: (String?, show: :full | :snippet) -> String?
+    #: (String?, show: Symbol) -> String?
     def highlight(text, show:)
       if text.present? && attribute?(:query)
         highlighter = Search::Highlighter.new(query)

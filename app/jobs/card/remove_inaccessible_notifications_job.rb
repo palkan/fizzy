@@ -1,3 +1,5 @@
+# typed: true
+
 class Card::RemoveInaccessibleNotificationsJob < ApplicationJob
   discard_on ActiveJob::DeserializationError
 

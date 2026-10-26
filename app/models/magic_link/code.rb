@@ -1,3 +1,5 @@
+# typed: true
+
 module MagicLink::Code
   CODE_SUBSTITUTIONS = { "O" => "0", "I" => "1", "L" => "1" }.freeze
 

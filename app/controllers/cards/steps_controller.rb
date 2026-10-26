@@ -1,3 +1,5 @@
+# typed: true
+
 class Cards::StepsController < ApplicationController
   wrap_parameters :step, include: %i[ content completed ]
 

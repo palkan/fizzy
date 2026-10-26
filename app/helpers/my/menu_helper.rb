@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module My::MenuHelper
-  # @type instance: ActionView::Base
   #: () -> ActiveSupport::SafeBuffer
   def jump_field_tag
     text_field_tag :search, nil,
@@ -56,7 +58,7 @@ module My::MenuHelper
   end
 
   #: (String, untyped record) { () -> untyped } -> ActiveSupport::SafeBuffer
-  def my_menu_item(item, record)
+  def my_menu_item(item, record, &)
     tag.li(class: "popup__item", data: { filter_target: "item", navigable_list_target: "item", id: "filter-#{item}-#{record.id}" }) do
       icon_tag(item, class: "popup__icon") + yield
     end

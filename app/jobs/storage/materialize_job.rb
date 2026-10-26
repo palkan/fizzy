@@ -1,3 +1,5 @@
+# typed: true
+
 class Storage::MaterializeJob < ApplicationJob
   queue_as :backend
   limits_concurrency to: 1, key: ->(owner) { owner }

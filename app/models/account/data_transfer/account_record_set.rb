@@ -1,3 +1,5 @@
+# typed: true
+
 class Account::DataTransfer::AccountRecordSet < Account::DataTransfer::RecordSet
   ACCOUNT_ATTRIBUTES = %w[
     join_code

@@ -1,3 +1,5 @@
+# typed: true
+
 class ApplicationPlatform < PlatformAgent
   #: () -> bool
   def ios?

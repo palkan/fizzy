@@ -1,3 +1,5 @@
+# typed: true
+
 class ActivitiesController < ApplicationController
   ACTIONS = %w[
     card_assigned

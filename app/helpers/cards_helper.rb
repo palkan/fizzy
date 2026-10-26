@@ -1,5 +1,7 @@
+# typed: true
+
+# @requires_ancestor: ActionView::Base
 module CardsHelper
-  # @type instance: ActionView::Base
   #: (Card, ?id: String, ?data: Hash[Symbol, untyped], **untyped) ?{ (?) -> untyped } -> ActiveSupport::SafeBuffer
   def card_article_tag(card, id: dom_id(card, :article), data: {}, **options, &block)
     classes = [
@@ -39,7 +41,7 @@ module CardsHelper
   #: (Card) -> ActiveSupport::SafeBuffer
   def card_social_tags(card)
     tag.meta(property: "og:title", content: "#{card.title} | #{card.board.name}") +
-    tag.meta(property: "og:description", content: format_excerpt(card&.description, length: 200)) +
+    tag.meta(property: "og:description", content: format_excerpt(card.description, length: 200)) +
     tag.meta(property: "og:image", content: card.image.attached? ? "#{request.base_url}#{url_for(card.image)}" : "#{request.base_url}/opengraph.png") +
     tag.meta(property: "og:url", content: card_url(card))
   end

@@ -1,3 +1,5 @@
+# typed: true
+
 class Users::JoinsController < ApplicationController
   wrap_parameters :user, include: %i[ name avatar ]
 

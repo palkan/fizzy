@@ -1,3 +1,5 @@
+# typed: true
+
 class Cards::GoldnessesController < ApplicationController
   include CardScoped
 

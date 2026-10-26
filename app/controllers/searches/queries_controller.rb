@@ -1,3 +1,5 @@
+# typed: true
+
 class Searches::QueriesController < ApplicationController
   def create
     Current.user!.remember_search(params[:q])
