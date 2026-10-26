@@ -110,7 +110,9 @@ class Webhook::Delivery < ApplicationRecord
     #: () -> String?
     def resolved_ip
       return @resolved_ip if defined?(@resolved_ip)
-      @resolved_ip = SsrfProtection.resolve_public_ip(uri.host)
+      @resolved_ip = if host = uri.host
+        SsrfProtection.resolve_public_ip(host)
+      end
     end
 
     #: () -> URI::Generic

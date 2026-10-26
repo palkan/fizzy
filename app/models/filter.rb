@@ -56,10 +56,6 @@ class Filter < ApplicationRecord
     boards.first if boards.one?
   end
 
-  def single_workflow
-    boards.first.workflow if boards.pluck(:workflow_id).uniq.one?
-  end
-
   #: () -> bool
   def cacheable?
     boards.exists?

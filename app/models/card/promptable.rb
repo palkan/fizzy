@@ -13,7 +13,7 @@ module Card::Promptable
     <<~PROMPT
       BEGIN OF CARD #{id}
 
-      **Title:** #{title.first(1000)}
+      **Title:** #{title&.first(1000) || "Untitled"}
       **Description:**
 
       #{description.to_plain_text.first(10_000)}

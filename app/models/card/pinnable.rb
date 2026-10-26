@@ -26,7 +26,7 @@ module Card::Pinnable
 
   #: (User) -> Pin?
   def unpin_by(user)
-    pins.find_by(user: user).tap { it.destroy }
+    pins.find_by(user: user).tap { it&.destroy }
   end
 
   private
