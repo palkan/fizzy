@@ -26,6 +26,16 @@ end
 
 ActiveRecord::Base.singleton_class.prepend(MutineerEnumRedeclaration)
 
+# Reopening a controller runs its `skip_before_action` calls again, for callbacks it has already skipped.
+module MutineerCallbackReskipping
+  def skip_callback(name, *filter_list, &block)
+    options = filter_list.extract_options!
+    super(name, *filter_list, options.reverse_merge(raise: false), &block)
+  end
+end
+
+ActiveSupport::Callbacks::ClassMethods.prepend(MutineerCallbackReskipping)
+
 # Reopening a class also redefines its constants, warning about each one on every mutant.
 module MutineerConstantRedefinitionWarnings
   def warn(message, ...)
