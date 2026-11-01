@@ -1,0 +1,11 @@
+# Mutation testing: https://github.com/davidteren/mutineer
+# Run with bin/mutineer, e.g. `bin/mutineer app/models/card.rb` or `bin/mutineer app/models --since origin/main`.
+rails: true
+
+# Boot once and fork per mutant, each parallel worker on its own copy of the test database.
+daemon: true
+
+# Tests use Action Cable's test adapter, so workers never write to the cable database.
+shared_databases: [ cable ]
+
+require: test/mutineer_boot.rb

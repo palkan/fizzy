@@ -43,3 +43,7 @@
 .DS_Store
 .dockerdev/.claude.json
 .claude/*.local.*
+
+# Mutation testing coverage cache and in-flight mutant files.
+/.mutineer/
+.mutineer_*.rb

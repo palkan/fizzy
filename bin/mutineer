@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Mutation testing for app code, configured in .mutineer.yml.
+#
+# Usage:
+#   bin/mutineer app/models/card.rb                   # one file against its paired test
+#   bin/mutineer app/models --since origin/main       # only lines changed on this branch
+#   bin/mutineer app/models --no-fail-fast            # every survivor in a directory
+#   bin/mutineer --help                               # all options
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+export RAILS_ENV=test
+exec bundle exec mutineer run "$@"

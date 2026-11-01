@@ -49,6 +49,18 @@ The full continuous integration tests can be run with:
 bin/ci
 ```
 
+### Mutation testing
+
+Line coverage tells you a line ran; [Mutineer](https://github.com/davidteren/mutineer) tells you whether the tests would notice it changing. It makes small changes to the code (`>=` to `>`, `&&` to `||`, deleting a statement) and runs the tests that cover each changed line. A change that every test still passes is a *surviving mutant*, pointing at behavior no test pins down.
+
+```sh
+bin/mutineer app/models/card.rb                  # one file, against its paired test
+bin/mutineer app/models --since origin/main      # only the lines changed on your branch
+bin/mutineer app/models --no-fail-fast           # every survivor in a directory
+```
+
+Each source runs against its conventionally paired test (`app/models/card.rb` with `test/models/card_test.rb`); pass `--test FILE` to add others. Mutineer only mutates method bodies, so scopes, callbacks and associations declared in class bodies aren't covered. Settings live in `.mutineer.yml`, and `test/mutineer_boot.rb` adapts the app to how Mutineer loads mutants.
+
 ### Database configuration
 
 Fizzy works with SQLite by default and supports MySQL too. You can switch adapters with the `DATABASE_ADAPTER` environment variable. For example, to develop locally against MySQL:
