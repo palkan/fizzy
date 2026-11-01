@@ -48,7 +48,8 @@ class ZipFile::Writer
   end
 
   private
+    # Streams through #write, which counts the size and checksum saved on the blob.
     def streamer
-      @streamer ||= ZipKit::Streamer.new(@output_io)
+      @streamer ||= ZipKit::Streamer.new(self)
     end
 end

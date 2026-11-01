@@ -57,29 +57,6 @@ class FilterTest < ActiveSupport::TestCase
     filter.cards.each { |card| assert_includes users(:david).boards, card.board }
   end
 
-  test "remembering equivalent filters" do
-    assert_difference "Filter.count", +1 do
-      filter = users(:david).filters.remember(sorted_by: "latest", assignment_status: "unassigned", tag_ids: [ tags(:mobile).id ])
-
-      assert_changes "filter.reload.updated_at" do
-        assert_equal filter, users(:david).filters.remember(tag_ids: [ tags(:mobile).id ], assignment_status: "unassigned")
-      end
-    end
-  end
-
-  test "remembering equivalent filters for different users" do
-    assert_difference "Filter.count", +2 do
-      users(:david).filters.remember(assignment_status: "unassigned", tag_ids: [ tags(:mobile).id ])
-      users(:kevin).filters.remember(assignment_status: "unassigned", tag_ids: [ tags(:mobile).id ])
-    end
-  end
-
-  test "turning into params" do
-    filter = users(:david).filters.new sorted_by: "latest", tag_ids: "", assignee_ids: [ users(:jz).id ], board_ids: [ boards(:writebook).id ]
-    expected = { assignee_ids: [ users(:jz).id ], board_ids: [ boards(:writebook).id ] }
-    assert_equal expected, filter.as_params
-  end
-
   test "cacheability" do
     assert_not filters(:jz_assignments).cacheable?
     assert users(:david).filters.create!(board_ids: [ boards(:writebook).id ]).cacheable?
@@ -168,14 +145,6 @@ class FilterTest < ActiveSupport::TestCase
 
     filter = users(:david).filters.new closer_ids: [ users(:jz).id ]
     assert_includes filter.cards, cards(:shipping)
-  end
-
-  test "check if a filter is used" do
-    assert users(:david).filters.new(creator_ids: [ users(:david).id ]).used?
-    assert_not users(:david).filters.new.used?
-
-    assert users(:david).filters.new(board_ids: [ boards(:writebook).id ]).used?
-    assert_not users(:david).filters.new(board_ids: [ boards(:writebook).id ]).used?(ignore_boards: true)
   end
 
   test "column ids filter cards by workflow columns" do

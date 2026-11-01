@@ -239,6 +239,19 @@ class Storage::TotaledTest < ActiveSupport::TestCase
     assert_equal 1000, entry.delta
   end
 
+  test "reconcile_storage for an account records its drift outside any board" do
+    board = @account.boards.create!(name: "Test Board", creator: users(:david))
+    card = board.cards.create!(title: "Test Card", creator: users(:david))
+    card.image.attach io: StringIO.new("x" * 1000), filename: "test.png", content_type: "image/png"
+
+    Storage::Entry.where(account: @account).delete_all
+    @account.reconcile_storage
+
+    entry = Storage::Entry.find_by(account: @account, operation: "reconcile")
+    assert_nil entry.board
+    assert_equal @account.send(:calculate_real_storage_bytes), entry.delta
+  end
+
   test "reconcile_storage no-op when ledger matches reality" do
     board = @account.boards.create!(name: "Test Board", creator: users(:david))
     card = board.cards.create!(title: "Test Card", creator: users(:david))

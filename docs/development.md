@@ -59,7 +59,7 @@ bin/mutineer app/models app/controllers --since origin/main  # only the lines ch
 bin/mutineer app/controllers --no-fail-fast              # every survivor in a directory
 ```
 
-Each source runs against its conventionally paired test (`app/models/card.rb` with `test/models/card_test.rb`, `app/controllers/cards_controller.rb` with `test/controllers/cards_controller_test.rb`); pass `--test FILE` to add others. Shared controller concerns like `BoardScoped` or `Authentication` have no paired test, so give them the controller tests and let coverage pick the ones that reach each line:
+Each source runs against its conventionally paired test (`app/models/card.rb` with `test/models/card_test.rb`, `app/controllers/cards_controller.rb` with `test/controllers/cards_controller_test.rb`); pass `--test FILE` to add others. A source without a test at that path is skipped with a `no test found by convention` warning, so give code worth mutating a test file that mirrors its path, `concerns/` included (`app/models/concerns/storage/totaled.rb` with `test/models/concerns/storage/totaled_test.rb`). For shared controller concerns tested through their controllers, like `BoardScoped`, give Mutineer the controller tests and let coverage pick the ones that reach each line:
 
 ```sh
 bin/mutineer app/controllers/concerns $(find test/controllers test/integration -name '*_test.rb' | sed 's/^/--test /')
@@ -70,6 +70,8 @@ Mutineer only mutates method bodies, so scopes, callbacks and associations decla
 #### Working with mutation testing
 
 Run it once your tests are green and before opening a pull request: it checks whether the tests you just wrote pin down the code you just wrote.
+
+Mutation testing is slow, since it runs the covering tests once for every mutant. One file takes from several seconds to a minute or two, a whole directory like `app/models` takes around five minutes, and passing many `--test` files adds minutes of coverage capture before the first mutant runs. So don't run it on every save or test run: run it at the end of a change, scoped to it with `--since origin/main` or `--only`, and leave whole-directory scans for occasional check-ups.
 
 1. **Mutate what you changed.** `bin/mutineer app/models app/controllers --since origin/main` only touches the lines in your diff and only runs the tests that cover them. Use `--only 'Card#postpone'` for a tight loop on one method.
 2. **Go through the survivors.** Each one is a change no test noticed:

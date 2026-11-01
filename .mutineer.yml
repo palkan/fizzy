@@ -9,3 +9,46 @@ daemon: true
 shared_databases: [ cable ]
 
 require: test/mutineer_boot.rb
+
+# Equivalent mutants: changes that no request can tell apart from the original.
+ignore:
+  - id: a077dec18700
+    reason: "Authorization#authenticated_account_access?: an account is never present but falsy"
+  - id: 81a7c8f5cce6
+    reason: "Authorization#authenticated_account_access?: every action that allows unauthenticated access also skips this check"
+  - id: 6425a1f8ce66
+    reason: "Authentication#authenticated?: an identity is never present but falsy"
+  - id: ba150988e196
+    reason: "Authentication#require_account: an account is never present but falsy"
+  - id: 43bc4767e1b2
+    reason: "Authentication#request_authentication: an account is never present but falsy"
+  - id: ca3f70649eb8
+    reason: "Authentication#redirect_tenanted_request: an account is never present but falsy"
+  - id: b2139e0d4b53
+    reason: "Authentication#authenticate_by_bearer_token: the block still returns the nil identity, so an unknown token is refused either way"
+  - id: 43bd7efaaae4
+    reason: "Authentication::ViaMagicLink#ensure_development_magic_link_not_leaked: a magic link code is never blank"
+  - id: 8afe2b5d664d
+    reason: "Authentication::ViaMagicLink#serve_development_magic_link: a magic link is never present but falsy"
+  - id: dc28b220c31e
+    reason: "Authentication::ViaMagicLink#serve_development_magic_link: every caller passes a magic link, and the pending token that follows needs one too"
+  - id: 828ae43ca8bd
+    reason: "Storage::Totaled#materialize_storage: differs only once every entry is gone, and the total stays the same either way"
+  - id: 2f55e4ad32d5
+    reason: "Storage::Totaled#reconcile_storage: log line"
+  - id: 20189b959040
+    reason: "Storage::Totaled#reconcile_storage: log line"
+  - id: 50cb73c57aa4
+    reason: "Storage::Tracked#track_board_transfer: shortcut; with no records there are no attachments to transfer"
+  - id: 9065aed63a40
+    reason: "Storage::Tracked#track_board_transfer: shortcut; a zero-byte transfer changes no totals"
+  - id: 0ddabf0dc51e
+    reason: "Storage::Tracked#storage_attachments_for_records: shortcut; no records find no attachments"
+  - id: f97198c248af
+    reason: "ZipFile.create_for_disk: the tempfile is unlinked right after, so closing it only frees its descriptor sooner"
+  - id: 3d42e39ea940
+    reason: "ZipFile::Reader::IO#read: shortcut; an extractor at its end extracts nil, which is returned the same way"
+  - id: 09cd45b1dca1
+    reason: "ZipFile::Writer#initialize: an unset instance variable is nil already"
+  - id: f0f5412652a2
+    reason: "Account::DataTransfer::AccountRecordSet#check_record: unreachable, since join_code is one of ACCOUNT_ATTRIBUTES"
